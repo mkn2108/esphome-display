@@ -1,0 +1,37 @@
+#-------------------------------------------
+# Graphicsd and Fonts
+#-------------------------------------------
+
+  - file: 'images/back1.png'
+    id: back1
+    type: RGB565
+
+  - file: 'images/back2.png'
+    id: back2
+    type: RGB565
+
+  #- file: 'images/back3.png'
+  #  id: back3
+  #  type: RGB565
+
+  - file: 'images/back4.png'
+    id: back4
+    type: RGB565
+
+  #- file: 'images/back5.png'
+  #  id: back5
+  #  type: RGB565
+
+  - file: 'images/back6.png'
+    id: back6
+    type: RGB565
+
+#  - file: 'images/back7.png'
+#    id: back7
+#    type: RGB565
+
+  - file: 'images/ha_logo.png'
+    id: boot_logo
+    resize: 200x200
+    type: RGB565
+    transparency: chroma_key
