@@ -1,0 +1,5 @@
+Just my adaption of the display UI![DSC_1091](https://github.com/user-attachments/assets/b534205b-1d09-485d-bb39-267f1f11db08)
+![DSC_1090](https://github.com/user-attachments/assets/4b0ba06a-ab71-4ffa-be33-1e12e6bf868e)
+![DSC_1088](https://github.com/user-attachments/assets/03cb1f4f-a93a-4cb7-a6e9-2296301abd6c)
+![DSC_1087](https://github.com/user-attachments/assets/6a892069-7b73-4b16-9044-08c92755d029)
+![DSC_1086](https://github.com/user-attachments/assets/5e2ba4f6-c528-4c5b-b430-2b1a98af1e17)
