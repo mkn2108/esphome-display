@@ -32,6 +32,6 @@
 
   - file: 'images/ha_logo.png'
     id: boot_logo
-    resize: 200x200
+#    resize: 200x200
     type: RGB565
     transparency: chroma_key
