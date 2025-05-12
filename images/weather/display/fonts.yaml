@@ -1,0 +1,256 @@
+- file: "fonts/Nunito-SemiBold.ttf"
+  id: nunito_20
+  size: 20
+  bpp: 4
+
+- file: "fonts/Nunito-SemiBold.ttf"
+  id: nunito_24
+  size: 24
+  bpp: 4
+
+- file: "fonts/Nunito-SemiBold.ttf"
+  id: nunito_30
+  size: 30
+  bpp: 4
+
+- file: "fonts/Nunito-SemiBold.ttf"
+  id: nunito_36
+  size: 36
+  bpp: 4
+
+- file: "fonts/Nunito-SemiBold.ttf"
+  id: nunito_48
+  size: 48
+  bpp: 4
+
+- file: "fonts/Nunito-SemiBold.ttf"
+  id: nunito_84
+  size: 84
+  bpp: 4
+
+- file: "gfonts://Roboto"
+  id: roboto40
+  size: 40
+  bpp: 4
+
+- file: "fonts/Icons.ttf"
+  id: icons_24
+  size: 24
+  bpp: 4
+  glyphs: [
+    "\U0000e900",
+    "\U0000e901",
+    "\U0000e902",
+    "\U0000e903",
+    "\U0000e904",
+    "\U0000e905",
+    "\U0000e906",
+    "\U0000e907",
+    "\U0000e909",
+    "\U0000e90a",
+    "\U0000e90b",
+    "\U0000e90c",
+    "\U0000e90d",
+    "\U0000e90e",
+    "\U0000e90f",
+    "\U0000e911",
+    "\U0000E910",
+    "\U0000e912",
+    "\U0000e913",
+    "\U0000e914",
+    "\U0000e915",
+    "\U0000e916",
+    "\U0000e917",
+    "\U0000e918",
+    "\U0000e919",
+    "${heating}",
+      ]
+- file: 'fonts/Roboto-Regular.ttf'
+  id: roboto24
+  size: 24
+  bpp: 4
+  glyphs: [
+    " ", "!", "\"", "#", "%", "&", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    ":", ";", "<", "=", ">", "?", "@", "°",
+    "A","B","C","D","E","F","G","H","I","J","K","L","M",
+    "N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+    "a","b","c","d","e","f","g","h","i","j","k","l","m",
+    "n","o","p","q","r","s","t","u","v","w","x","y","z",
+    "Ä", "Ö", "Ü", "ä", "ö", "ü", "ß",
+  ]
+  extras:
+    - file: 'fonts/materialdesignicons-webfont.ttf'
+      glyphs: [
+        "\U000F004B",
+        "\U000F006E",
+        "\U000F012C",
+        "\U000F179B",
+        "\U000F0748",
+        "\U000F1A1B",
+        "\U000F02DC",
+        "\U000F0A02",
+        "\U000F035F",
+        "\U000F0156",
+        "\U000F0C5F",
+        "\U000f0084",
+        "\U000f0091",
+        "\U000F005D",
+        "\U000F0045",
+        "\U000F04DB",
+        "\U000F050F",
+        $house_temp,
+        $uv_state
+      ]
+- file: "gfonts://Roboto"
+  id: roboto12
+  size: 14
+  bpp: 4
+  extras:
+    - file: 'fonts/materialdesignicons-webfont.ttf'
+      glyphs: [
+          "\U000F004B",
+          "\U000F0636",
+          "\U000F006E",
+          "\U000F01A9",
+          "\U000F0114",
+          "\U000F050F",
+          "\U000F0438",
+          "\U000F0241",
+          "\U000F075D",
+          "\U000F075E",
+          "\U000F04C3",
+          ]
+
+- file: "gfonts://Roboto"
+  id: weather_icons
+  size: 110
+  bpp: 4
+  extras:
+    - file: 'fonts/materialdesignicons-webfont.ttf'
+      glyphs: [
+          $cloudy,
+          $cloudyalert,
+          $cloudyarrowright,
+          $fog,
+          $hail,
+          $hazy,
+          $hurricane,
+          $lightning,
+          $lightningrainy,
+          $night,
+          $nightpartlycloudy,
+          $partlycloudy,
+          $partlylightning,
+          $partlyrainy,
+          $partlysnowy,
+          $partlysnowyrainy,
+          $pouring,
+          $rainy,
+          $snowy,
+          $snowyheavy,
+          $snowyrainy,
+          $sunny,
+          $sunnyalert,
+          $sunnyoff,
+          $sunset,
+          $sunsetdown,
+          $sunsetup,
+          $tornado,
+          $windy,
+          $windyvariant,
+          $happyface
+        ]
+
+- file: 'fonts/hass_hue_icons.ttf'
+  id: hass_hue_icons
+  size: 48
+  bpp: 4
+  glyphs: [
+  "\U0000E904",
+  "\U0000E900",
+  "\U0000E901",
+  "\U0000E902",
+  "\U0000E903",
+  "\U0000E905",
+  "\U0000E90D",
+  "\U0000E906",
+  "\U0000E918",
+  "\U0000E9C5",
+  "\U0000E950",
+  "\U0000E9DF",
+  "\U0000E9ED",
+  "\U0000E9f7",
+  "\U0000E948",
+  "\U0000E944",
+  "\U0000E90A",
+  "\U0000E907",
+  "\U0000E9DE",
+  ]
+- file: 'fonts/Roboto-Regular.ttf'
+  id: btn_icons_font
+  size: 70
+  bpp: 4
+  glyphs: [
+    " ", "!", "\"", "#", "%", "&", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    ":", ";", "<", "=", ">", "?", "@", "°",
+    "A","B","C","D","E","F","G","H","I","J","K","L","M",
+    "N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+    "a","b","c","d","e","f","g","h","i","j","k","l","m",
+    "n","o","p","q","r","s","t","u","v","w","x","y","z",
+    "Ä", "Ö", "Ü", "ä", "ö", "ü", "ß",
+  ]
+  extras:
+    - file: 'fonts/materialdesignicons-webfont.ttf'
+      glyphs: [
+          $lightbulb,
+          $boiler_on,
+          $boiler_off,
+          $radiator,
+          $snowflake,
+          $power_off,
+          $ceiling_light,
+          $house_temp,
+          $lamp,
+          $floor_lamp,
+          $string_lights,
+          $track_light,
+          $bulkhead_light,
+          $led_strip,
+          $coach_lamp,
+          $bed,
+        ]
+
+- file: "gfonts://Roboto"
+  id: btn_icons_font2
+  size: 50
+  bpp: 4
+  extras:
+    - file: 'fonts/materialdesignicons-webfont.ttf'
+      glyphs: [
+          $lightbulb,
+          $ceiling_light,
+          $lamp,
+          $floor_lamp,
+          $string_lights,
+          $track_light,
+          $bulkhead_light,
+          $led_strip,
+          $coach_lamp,
+          $bed,
+          $house_temp,
+        ]
+
+- file: "gfonts://Roboto"
+  id: roboto90
+  size: 90
+  bpp: 4
+
+- file: "fonts/materialdesignicons-webfont.ttf"
+  id: icon_font
+  size: 28
+  glyphs: ["\U000F0922", "\U000F0923", "\U000F0924", "\U000F0925"]
+
+- file: 'fonts/DejaVuSans.ttf'
+  id: regular18
+  size: 24
+  glyphs: "äöüÄÖÜßabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"§$%&/()=?+*#,.-: "
