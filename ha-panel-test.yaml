@@ -103,7 +103,6 @@ esphome:
   friendly_name: Display Schlafzimmerbett
   platformio_options:
     board_build.flash_mode: dio
-
   on_boot:
     - delay: 5s
     - lvgl.widget.hide: boot_screen
@@ -179,12 +178,8 @@ lvgl:
   on_idle:
     timeout: 2min
     then:
-      - lambda: |-
-          // Standby aktivieren
-          id(display_in_standby) = true;
-      - logger.log: "LVGL Inaktiv – wechsel in Standby"
-      - light.turn_off: display_backlight
-      - lvgl.pause:
+      - logger.log: "LVGL Inaktiv – Wechsel in Standby"
+      - script.execute: enter_standby
 
   theme:
     button:
@@ -261,6 +256,7 @@ lvgl:
       bg_grad_color: 0x444444
       bg_grad_dir: VER
       bg_opa: COVER
+      border_opa: TRANSP
       border_width: 0
       radius: 0
       pad_all: 0
@@ -771,6 +767,13 @@ lvgl:
                         grid_cell_y_align: STRETCH
                         widgets:
                           - label:
+                              id: lbl_battery_status_schlafzimmer
+                              align: TOP_LEFT
+                              x: 18
+                              y: 12
+                              text_font: battery_icons_20
+                              text: "\U000F0091"
+                          - label:
                               text_font: hass_hue_icons
                               text: $bed_light
                               align: CENTER
@@ -841,18 +844,16 @@ lvgl:
                               indicator:
                                 radius: 0px
                                 bg_color: 0xb1b1b1
-                        on_release:
-                          - homeassistant.action:
-                              action: light.turn_on
-                              data:
-                                entity_id: light.schlafzimmerbett
-                                brightness: !lambda return int(x);
+                              on_value:
+                                then:
+                                  - number.set:
+                                      id: dimmer_val
+                                      value: !lambda 'return x;'
                         on_click:
                           - homeassistant.service:
                               service: light.toggle
-                              data_template:
+                              data:
                                 entity_id: light.schlafzimmerbett
-                                brightness: !lambda "return id(dimmer_level);"
                     - button:
                         id: office_heating_btn
                         checkable: true
@@ -917,17 +918,16 @@ lvgl:
                               indicator:
                                 radius: 0px
                                 bg_color: 0xb1b1b1
-                        on_release:
-                            - homeassistant.action:
-                                action: light.turn_on
-                                data:
-                                  entity_id: light.color_temperature_light_23
-                                  brightness: !lambda return int(x);
+                              on_value:
+                                then:
+                                  - number.set:
+                                      id: dimmer_val_tisch
+                                      value: !lambda 'return x;'
                         on_click:
-                            - homeassistant.service:
-                                service: light.toggle
-                                data:
-                                  entity_id: light.color_temperature_light_23
+                          - homeassistant.service:
+                              service: light.toggle
+                              data:
+                                entity_id: light.color_temperature_light_23
                     - button:
                         id: kids_heating_btn
                         checkable: true
@@ -976,6 +976,23 @@ lvgl:
                         grid_cell_x_align: STRETCH
                         grid_cell_y_align: STRETCH
                         widgets:
+                          - slider:
+                              id: slider_media_player
+                              align: BOTTOM_RIGHT
+                              x: -3
+                              y: 10
+                              width: 20
+                              height: 140
+                              pad_all: 8
+                              min_value: 0
+                              max_value: 10
+                              adv_hittest: true
+                              on_value:
+                                - homeassistant.action:
+                                    action: media_player.volume_set
+                                    data:
+                                      entity_id: media_player.tv_schlafzimmer_2
+                                      volume_level: !lambda return (x / 100);
                           - label:
                               id: tv_icon
                               text_font: hass_hue_icons
@@ -1600,7 +1617,40 @@ lvgl:
 time:
   - platform: homeassistant
     id: ha_time
-
+    on_time:
+      - hours: 2,3,4,5
+        minutes: 5
+        seconds: 0
+        then:
+          - switch.turn_on: switch_antiburn
+      - hours: 2,3,4,5
+        minutes: 35
+        seconds: 0
+        then:
+          - switch.turn_off: switch_antiburn
+switch:
+  - platform: template
+    name: Antiburn
+    id: switch_antiburn
+    icon: mdi:television-shimmer
+    optimistic: true
+    entity_category: "config"
+    turn_on_action:
+      - logger.log: "Starting Antiburn"
+      - if:
+          condition: lvgl.is_paused
+          then:
+            - lvgl.resume:
+            - lvgl.widget.redraw:
+      - lvgl.pause:
+          show_snow: true
+    turn_off_action:
+      - logger.log: "Stopping Antiburn"
+      - if:
+          condition: lvgl.is_paused
+          then:
+            - lvgl.resume:
+            - lvgl.widget.redraw:
 number:
   - platform: template
     id: dimmer_val
@@ -1625,11 +1675,88 @@ number:
                   data_template:
                     entity_id: light.schlafzimmerbett
                     brightness: !lambda "return x;"
-  
+
+  - platform: template
+    id: dimmer_val_tisch
+    name: "dimmer val tisch"
+    min_value: 0
+    max_value: 255
+    step: 1
+    initial_value: 160
+    optimistic: True
+    internal: True
+    on_value:
+      then:
+        - globals.set:
+            id: dimmer_level
+            value: !lambda 'return int(x);'
+        - if:
+            condition:
+              lambda: 'return id(living_room_heating_btn).state == true;'
+            then:
+              - homeassistant.service:
+                  service: light.turn_on
+                  data_template:
+                    entity_id: light.color_temperature_light_23
+                    brightness: !lambda "return x;"
+
 sensor:
   - platform: homeassistant
-    id: kalenderwoche
-    entity_id: sensor.swedish_calendar_week
+    id: media_player_volume
+    entity_id: media_player.tv_schlafzimmer_2
+    attribute: volume_level
+    on_value:
+      - lvgl.slider.update:
+          id: slider_media_player
+          value: !lambda return (x * 100);
+
+  - platform: homeassistant
+    id: battery_percentage_schlafzimmer
+    entity_id: sensor.thermostatbadezimmervorne_battery
+    on_value:
+      - lvgl.label.update:
+          id: lbl_battery_status_schlafzimmer
+          text: !lambda |-
+            static char buf[8];
+            float pct = x;
+            std::string icon;
+            if (pct >= 100.0f) {
+              icon = "\U000F0079";  // mdi-battery
+            } else if (pct > 90.0f) {
+              icon = "\U000F0082";  // mdi-battery-90
+            } else if (pct > 80.0f) {
+              icon = "\U000F0081";  // mdi-battery-80
+            } else if (pct > 70.0f) {
+              icon = "\U000F0080";  // mdi-battery-70
+            } else if (pct > 60.0f) {
+              icon = "\U000F007F";  // mdi-battery-60
+            } else if (pct > 50.0f) {
+              icon = "\U000F007E";  // mdi-battery-50
+            } else if (pct > 40.0f) {
+              icon = "\U000F007D";  // mdi-battery-40
+            } else if (pct > 30.0f) {
+              icon = "\U000F007C";  // mdi-battery-30
+            } else if (pct > 20.0f) {
+              icon = "\U000F007B";  // mdi-battery-20
+            } else if (pct > 10.0f) {
+              icon = "\U000F007A";  // mdi-battery-10
+            } else if (pct > 0.0f) {
+              icon = "\U000F008E";  // mdi-battery-outline
+            } else {
+              icon = "\U000F0091";  // mdi-battery-unknown
+            }
+            snprintf(buf, sizeof(buf), "%s", icon.c_str());
+            return std::string(buf);
+          text_color: !lambda |-
+            float pct = x;
+            // Normiere zwischen 10% (t=0) und 100% (t=1)
+            float t = (pct <= 10.0f)  ? 0.0f
+                      : (pct >= 100.0f) ? 1.0f
+                      : (pct - 10.0f) / 90.0f;
+            int r = int((1.0f - t) * 255.0f);
+            int g = int(t * 255.0f);
+            // b bleibt 0
+            return lv_color_make(r, g, 0);
 
   - platform: template
     name: "Panel User Touched"
@@ -1956,11 +2083,16 @@ sensor:
     entity_id: sensor.home_uv_index_tag_0
     on_value:
       then:
-         - lvgl.label.update:
+        - lvgl.label.update:
             id: display_uv_index
-            text:
-              format: "$uv_state %.1f%%"
-              args: ["id(uv_sensor).state"]
+            text: !lambda |-
+              if (isnan(id(uv_sensor).state)) {
+                return "UV: ---";
+              } else {
+                char buf[32];
+                snprintf(buf, sizeof(buf), "UV: %.1f", id(uv_sensor).state);
+                return std::string(buf);
+              }
 
 text_sensor:
   - platform: homeassistant
@@ -2873,7 +3005,7 @@ light:
         - light.turn_on:
             id: display_backlight
             brightness: !lambda |-
-              return id(is_nighttime) ? 0.05f : 0.90f;
+              return id(is_nighttime) ? 0.01f : 0.90f;
             transition_length: 0s
 
 #  - platform: binary
@@ -2888,7 +3020,6 @@ i2c:
     sda: GPIO19
     scl: GPIO45
     #frequency: 100kHz
-
 touchscreen:
   - platform: gt911
     id: my_touchscreen
@@ -2898,7 +3029,13 @@ touchscreen:
             id(last_touch_timestamp) = millis();
         - script.execute: touch_wakeup_and_restart_timer
         - logger.log: "gt911 was called"
-
+    on_release:
+      then:
+        - if:
+            condition: lvgl.is_paused
+            then:
+              - lvgl.resume:
+              - lvgl.widget.redraw:
 globals:
   - id: last_touch_timestamp
     type: uint32_t
@@ -2910,10 +3047,10 @@ globals:
     initial_value: '0'
   - id: standby_delay_day
     type: int
-    initial_value: '60'
+    initial_value: '180'
   - id: standby_delay_night
     type: int
-    initial_value: '20'
+    initial_value: '60'
   - id: user_touched
     type: bool
     initial_value: 'false'
@@ -2958,17 +3095,43 @@ globals:
     type: std::string
 
 interval:
-  - interval: 30s
+  - interval: 60s
     then:
-      - lvgl.label.update:
-          id: display_time_standby
-          text:
-            time_format: "%H:%M"
-            time: ha_time
-
-
+      - if:
+          condition:
+            lambda: 'return id(display_in_standby);'
+          then:
+            - lvgl.label.update:
+                id: display_time_standby
+                text:
+                  time_format: "%H:%M"
+                  time: ha_time
 
 script:
+  - id: enter_standby
+    then:
+      - lambda: |-
+          id(display_in_standby) = true;
+          id(is_standby_active)  = true;
+      - light.turn_on:
+          id: display_backlight
+          brightness: !lambda 'return id(is_nighttime) ? 0.01f : 0.65f;'
+          transition_length: 0s
+      - lvgl.page.show:
+          id: standby_page
+      - logger.log: "Standby aktiv – standby_page shown"
+      - script.execute: standby_followup
+
+  - id: standby_followup
+    mode: restart
+    then:
+      - delay: 30s
+      - lambda: |-
+          if (id(is_standby_active)) ESP_LOGD("main","30s im Standby ohne Touch -> clock_page");
+      - lvgl.page.show:
+          id: clock_page
+      - logger.log: "clock_page shown after 30s"
+
   - id: touch_wakeup_and_restart_timer
     mode: restart
     then:
@@ -3023,7 +3186,6 @@ script:
       - lambda: |-
           lv_scr_load(id(standby_page).obj);
       - logger.log: "standby_timer was called"
-
 
 #-------------------------------------------
 # Display st7701s spi
