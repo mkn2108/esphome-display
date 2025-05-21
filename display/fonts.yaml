@@ -3,18 +3,18 @@
   size: 16
   bpp: 4
   glyphs: [
-    "\U000F007A", # mdi-battery-10
-    "\U000F007B", # mdi-battery-20
-    "\U000F007C", # mdi-battery-30
-    "\U000F007D", # mdi-battery-40
-    "\U000F007E", # mdi-battery-50
-    "\U000F007F", # mdi-battery-60
-    "\U000F0080", # mdi-battery-70
-    "\U000F0081", # mdi-battery-80
-    "\U000F0082", # mdi-battery-90
-    "\U000F0079", # mdi-battery (full)
-    "\U000F008E", # mdi-battery-outline
-    "\U000F0091", # mdi-battery-unknown
+    "\U000F007A",
+    "\U000F007B",
+    "\U000F007C",
+    "\U000F007D",
+    "\U000F007E",
+    "\U000F007F",
+    "\U000F0080",
+    "\U000F0081",
+    "\U000F0082",
+    "\U000F0079",
+    "\U000F008E",
+    "\U000F0091",
     ]
 
 - file: "fonts/Nunito-SemiBold.ttf"
@@ -51,7 +51,38 @@
   id: roboto40
   size: 40
   bpp: 4
-
+- file: "fonts/Icons.ttf"
+  id: icons_12
+  size: 16
+  bpp: 4
+  glyphs: [
+    "\U0000e900",
+    "\U0000e901",
+    "\U0000e902",
+    "\U0000e903",
+    "\U0000e904",
+    "\U0000e905",
+    "\U0000e906",
+    "\U0000e907",
+    "\U0000e909",
+    "\U0000e90a",
+    "\U0000e90b",
+    "\U0000e90c",
+    "\U0000e90d",
+    "\U0000e90e",
+    "\U0000e90f",
+    "\U0000e911",
+    "\U0000E910",
+    "\U0000e912",
+    "\U0000e913",
+    "\U0000e914",
+    "\U0000e915",
+    "\U0000e916",
+    "\U0000e917",
+    "\U0000e918",
+    "\U0000e919",
+    "\U0000e908",
+      ]
 - file: "fonts/Icons.ttf"
   id: icons_24
   size: 24
@@ -82,7 +113,7 @@
     "\U0000e917",
     "\U0000e918",
     "\U0000e919",
-    "${heating}",
+    "\U0000e908",
       ]
 - file: 'fonts/Roboto-Regular.ttf'
   id: roboto24
@@ -107,6 +138,7 @@
         "\U000F0748",
         "\U000F1A1B",
         "\U000F02DC",
+        "\U000F0438",
         "\U000F0A02",
         "\U000F035F",
         "\U000F0156",
@@ -117,9 +149,43 @@
         "\U000F0045",
         "\U000F04DB",
         "\U000F050F",
+        "\U000F00ED",
+        "\U000F040E",
+        "\U000F075F",
+        "\U000F057F",
+        "\U000F0906",
+        "\U000F0EC0",
+        "\U000F0448",
+        "\U000F0449",
+        "\U000F0361",
+        "\U000F0363",
+        "\U000f075e",
+        "\U000f075d",
+        "\U000F04AE",
+        "\U000F04AD",
+        "\U000F04C4",
         $house_temp,
-        $uv_state
+        $uv_state,
       ]
+- file: "gfonts://Roboto"
+  id: roboto18
+  size: 16
+  bpp: 4
+  extras:
+    - file: 'fonts/materialdesignicons-webfont.ttf'
+      glyphs: [
+          "\U000F004B",
+          "\U000F0636",
+          "\U000F006E",
+          "\U000F01A9",
+          "\U000F0114",
+          "\U000F050F",
+          "\U000F0438",
+          "\U000F0241",
+          "\U000F075D",
+          "\U000F075E",
+          "\U000F04C3",
+          ]
 - file: "gfonts://Roboto"
   id: roboto12
   size: 14
@@ -138,6 +204,9 @@
           "\U000F075D",
           "\U000F075E",
           "\U000F04C3",
+          "\U000F0D91",
+          "\U000F1435",
+          "\U000F07D0",
           ]
 
 - file: "gfonts://Roboto"
@@ -168,7 +237,7 @@
           $snowy,
           $snowyheavy,
           $snowyrainy,
-          $sunny,
+          "\U000F0599",
           $sunnyalert,
           $sunnyoff,
           $sunset,
@@ -203,7 +272,12 @@
   "\U0000E944",
   "\U0000E90A",
   "\U0000E907",
+  "\U0000E915",
   "\U0000E9DE",
+  "\U0000E9D2",
+  "\U0000E9FC",
+  "\U0000E9CA",
+  "\U0000E9F8",
   ]
 - file: 'fonts/Roboto-Regular.ttf'
   id: btn_icons_font
@@ -273,3 +347,12 @@
   id: regular18
   size: 24
   glyphs: "äöüÄÖÜßabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"§$%&/()=?+*#,.-: "
+
+- file: 'fonts/materialdesignicons-webfont.ttf'
+  id: mdi_font
+  size: 24
+  bpp: 4
+  glyphs: [
+    "󰝝",  # U+F075D (volume-plus)
+    "󰝞",  # U+F075E (volume-minus)
+  ]

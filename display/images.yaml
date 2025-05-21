@@ -1,10 +1,22 @@
-#-------------------------------------------
-# Graphic
-#-------------------------------------------
+- file: "img/placeholder.jpg"
+  id: sonos_cover_placeholder
+  resize: 140x140
+  type: RGB565
+- file: "img/idle.png"
+  id: idle_cover
+  resize: 140x140
+  type: RGB565
+- file: "img/music.png"
+  id: music_cover
+  resize: 140x140
+  type: RGB565
+- file: "img/tv.png"
+  id: tv_cover
+  resize: 140x140
+  type: RGB565
 - file: "img/weather/clear_day.png"
   id: clear_day
   type: RGB565
-
 - file: 'img/weather/partlycloudy_moon/partlycloudy_moon0.png'
   type: RGB565
   id: partlycloudy_night
@@ -29,7 +41,6 @@
 - file: 'img/weather/partlycloudy_moon/partlycloudy_moon7.png'
   type: RGB565
   id: partlycloudy_night7
-
   # SNOWY ANIMATION
 - file: 'img/weather/snowy/snowy0.png'
   type: RGB565
@@ -67,7 +78,6 @@
 - file: 'img/weather/snowy/snowy11.png'
   type: RGB565
   id: snowy11a
-
 # LIGHTNING ANIMATION
 - file: 'img/weather/lightning/lightning0.png'
   type: RGB565
@@ -81,7 +91,6 @@
 - file: 'img/weather/lightning/lightning3.png'
   type: RGB565
   id: thunderstorm3
-
   # FOG ANIMATION
 - file: 'img/weather/fog/fog0.png'
   type: RGB565
@@ -122,7 +131,6 @@
 - file: 'img/weather/fog/fog12.png'
   type: RGB565
   id: fog12
-
 # RAINY ANIMATION
 - file: 'img/weather/rainy/rainy0.png'
   type: RGB565
@@ -160,7 +168,6 @@
 - file: 'img/weather/rainy/rainy11.png'
   type: RGB565
   id: rainy11
-
 # LIGHTNING RAINY ANIMATION
 - file: 'img/weather/lightning_rainy/lightning_rainy0.png'
   type: RGB565
@@ -174,7 +181,6 @@
 - file: 'img/weather/lightning_rainy/lightning_rainy3.png'
   type: RGB565
   id: lightning_rainy3
-
 # POURING ANIMATION
 - file: 'img/weather/pouring/pouring0.png'
   type: RGB565
@@ -212,7 +218,6 @@
 - file: 'img/weather/pouring/pouring11.png'
   type: RGB565
   id: pouring11
-
 # LIGHTNING ANIMATION
 - file: 'img/weather/lightning/lightning0.png'
   type: RGB565
@@ -226,7 +231,6 @@
 - file: 'img/weather/lightning/lightning3.png'
   type: RGB565
   id: lightning3
-
   # SNOWY ANIMATION
 - file: 'img/weather/snowy/snowy0.png'
   type: RGB565
@@ -264,7 +268,6 @@
 - file: 'img/weather/snowy/snowy11.png'
   type: RGB565
   id: snowy11
-
 # SNOWY RAINY ANIMATION
 - file: 'img/weather/snowy_rainy/snowy_rainy0.png'
   type: RGB565
@@ -302,7 +305,6 @@
 - file: 'img/weather/snowy_rainy/snowy_rainy11.png'
   type: RGB565
   id: snowy_rainy11
-
 # HAIL ANIMATION
 - file: 'img/weather/hail/hail0.png'
   type: RGB565
@@ -340,7 +342,6 @@
 - file: 'img/weather/hail/hail11.png'
   type: RGB565
   id: hail11
-
 # PARTLY CLOUDY SUN ANIMATION
 - file: 'img/weather/partlycloudy_sun/partlycloudy_sun0.png'
   type: RGB565
@@ -366,7 +367,6 @@
 - file: 'img/weather/partlycloudy_sun/partlycloudy_sun7.png'
   type: RGB565
   id: partlycloudy_sun7
-
 # PARTLY CLOUDY MOON ANIMATION
 - file: 'img/weather/partlycloudy_moon/partlycloudy_moon0.png'
   type: RGB565
@@ -392,7 +392,6 @@
 - file: 'img/weather/partlycloudy_moon/partlycloudy_moon7.png'
   type: RGB565
   id: partlycloudy_moon7
-
 # CLOUDY ANIMATION
 - file: 'img/weather/cloudy/cloudy0.png'
   type: RGB565
@@ -406,7 +405,6 @@
 - file: 'img/weather/cloudy/cloudy3.png'
   type: RGB565
   id: cloudy3
-
 # WINDY ANIMATION
 - file: 'img/weather/windy/windy0.png'
   type: RGB565
@@ -420,7 +418,6 @@
 - file: 'img/weather/windy/windy3.png'
   type: RGB565
   id: windy3
-
 # WINDY VARIANT ANIMATION
 - file: 'img/weather/windy_variant/windy_variant0.png'
   type: RGB565
@@ -434,13 +431,10 @@
 - file: 'img/weather/windy_variant/windy_variant3.png'
   type: RGB565
   id: windy_variant3
-
 # SUNNY
 - file: 'img/weather/sunny.png'
   type: RGB565
-#  resize: 200x200
   id: sunny
-
 # CLEAR-NIGHT
 - file: 'img/weather/clear_night.png'
   type: RGB565
@@ -448,17 +442,7 @@
 - file: 'img/back1.png'
   id: back1
   type: RGB565
-#- file: 'img/back2.png'
-#  id: back2
-#  type: RGB565
-#- file: 'img/back4.png'
-#  id: back4
-#  type: RGB565
-#- file: 'img/back6.png'
-#  id: back6
-#  type: RGB565
 - file: 'img/ha_logo.png'
   id: boot_logo
-#    resize: 200x200
   type: RGB565
   transparency: chroma_key
