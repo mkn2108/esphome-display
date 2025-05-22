@@ -2023,7 +2023,6 @@ lvgl:
                   y: 30
                   width: 140
                   height: 140
-
               - label:
                   align: top_left
                   y: 6
@@ -2806,7 +2805,11 @@ sensor:
         - lvgl.label.update:
             id: wifi_status
             text_color: !lambda |-
-              return id(wifi_signal_dbm).state > -90 ? lv_color_hex(0x00FF00) : lv_color_hex(0x333333);
+              float dBm = id(wifi_signal_dbm).state;
+              if (dBm > -50) return lv_color_hex(0x00FF00);
+              if (dBm > -60) return lv_color_hex(0xCCFF00);
+              if (dBm > -70) return lv_color_hex(0xFF9900);
+              return lv_color_hex(0xFF0000);
             text: !lambda |-
               float dBm = id(wifi_signal_dbm).state;
               if (dBm > -50) return "${wifi_100}";
@@ -2842,7 +2845,7 @@ online_image:
     update_interval: never
     on_download_finished:
       then:
-        - delay: 3s
+        - delay: 3s  # Wait for image processing
         - lvgl.image.update:
             id: sonos_cover_widget
             src: sonos_cover_image
@@ -2851,6 +2854,7 @@ online_image:
         - if:
             condition:
               lambda: |-
+                // Simple error checking that always returns true
                 return true;
             then:
               - lambda: |-
@@ -2911,11 +2915,6 @@ text_sensor:
         - lambda: |-
             if (!x.empty()) {
               lv_label_set_text(id(display_sonos_vardagsrum_media_artist), x.c_str());
-            } else {
-              auto channel = id(media_channel).state;
-              if (!channel.empty()) {
-                lv_label_set_text(id(display_sonos_vardagsrum_media_artist), channel.c_str());
-              }
             }
 
   - platform: homeassistant
@@ -2926,13 +2925,14 @@ text_sensor:
     on_value:
       then:
         - lambda: |-
-            lv_label_set_text(id(display_sonos_vardagsrum_title), x.c_str());
-            if (x == "TV") {
-              lv_img_set_src(id(sonos_cover_widget), &tv_cover);
-              lv_label_set_text(id(display_sonos_vardagsrum_media_artist), "");
-            } else {
-              id(sonos_cover_image).set_url("http://192.168.1.22:8123/local/sonos-cover/vardagsrum.jpg");
-              lv_img_set_src(id(sonos_cover_widget), id(sonos_cover_image));
+            if (!x.empty()) {
+              lv_label_set_text(id(display_sonos_vardagsrum_title), x.c_str());
+              if (x == "TV") {
+                lv_img_set_src(id(sonos_cover_widget), &tv_cover);
+                lv_label_set_text(id(display_sonos_vardagsrum_media_artist), "");
+              } else {
+                id(sonos_cover_image).set_url("http://192.168.1.22:8123/local/sonos-cover/vardagsrum.jpg");
+              }
             }
 
   - platform: homeassistant
@@ -4112,3 +4112,4 @@ display:
         - 6          # B3
         - 7          # B4
         - 15         # B5
+
