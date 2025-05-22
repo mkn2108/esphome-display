@@ -1,0 +1,21 @@
+alias: Update Sonos Cover bei neuem Titel
+triggers:
+  - entity_id: media_player.vardagsrum
+    attribute: media_title
+    trigger: state
+conditions:
+  - condition: template
+    value_template: |
+      {{ trigger.to_state.attributes.media_title !=
+         trigger.from_state.attributes.media_title }}
+actions:
+  - action: shell_command.download_sonos_cover
+    data: {}
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - action: shell_command.update_sonos_cover
+    data: {}
+mode: single
