@@ -1,0 +1,5 @@
+  download_sonos_cover: >
+    curl -s -o /config/www/sonos-cover/vardagsrum.jpg
+    http://192.168.1.22:8123{{ state_attr('media_player.vardagsrum', 'entity_picture') }}
+
+  update_sonos_cover: python3 /config/python_scripts/update_sonos_cover.py
