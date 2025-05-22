@@ -1,4 +1,4 @@
-alias: Update Sonos Cover bei neuem Titel
+alias: Update Sonos Cover by new titel
 triggers:
   - entity_id: media_player.vardagsrum
     attribute: media_title
