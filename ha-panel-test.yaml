@@ -1,6 +1,15 @@
 substitutions:
-  standby_delay_day: "60"
+  sonos_entity: media_player.vardagsrum
+  brightness:         "\U0000e916"
+  radiator_icon:      "\U000f0438"
+  power_off_icon:     "\U000F0906"
+  standby_delay_day:   "60"
   standby_delay_night: "30"
+  play_pause_icon:    "\U000F040E"
+  mute_icon:          "\U000F075F"
+  volume_icon:        "\U000F057F"
+  powerbutton:        "\U000F0906"
+  calendar_icon:      "\U000F00ED"
   watt:               "\U000F0241"
   television:         "\U0000E9DE"
   power:              "\U0000E907"
@@ -10,7 +19,11 @@ substitutions:
   icon_0001:          "\U00000001"
   icon_space:         "\U00000020"
   ceiling_light1:     "\U0000E904"
+  icon_e9f8:          "\U0000E9F8"
+  icon_e9fc:          "\U0000E9FC"
+  icon_e9ca:          "\U0000E9CA"
   icon_e948:          "\U0000E948"
+  icon_e915:          "\U0000E915"
   icon_e9f7:          "\U0000E9f7"
   icon_e900:          "\U0000E900"
   icon_e901:          "\U0000E901"
@@ -24,6 +37,7 @@ substitutions:
   icon_e950:          "\U0000E950"
   icon_e9df:          "\U0000E9DF"
   icon_e9ed:          "\U0000E9ED"
+  icon_e90a:          "\U0000E90A"
   volume_plus:        "\U000f075d"
   volume_minus:       "\U000f075e"
   volume_mute:        "\U000f075f"
@@ -43,8 +57,8 @@ substitutions:
   led_strip:          "\U000F07D6"
   coach_lamp:         "\U000F1020"
   bed:                "\U000F02E3"
-  heating:            "\U0000e908"
-  ha:                 "\U0000e90b"
+  heating:            "\U0000E908"
+  ha:                 "\U000F07D0"
   boiler_on:          "\U000F0238"
   color_temp:         "\U0000e90c"
   humidity:           "\U0000e912"
@@ -55,7 +69,9 @@ substitutions:
   logo:               "\U0000e919"
   thermostat:         "\U0000e901"
   boiler_off:         "\U000F1722"
-  motion:             "\U0000e907"
+  motion:             "\U000F0D91"
+  motion_unavailable: "\U000F1435"
+  motion_off:         "\U000F1435"
   radiator:           "\U000F0636"
   radiator2:          "\U000f0438"
   ceiling_light:      "\U000F0769"
@@ -99,17 +115,28 @@ substitutions:
   wifi_100:           "\U0000E911"
 
 esphome:
-  name: ha-panel-1
-  friendly_name: Display Schlafzimmerbett
+  name: hapanel3
+  friendly_name: Display Test
   platformio_options:
     board_build.flash_mode: dio
   on_boot:
-    - delay: 5s
-    - lvgl.widget.hide: boot_screen
-    - delay: 10s
-    - script.execute: standby_timer
-    - script.execute: touch_wakeup_and_restart_timer
-    -  logger.log: "touch_wakeup_and_restart_timer – on boot started"
+    priority: 800
+    then:
+      - delay: 5s
+      - lvgl.widget.hide: boot_screen
+      - delay: 10s
+      - script.execute: standby_timer
+      - script.execute: touch_wakeup_and_restart_timer
+      - lambda: |-
+          if (!isnan(id(main_light_brightness).state)) {
+            lv_slider_set_value(id(light_main_brightness_slider), id(main_light_brightness).state, LV_ANIM_OFF);
+          }
+          if (!isnan(id(main_light_brightness_table).state)) {
+            lv_slider_set_value(id(light_main_brightness_slider_table), id(main_light_brightness_table).state, LV_ANIM_OFF);
+          }
+          if (!isnan(id(main_light_brightness_bed).state)) {
+            lv_slider_set_value(id(light_main_brightness_slider_bed), id(main_light_brightness_bed).state, LV_ANIM_OFF);
+          }
 
 font: !include display/fonts.yaml
 image: !include display/images.yaml
@@ -141,7 +168,7 @@ api:
         then:
           - lvgl.label.update:
               id: ha_status
-              text_color: 0x87cefa
+              text_color: 0x56acfa
   on_client_disconnected:
     - if:
         condition:
@@ -156,29 +183,28 @@ ota:
 
 wifi:
   manual_ip:
-    static_ip: 192.168.1.70
+    static_ip: 192.168.1.71
     gateway: 192.168.1.1
     subnet: 255.255.255.0
   networks:
   - ssid: !secret wifi_ssid
     password: !secret wifi_password
-  ap:
-    ssid: "Ha-Panel-1 Fallback Hotspot"
-    password: !secret wifi_password
 
-captive_portal:
+http_request:
 #-----------------------------------------------------------------------------------------------------------
 # Content
-#------------------------------------------- 
+#-------------------------------------------
 lvgl:
   displays:
     - my_display
+
   touchscreens:
     - my_touchscreen
+
   on_idle:
     timeout: 2min
     then:
-      - logger.log: "LVGL Inaktiv – Wechsel in Standby"
+      - logger.log: "Wechsel in Standby"
       - script.execute: enter_standby
 
   theme:
@@ -197,7 +223,7 @@ lvgl:
         text_color: 0x56acfa
     buttonmatrix:
       bg_opa: TRANSP
-      border_color: 0x333333
+      border_color: 0x6b6b6b
       border_width: 0
       text_color: 0xFFFFFF
       pad_all: 0
@@ -206,7 +232,7 @@ lvgl:
         bg_grad_color: 0x333333
         bg_grad_dir: VER
         bg_opa: COVER
-        border_color: 0x333333
+        border_color: 0x6b6b6b
         border_width: 1
         text_color: 0xFFFFFF
         pressed:
@@ -253,16 +279,11 @@ lvgl:
       text_color: 0xFFFFFF
     - id: header_footer
       bg_color: 0x444444
-      bg_grad_color: 0x444444
+      bg_grad_color: 0x6b6b6b
       bg_grad_dir: VER
       bg_opa: COVER
       border_opa: TRANSP
-      border_width: 0
-      radius: 0
-      pad_all: 0
-      pad_row: 0
-      pad_column: 0
-      border_color: 0x333333
+      border_color:  0x6b6b6b
       text_color: 0xFFFFFF
       width: 100%
       height: 40
@@ -281,34 +302,53 @@ lvgl:
           id: wifi_status
           align: top_right
           x: -2
-          y: 2
+          y: 6
           text_align: right
           text: "${wifi_25}"
           text_color: 0xFFFFFF
-          text_font: icons_24
+          text_font: icons_12
       - label:
           id: motion_status
           align: top_left
           x: 2
-          y: 2
+          y: 6
           text: "${motion}"
-          text_color: 0xFFFFFF
-          text_font: icons_24
+          text_color: 0x56acfa
+          text_font: roboto12
+          hidden: true
       - label:
-          id: heating_status
+          id: motion_status_off
+          align: top_left
+          x: 2
+          y: 6
+          text: "${motion_off}"
+          text_color: 0x333333
+          text_font: roboto12
+          hidden: true
+      - label:
+          id: motion_status_unavailable
+          align: top_left
+          x: 2
+          y: 6
+          text: "${motion_unavailable}"
+          text_color: 0xFF0000
+          text_font: roboto12
+          hidden: true
+      - label:
+          id: heating_icon_label_header
           x: 32
-          y: 2
-          text: "${heating}"
+          y: 6
+          text: "${radiator2}"
           text_color: 0xFF8000
-          text_font: icons_24
+          text_font: roboto12
       - label:
           id: ha_status
           align: TOP_RIGHT
           x: -35
-          y: 2
+          y: 6
           text: "${ha}"
           text_color: 0xFFFFFF
-          text_font: icons_24
+          text_font: roboto12
       - buttonmatrix:
           align: bottom_mid
           styles: header_footer
@@ -362,7 +402,6 @@ lvgl:
                   arc_width: 8
           on_press:
             - lvgl.widget.hide: boot_screen
-
   page_wrap: true
   pages:
     - id: standby_page
@@ -379,7 +418,6 @@ lvgl:
             on_click:
               then:
                 - script.execute: touch_wakeup_and_restart_timer
-                - logger.log: "standby_page touch_wakeup_and_restart_timer was called"
         - label:
             id: display_time_standby
             text_font: roboto90
@@ -656,8 +694,8 @@ lvgl:
             x: -75
         - label:
             align: CENTER
-            id: display_uv_index
-            text: "uv"
+            id: display_cw_index
+            text: "$calendar_icon KW"
             x: -75
             y: 180
             text_font: roboto24
@@ -684,6 +722,7 @@ lvgl:
                         text_font: hass_hue_icons
                         text: $bed_light
                         align: CENTER
+                        y: -10
                     - label:
                         text: "Decke"
                         long_mode: dot
@@ -706,6 +745,7 @@ lvgl:
                         text_font: btn_icons_font2
                         text: "$bed"
                         align: CENTER
+                        y: -10
                     - label:
                         text: "Bett"
                         long_mode: dot
@@ -716,7 +756,6 @@ lvgl:
                         service: light.toggle
                         data_template:
                           entity_id: light.schlafzimmerbett
-                          brightness: !lambda "return id(dimmer_level);"
               - button:
                   id: living_room_light_l3_btn
                   align: CENTER
@@ -729,6 +768,7 @@ lvgl:
                         text_font: btn_icons_font2
                         text: "$lamp"
                         align: CENTER
+                        y: -10
                     - label:
                         text: "Tisch"
                         long_mode: dot
@@ -739,18 +779,31 @@ lvgl:
                         service: light.toggle
                         data_template:
                           entity_id: light.color_temperature_light_23
-                          brightness: !lambda "return id(dimmer_level);"
 
-    - id: heating_page
+    - id: sleeping_page
       widgets:
         - image:
             align: CENTER
             src: back1
+        - label:
+            text: "Schlafzimmer"
+            align: TOP_MID
+            y: 6
+            text_font: roboto12
+            text_color: 0xffffff
+        - label:
+            align: top_left
+            y: 6
+            x: 62
+            id: display_time_header
+            text: "00:00"
+            text_font: roboto12
+            text_color: 0xffffff
         - obj:
             layout:
-              type: GRID
-              grid_columns: [FR(1), FR(1), FR(1)]
-              grid_rows: [FR(50), FR(50)]
+                type: GRID
+                grid_columns: [FR(1), FR(1), FR(1)]
+                grid_rows: [FR(50), FR(50)]
             width: 100%
             height: 90%
             pad_all: 15
@@ -758,296 +811,369 @@ lvgl:
             bg_opa: TRANSP
             border_opa: TRANSP
             widgets:
-                    - button:
-                        id: boiler_heating_btn
-                        checkable: true
-                        grid_cell_column_pos: 0
-                        grid_cell_row_pos: 0
-                        grid_cell_x_align: STRETCH
-                        grid_cell_y_align: STRETCH
-                        widgets:
-                          - label:
-                              id: lbl_battery_status_schlafzimmer
-                              align: TOP_LEFT
-                              x: 18
-                              y: 12
-                              text_font: battery_icons_20
-                              text: "\U000F0091"
-                          - label:
-                              text_font: hass_hue_icons
-                              text: $bed_light
-                              align: CENTER
-                              y: -20
-                          - label:
-                              text_font: roboto24
-                              text: "Decke"
-                              long_mode: dot
-                              align: CENTER
-                              y: 30
-                          - label:
-                              id: room_temp_label
-                              text: "$temp"
-                              align: TOP_RIGHT
-                              x: -3
-                              y: 10
-                              text_font: roboto12
-                              text_color: 0xffffff
-                          - label:
-                              id: heating_icon_label
-                              text: $radiator
-                              align: TOP_LEFT
-                              x: 3
-                              y: 10
-                              text_font: roboto12
-                              text_color: 0x808080
-                        on_click:
-                          - homeassistant.service:
-                              service: light.toggle
-                              data_template:
-                                entity_id: light.schlafzimmer_relay_1
-                    - button:
-                        id: bedroom_heating_btn
-                        checkable: true
-                        grid_cell_column_pos: 1
-                        grid_cell_row_pos: 0
-                        grid_cell_x_align: STRETCH
-                        grid_cell_y_align: STRETCH
-                        widgets:
-                          - label:
-                              text_font: btn_icons_font
-                              text: $bed
-                              align: CENTER
-                              y: -20
-                          - label:
-                              text: "Bett"
-                              long_mode: dot
-                              align: CENTER
-                              y: 30
-                          - slider:
-                              id: lv_button_1_slider
-                              align: bottom_mid
-                              x: 0
-                              y: -5
-                              width: 100
-                              height: 35
-                              pad_all: 0
-                              min_value: 0
-                              max_value: 255
-                              radius: 5px
-                              knob:
-                                bg_color: 0xffffff
-                                radius: 5px
-                                pad_left: 0px
-                                pad_right: 0px
-                                pad_top: 0px
-                                pad_bottom: 0px
-                              indicator:
-                                radius: 0px
-                                bg_color: 0xb1b1b1
-                              on_value:
-                                then:
-                                  - number.set:
-                                      id: dimmer_val
-                                      value: !lambda 'return x;'
-                        on_click:
-                          - homeassistant.service:
-                              service: light.toggle
+              - button:
+                  id: boiler_heating_btn
+                  checkable: true
+                  grid_cell_column_pos: 0
+                  grid_cell_row_pos: 0
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        id: lbl_battery_status_schlafzimmer
+                        align: TOP_LEFT
+                        x: 18
+                        y: 10
+                        text_font: battery_icons_20
+                        text: "\U000F0091"
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $bed_light
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Decke"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: room_temp_label
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        id: heating_icon_label
+                        text: "${radiator2}"
+                        align: TOP_LEFT
+                        x: 3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0x808080
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.schlafzimmer_relay_1
+              - button:
+                  id: bedroom_heating_btn
+                  checkable: true
+                  grid_cell_column_pos: 1
+                  grid_cell_row_pos: 0
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        id: light_icon_bed
+                        align: BOTTOM_MID
+                        text_font: icons_12
+                        text_color: 0x56acfa
+                        text: !lambda |-
+                          return "\U0000e916";
+                        x: -20
+                        y: -30
+                    - label:
+                        id: light_brightness_percent_bed
+                        align: BOTTOM_MID
+                        text_font: roboto12
+                        text_color: 0x56acfa
+                        text: ""
+                        x: 15
+                        y: -30
+                    - label:
+                        text_font: btn_icons_font
+                        text: $bed
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text: "Bett"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - slider:
+                        id: light_main_brightness_slider_bed
+                        align: bottom_mid
+                        x: 0
+                        y: -5
+                        width: 100
+                        height: 25
+                        pad_all: 0
+                        min_value: 0
+                        max_value: 255
+                        knob:
+                          bg_color: 0xffffff
+                          pad_left: 0px
+                          pad_right: 0px
+                          pad_top: 0px
+                          pad_bottom: 0px
+                        indicator:
+                          radius: 8px
+                          bg_color: 0xb1b1b1
+                        on_release:
+                          - homeassistant.action:
+                              action: light.turn_on
                               data:
                                 entity_id: light.schlafzimmerbett
-                    - button:
-                        id: office_heating_btn
-                        checkable: true
-                        grid_cell_column_pos: 2
-                        grid_cell_row_pos: 0
-                        grid_cell_x_align: STRETCH
-                        grid_cell_y_align: STRETCH
-                        widgets:
-                          - label:
-                              text_font: hass_hue_icons
-                              text: $icon_e90D
-                              align: CENTER
-                              y: -20
-                          - label:
-                              text_font: roboto24
-                              text: "Deko"
-                              long_mode: dot
-                              align: CENTER
-                              y: 30
-                        on_click:
-                          - homeassistant.service:
-                              service: light.toggle
-                              data_template:
-                                entity_id: light.schlafzimmer_relay_2
-                    - button:
-                        id: living_room_heating_btn
-                        checkable: true
-                        grid_cell_column_pos: 0
-                        grid_cell_row_pos: 1
-                        grid_cell_x_align: STRETCH
-                        grid_cell_y_align: STRETCH
-                        widgets:
-                          - label:
-                              text_font: hass_hue_icons
-                              text: $icon_e9c5
-                              align: CENTER
-                              y: -20
-                          - label:
-                              text_font: roboto24
-                              text: "Tisch"
-                              long_mode: dot
-                              align: CENTER
-                              y: 30
-                          - slider:
-                              id: lv_button_2_slider
-                              align: bottom_mid
-                              x: 0
-                              y: -5
-                              width: 100
-                              height: 35
-                              pad_all: 0
-                              min_value: 0
-                              max_value: 255
-                              radius: 5px
-                              knob:
-                                bg_color: 0xffffff
-                                radius: 5px
-                                pad_left: 0px
-                                pad_right: 0px
-                                pad_top: 0px
-                                pad_bottom: 0px
-                              indicator:
-                                radius: 0px
-                                bg_color: 0xb1b1b1
-                              on_value:
-                                then:
-                                  - number.set:
-                                      id: dimmer_val_tisch
-                                      value: !lambda 'return x;'
-                        on_click:
-                          - homeassistant.service:
-                              service: light.toggle
+                                brightness: !lambda return int(x);
+                          - lambda: |-
+                              float brightness = x;
+                              lv_label_set_text_fmt(id(light_brightness_percent_bed), "%.0f %%", brightness / 2.55);
+                              lv_obj_clear_flag(id(light_icon_bed), LV_OBJ_FLAG_HIDDEN);
+                              lv_obj_clear_flag(id(light_brightness_percent_bed), LV_OBJ_FLAG_HIDDEN);
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.schlafzimmerbett
+              - button:
+                  id: office_heating_btn
+                  checkable: true
+                  grid_cell_column_pos: 2
+                  grid_cell_row_pos: 0
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $icon_e90D
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Deko"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.schlafzimmer_relay_2
+              - button:
+                  id: living_room_heating_btn
+                  checkable: true
+                  grid_cell_column_pos: 0
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        id: light_icon_table
+                        align: BOTTOM_MID
+                        text_font: icons_12
+                        text_color: 0x56acfa
+                        text: !lambda |-
+                          return "\U0000e916";
+                        x: -20
+                        y: -30
+                    - label:
+                        id: light_brightness_percent_table
+                        align: BOTTOM_MID
+                        text_font: roboto12
+                        text_color: 0x56acfa
+                        text: ""
+                        x: 15
+                        y: -30
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $icon_e9c5
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Tisch"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - slider:
+                        id: light_main_brightness_slider_table
+                        align: bottom_mid
+                        x: 0
+                        y: -5
+                        width: 100
+                        height: 25
+                        pad_all: 0
+                        min_value: 0
+                        max_value: 255
+                        knob:
+                          bg_color: 0xffffff
+                          pad_left: 0px
+                          pad_right: 0px
+                          pad_top: 0px
+                          pad_bottom: 0px
+                        indicator:
+                          radius: 8px
+                          bg_color: 0xb1b1b1
+                        on_release:
+                          - homeassistant.action:
+                              action: light.turn_on
                               data:
                                 entity_id: light.color_temperature_light_23
-                    - button:
-                        id: kids_heating_btn
-                        checkable: true
-                        grid_cell_column_pos: 1
-                        grid_cell_row_pos: 1
-                        grid_cell_x_align: STRETCH
-                        grid_cell_y_align: STRETCH
-                        widgets:
-                          - label:
-                              text_font: hass_hue_icons
-                              text: $icon_e950
-                              align: CENTER
-                              y: -20
-                          - label:
-                              text_font: roboto24
-                              text: "Diele"
-                              long_mode: dot
-                              align: CENTER
-                              y: 30
-                          - label:
-                              id: room_temp_label_diele
-                              text: "$temp"
-                              align: TOP_RIGHT
-                              x: -3
-                              y: 10
-                              text_font: roboto12
-                              text_color: 0xffffff
-                          - label:
-                              id: heating_icon_label_diele
-                              text: $radiator2
-                              align: TOP_LEFT
-                              x: 3
-                              y: 10
-                              text_font: roboto12
-                              text_color: 0x808080
-                        on_click:
-                          - homeassistant.service:
-                              service: light.toggle
-                              data_template:
-                                entity_id: light.diele_alle
-                    - button:
-                        id: tv_btn
-                        checkable: true
-                        grid_cell_column_pos: 2
-                        grid_cell_row_pos: 1
-                        grid_cell_x_align: STRETCH
-                        grid_cell_y_align: STRETCH
-                        widgets:
-                          - slider:
-                              id: slider_media_player
-                              align: BOTTOM_RIGHT
-                              x: -3
-                              y: 10
-                              width: 20
-                              height: 140
-                              pad_all: 8
-                              min_value: 0
-                              max_value: 10
-                              adv_hittest: true
-                              on_value:
-                                - homeassistant.action:
-                                    action: media_player.volume_set
-                                    data:
-                                      entity_id: media_player.tv_schlafzimmer_2
-                                      volume_level: !lambda return (x / 100);
-                          - label:
-                              id: tv_icon
-                              text_font: hass_hue_icons
-                              text: "${television}"
-                              align: CENTER
-                              y: -20
-                          - label:
-                              text_font: roboto24
-                              text: "TV"
-                              align: CENTER
-                              y: 30
-                          - label:
-                              id: tv_power_label
-                              text: "W"
-                              text_font: roboto12
-                              align: TOP_RIGHT
-                              x: -3
-                              y: 10
-                              text_color: 0xAAAAAA
-                        on_value:
-                          - if:
-                              condition:
-                                lambda: 'return x;'
-                              then:
-                                - homeassistant.service:
-                                    service: media_player.turn_on
-                                    data:
-                                      entity_id: media_player.tv_schlafzimmer_2
-                              else:
-                                - homeassistant.service:
-                                    service: media_player.turn_off
-                                    data:
-                                      entity_id: media_player.tv_schlafzimmer_2
-                    - button:
-                        id: volume_display
-                        checkable: false
-                        grid_cell_column_pos: 2
-                        grid_cell_row_pos: 1
-                        grid_cell_x_align: START
-                        grid_cell_y_align: CENTER
-                        width: 40
-                        height: 40
-                        bg_opa: 0%
-                        widgets:
-                          - label:
-                              id: tv_volume_label
-                              text: ""
-                              text_font: roboto12
-                              text_color: 0xAAAAAA
-                              align: CENTER
-    - id: heating_page2
+                                brightness: !lambda return int(x);
+                          - lambda: |-
+                              float brightness = x;
+                              lv_label_set_text_fmt(id(light_brightness_percent_table), "%.0f %%", brightness / 2.55);
+                              lv_obj_clear_flag(id(light_icon_table), LV_OBJ_FLAG_HIDDEN);
+                              lv_obj_clear_flag(id(light_brightness_percent_table), LV_OBJ_FLAG_HIDDEN);
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.color_temperature_light_23
+
+              - button:
+                  id: kids_heating_btn
+                  checkable: true
+                  grid_cell_column_pos: 1
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $icon_e950
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Diele"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: room_temp_label_diele
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        id: heating_icon_label_diele
+                        text: $radiator2
+                        align: TOP_LEFT
+                        x: 3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0x808080
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.diele_alle
+              - button:
+                  id: tv_btn
+                  checkable: true
+                  grid_cell_column_pos: 2
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        id: tv_icon
+                        text_font: hass_hue_icons
+                        text: "${television}"
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "TV"
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: tv_power_label
+                        text: "W"
+                        text_font: roboto12
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_color: 0xAAAAAA
+                    - label:
+                        id: tv_volume_label
+                        text: ""
+                        text_font: roboto12
+                        align: CENTER
+                        x: -50
+                        y: 10
+                        text_color: 0xAAAAAA
+              - button:
+                  id: volume_up_btn
+                  checkable: false
+                  grid_cell_column_pos: 2
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: START
+                  grid_cell_y_align: START
+                  width: 40
+                  height: 40
+                  bg_opa: 0%
+                  widgets:
+                    - label:
+                        id: volume_up_icon
+                        text: "󰝝"
+                        text_font: mdi_font
+                        text_color: 0xAAAAAA
+                        align: CENTER
+                  on_click:
+                    - homeassistant.service:
+                        service: media_player.volume_up
+                        data:
+                          entity_id: media_player.tv_schlafzimmer_2
+                    - lambda: |-
+                        if (id(tv_volume).state >= 0) {
+                          lv_label_set_text(id(tv_volume_label), (to_string(int(id(tv_volume).state * 100)) + "%").c_str());
+                          lv_label_set_text(id(volume_up_icon), "󰝝");
+                          lv_label_set_text(id(volume_down_icon), "󰝞");
+                        }
+              - button:
+                  id: volume_down_btn
+                  checkable: false
+                  grid_cell_column_pos: 2
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: START
+                  grid_cell_y_align: END
+                  width: 40
+                  height: 40
+                  bg_opa: 0%
+                  widgets:
+                    - label:
+                        id: volume_down_icon
+                        text: "󰝞"
+                        text_font: mdi_font
+                        text_color: 0xAAAAAA
+                        align: CENTER
+                  on_click:
+                    - homeassistant.service:
+                        service: media_player.volume_down
+                        data:
+                          entity_id: media_player.tv_schlafzimmer_2
+                    - lambda: |-
+                        if (id(tv_volume).state >= 0) {
+                          lv_label_set_text(id(tv_volume_label), (to_string(int(id(tv_volume).state * 100)) + "%").c_str());
+                          lv_label_set_text(id(volume_up_icon), "󰝝");
+                          lv_label_set_text(id(volume_down_icon), "󰝞");
+                        }
+    - id: general_page
       widgets:
         - image:
             align: CENTER
             src: back1
+        - label:
+            text: "Allgemein"
+            align: TOP_MID
+            y: 6
+            text_font: roboto12
+            text_color: 0xffffff
+        - label:
+            align: top_left
+            y: 6
+            x: 62
+            id: display_time_header_general
+            text: "00:00"
+            text_font: roboto12
+            text_color: 0xffffff
         - obj:
             layout:
               type: GRID
@@ -1068,6 +1194,13 @@ lvgl:
                   grid_cell_x_align: STRETCH
                   grid_cell_y_align: STRETCH
                   widgets:
+                    - label:
+                        id: lbl_battery_status_kueche
+                        align: TOP_LEFT
+                        x: 18
+                        y: 10
+                        text_font: battery_icons_20
+                        text: "\U000F0091"
                     - label:
                         text_font: hass_hue_icons
                         text: $icon_e9df
@@ -1229,6 +1362,23 @@ lvgl:
                   grid_cell_y_align: STRETCH
                   widgets:
                     - label:
+                        id: light_icon
+                        align: BOTTOM_MID
+                        text_font: icons_12
+                        text_color: 0x56acfa
+                        text: !lambda |-
+                          return "\U0000e916";
+                        x: -20
+                        y: -30
+                    - label:
+                        id: light_brightness_percent
+                        align: BOTTOM_MID
+                        text_font: roboto12
+                        text_color: 0x56acfa
+                        text: ""
+                        x: 15
+                        y: -30
+                    - label:
                         text_font: btn_icons_font
                         text: $coach_lamp
                         align: CENTER
@@ -1247,6 +1397,37 @@ lvgl:
                         y: 10
                         text_font: roboto12
                         text_color: 0xffffff
+                    - slider:
+                        id: light_main_brightness_slider
+                        align: bottom_mid
+                        x: 0
+                        y: -5
+                        width: 100
+                        height: 25
+                        pad_all: 0
+                        min_value: 0
+                        max_value: 255
+                        knob:
+                          bg_color: 0xffffff
+                          pad_left: 0px
+                          pad_right: 0px
+                          pad_top: 0px
+                          pad_bottom: 0px
+                        indicator:
+                          radius: 8px
+                          bg_color: 0xb1b1b1
+                        on_release:
+                          - homeassistant.action:
+                              action: light.turn_on
+                              data:
+                                entity_id: light.haustur
+                                brightness: !lambda return int(x);
+                          - lambda: |-
+                              // Optional direkt nach Slider die Anzeige updaten
+                              float brightness = x;
+                              lv_label_set_text_fmt(id(light_brightness_percent), "%.0f %%", brightness / 2.55);
+                              lv_obj_clear_flag(id(light_icon), LV_OBJ_FLAG_HIDDEN);
+                              lv_obj_clear_flag(id(light_brightness_percent), LV_OBJ_FLAG_HIDDEN);
                   on_click:
                     - homeassistant.service:
                         service: light.toggle
@@ -1293,6 +1474,205 @@ lvgl:
                         data_template:
                           entity_id: light.schalter_badezimmer_unten_l1
 
+    - id: livingroom_page
+      widgets:
+        - image:
+            align: CENTER
+            src: back1
+        - label:
+            text: "Wohnzimmer"
+            align: TOP_MID
+            y: 6
+            text_font: roboto12
+            text_color: 0xffffff
+        - label:
+            align: top_left
+            y: 6
+            x: 62
+            id: display_time_header_livingroom
+            text: "00:00"
+            text_font: roboto12
+            text_color: 0xffffff
+        - obj:
+            layout:
+              type: GRID
+              grid_columns: [FR(1), FR(1), FR(1)]
+              grid_rows: [FR(50), FR(50)]
+            width: 100%
+            height: 90%
+            pad_all: 15
+            pad_top: 22
+            bg_opa: TRANSP
+            border_opa: TRANSP
+            widgets:
+              - button:
+                  id: btn_wohnzimmer_decke
+                  checkable: true
+                  grid_cell_column_pos: 0
+                  grid_cell_row_pos: 0
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        id: lbl_battery_status_livingroom
+                        align: TOP_LEFT
+                        x: 18
+                        y: 10
+                        text_font: battery_icons_20
+                        text: "\U000F0091"
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $icon_e9df
+                        align: CENTER
+                        y: -20
+                    - label:
+                        id: room_temp_label_wohnzimmer2
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        text_font: roboto24
+                        text: "Decke"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: heating_icon_label_wohnzimmer2
+                        text: "${radiator2}"
+                        align: TOP_LEFT
+                        x: 3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0x808080
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.wohnzimmer_relay_2
+              - button:
+                  id: btn_wohnzimmer_front
+                  checkable: true
+                  grid_cell_column_pos: 1
+                  grid_cell_row_pos: 0
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $icon_e9f8
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Front"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.wohnzimmer_relay_1
+              - button:
+                  id: btn_wohnzimmer_stehlampe
+                  checkable: true
+                  grid_cell_column_pos: 2
+                  grid_cell_row_pos: 0
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $icon_e9ca
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Stehlampe"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.stehlampe_wohnzimmer
+              - button:
+                  id: btn_wohnzimmer_links
+                  checkable: true
+                  grid_cell_column_pos: 0
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $icon_e90a
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Links"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.fensterbank_links_wohnzimmer
+              - button:
+                  id: btn_wohnzimmer_rechts
+                  checkable: true
+                  grid_cell_column_pos: 1
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $icon_e9fc
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Rechts"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.wohnzimmer_fenster_rechts
+              - button:
+                  id: btn_wohnzimmer_couch
+                  checkable: true
+                  grid_cell_column_pos: 2
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $icon_e915
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text: "Couch"
+                        text_font: roboto24
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.couch_hinten
+
     - id: page_thermostat
       widgets:
         - image:
@@ -1301,8 +1681,16 @@ lvgl:
         - label:
             text: "Heizung"
             align: TOP_MID
-            y: 2
-            text_font: roboto24
+            y: 6
+            text_font: roboto12
+            text_color: 0xffffff
+        - label:
+            align: top_left
+            y: 6
+            x: 62
+            id: display_time_header_thermostat
+            text: "00:00"
+            text_font: roboto12
             text_color: 0xffffff
         - obj:
             bg_opa: TRANSP
@@ -1409,7 +1797,7 @@ lvgl:
                   align: RIGHT_MID
                   text_font: nunito_84
                   text_color: 0xffffff
-                  text: " "
+                  text: ""
               - label:
                   id: target_temperature_fraction
                   x: 248
@@ -1417,7 +1805,7 @@ lvgl:
                   align: LEFT_MID
                   text_font: nunito_36
                   text_color: 0xffffff
-                  text: " "
+                  text: ""
               - label:
                   id: target_temperature_measurement
                   x: 245
@@ -1506,10 +1894,18 @@ lvgl:
             src: back1
             widgets:
               - label:
+                  align: top_left
+                  y: 6
+                  x: 62
+                  id: display_time_header_cover
+                  text: "00:00"
+                  text_font: roboto12
+                  text_color: 0xffffff
+              - label:
                   text: "Rollladen"
                   align: TOP_MID
-                  y: 2
-                  text_font: roboto24
+                  y: 6
+                  text_font: roboto12
                   text_color: 0xffffff
               - button:
                   x: 80
@@ -1614,6 +2010,241 @@ lvgl:
                           data:
                             entity_id: cover.rolllade_schlafzimmer_rechts
 
+    - id: sonos
+      widgets:
+        - image:
+            align: CENTER
+            src: back1
+            widgets:
+              - image:
+                  id: sonos_cover_widget
+                  src: sonos_cover_image
+                  x: 30
+                  y: 30
+                  width: 140
+                  height: 140
+
+              - label:
+                  align: top_left
+                  y: 6
+                  x: 62
+                  id: display_time_header_sonos
+                  text: "00:00"
+                  text_font: roboto12
+                  text_color: 0xffffff
+              - label:
+                  text: "Sonos"
+                  align: TOP_MID
+                  y: 6
+                  text_font: roboto12
+                  text_color: 0xffffff
+              - label:
+                  id: display_sonos_vardagsrum_title
+                  text: "Titel"
+                  x: 185
+                  y: 30
+                  width: 300
+                  text_font: roboto24
+                  text_color: 0xffffff
+                  align: TOP_LEFT
+              - label:
+                  id: display_sonos_vardagsrum_media_artist
+                  text: "Artist"
+                  x: 185
+                  y: 90
+                  width: 300
+                  text_font: roboto24
+                  text_color: 0xffffff
+                  align: TOP_LEFT
+              - slider:
+                  id: sonos_volume_slider
+                  x: 30
+                  y: 200
+                  width: 280
+                  height: 30
+                  min_value: 0
+                  max_value: 100
+                  adv_hittest: true
+                  knob:
+                    bg_color: 0xffffff
+                    pad_left: 0px
+                    pad_right: 0px
+                    pad_top: 0px
+                    pad_bottom: 0px
+                  indicator:
+                    radius: 8px
+                    bg_color: 0xb1b1b1
+                  value: 30
+                  on_value:
+                    then:
+                      - lambda: |-
+                          lv_label_set_text_fmt(id(sonos_volume_label), "%d%%", (int)x);
+                      - homeassistant.service:
+                          service: media_player.volume_set
+                          data:
+                            entity_id: media_player.vardagsrum
+                          data_template:
+                            volume_level: !lambda 'return x / 100.0;'
+              - label:
+                  id: sonos_volume_label
+                  text: "0%"
+                  x: 320
+                  y: 200
+                  text_font: roboto24
+                  text_color: 0xffffff
+              - button:
+                  id: sonos_volume_down
+                  width: 55
+                  height: 55
+                  x: 25
+                  y: 250
+                  widgets:
+                    - label:
+                        text_font: roboto24
+                        text: "\U000f075e"
+                        align: CENTER
+                  on_click:
+                    then:
+                      - lambda: |-
+                          int current = lv_slider_get_value(id(sonos_volume_slider));
+                          int new_val = std::max(0, current - 1);
+                          lv_slider_set_value(id(sonos_volume_slider), new_val, LV_ANIM_OFF);
+                          lv_label_set_text_fmt(id(sonos_volume_label), "%d%%", new_val);
+                      - homeassistant.service:
+                          service: media_player.volume_set
+                          data:
+                            entity_id: media_player.vardagsrum
+                          data_template:
+                            volume_level: !lambda 'return lv_slider_get_value(id(sonos_volume_slider)) / 100.0;'
+              - button:
+                  id: sonos_volume_up
+                  width: 55
+                  height: 55
+                  x: 100
+                  y: 250
+                  widgets:
+                    - label:
+                        text_font: roboto24
+                        text: "\U000f075d"
+                        align: CENTER
+                  on_click:
+                    then:
+                      - lambda: |-
+                          int current = lv_slider_get_value(id(sonos_volume_slider));
+                          int new_val = std::min(100, current + 1);
+                          lv_slider_set_value(id(sonos_volume_slider), new_val, LV_ANIM_OFF);
+                          lv_label_set_text_fmt(id(sonos_volume_label), "%d%%", new_val);
+                      - homeassistant.service:
+                          service: media_player.volume_set
+                          data:
+                            entity_id: media_player.vardagsrum
+                          data_template:
+                            volume_level: !lambda 'return lv_slider_get_value(id(sonos_volume_slider)) / 100.0;'
+              - button:
+                  id: sonos_prev
+                  width: 55
+                  height: 55
+                  x: 175
+                  y: 250
+                  widgets:
+                    - label:
+                        text_font: roboto24
+                        text: "\U000F04AE"
+                        align: CENTER
+                  on_click:
+                    - homeassistant.action:
+                        action: media_player.media_previous_track
+                        data:
+                          entity_id: media_player.vardagsrum
+              - button:
+                  id: sonos_vardagsrum_play_pause_button
+                  width: 55
+                  height: 55
+                  x: 250
+                  y: 250
+                  widgets:
+                    - label:
+                        id: sonos_play_pause_icon
+                        text_font: roboto24
+                        text: "\U000F040E"
+                        align: CENTER
+                  on_click:
+                    - homeassistant.action:
+                        action: media_player.media_play_pause
+                        data:
+                          entity_id: media_player.vardagsrum
+              - button:
+                  id: sonos_next
+                  width: 55
+                  height: 55
+                  x: 325
+                  y: 250
+                  widgets:
+                    - label:
+                        text_font: roboto24
+                        text: "\U000F04AD"
+                        align: CENTER
+                  on_click:
+                    - homeassistant.action:
+                        action: media_player.media_next_track
+                        data:
+                          entity_id: media_player.vardagsrum
+              - button:
+                  id: sonos_mute
+                  width: 55
+                  height: 55
+                  x: 400
+                  y: 250
+                  widgets:
+                    - label:
+                        id: sonos_vardagsrum_mute_button
+                        text_font: roboto24
+                        text: "\U000F04C4"
+                        align: CENTER
+                  on_click:
+                    - homeassistant.service:
+                        service: media_player.volume_mute
+                        data:
+                          entity_id: media_player.vardagsrum
+                          is_volume_muted: !lambda 'return !id(sonos_vardagsrum_mute).state;'
+              - button:
+                  id: sonos_vardagsrum_stubru_button
+                  width: 80
+                  height: 55
+                  x: 160
+                  y: 320
+                  widgets:
+                    - label:
+                        text_font: roboto12
+                        text: "WDR2"
+                        align: CENTER
+                  on_press:
+                    then:
+                      - homeassistant.action:
+                          action: media_player.play_media
+                          data:
+                            entity_id: media_player.vardagsrum
+                            media_content_type: "music"
+                            media_content_id: "x-rincon-mp3radio://http://wdr-wdr2-rheinland.icecast.wdr.de/wdr/wdr2/rheinland/mp3/128/stream.mp3"
+              - button:
+                  id: sonos_vardagsrum_pinguin_button
+                  width: 80
+                  height: 55
+                  x: 290
+                  y: 320
+                  widgets:
+                    - label:
+                        text_font: roboto24
+                        text: "\U000F0EC0"
+                        align: CENTER
+                  on_click:
+                    - homeassistant.service:
+                        service: media_player.play_media
+                        data:
+                          entity_id: media_player.vardagsrum
+                          media_content_type: "music"
+                          media_content_id: "http://streams.pinguinradio.com/PinguinClassics192.mp3"
+
 time:
   - platform: homeassistant
     id: ha_time
@@ -1651,64 +2282,105 @@ switch:
           then:
             - lvgl.resume:
             - lvgl.widget.redraw:
-number:
-  - platform: template
-    id: dimmer_val
-    name: "dimmer val"
-    min_value: 0
-    max_value: 255
-    step: 1
-    initial_value: 160
-    optimistic: True
-    internal: True
-    on_value:
-      then:
-        - globals.set:
-            id: dimmer_level
-            value: !lambda 'return int(x);'
-        - if:
-            condition:
-              lambda: 'return id(bedroom_heating_btn).state == true;'
-            then:
-              - homeassistant.service:
-                  service: light.turn_on
-                  data_template:
-                    entity_id: light.schlafzimmerbett
-                    brightness: !lambda "return x;"
-
-  - platform: template
-    id: dimmer_val_tisch
-    name: "dimmer val tisch"
-    min_value: 0
-    max_value: 255
-    step: 1
-    initial_value: 160
-    optimistic: True
-    internal: True
-    on_value:
-      then:
-        - globals.set:
-            id: dimmer_level
-            value: !lambda 'return int(x);'
-        - if:
-            condition:
-              lambda: 'return id(living_room_heating_btn).state == true;'
-            then:
-              - homeassistant.service:
-                  service: light.turn_on
-                  data_template:
-                    entity_id: light.color_temperature_light_23
-                    brightness: !lambda "return x;"
-
 sensor:
   - platform: homeassistant
-    id: media_player_volume
-    entity_id: media_player.tv_schlafzimmer_2
+    id: sonos_volume_state
+    entity_id: media_player.vardagsrum
     attribute: volume_level
+    internal: true
     on_value:
-      - lvgl.slider.update:
-          id: slider_media_player
-          value: !lambda return (x * 100);
+      then:
+        - lambda: |-
+            int val = int(x * 100.0);
+            lv_slider_set_value(id(sonos_volume_slider), val, LV_ANIM_OFF);
+            lv_label_set_text_fmt(id(sonos_volume_label), "%d%%", val);
+
+  - platform: homeassistant
+    id: main_light_brightness
+    entity_id: light.haustur
+    attribute: brightness
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            if (id(main_light_status).state) {
+                float brightness = id(main_light_brightness).state;
+                if (isnan(brightness) || brightness <= 0) {
+                    lv_label_set_text(id(light_brightness_percent), "- %");
+                } else {
+                    char buf[10];
+                    snprintf(buf, sizeof(buf), "%.0f %%", brightness / 2.55);
+                    lv_label_set_text(id(light_brightness_percent), buf);
+                    lv_slider_set_value(id(light_main_brightness_slider), brightness, LV_ANIM_OFF);
+                }
+                lv_obj_clear_flag(id(light_icon), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(id(light_brightness_percent), LV_OBJ_FLAG_HIDDEN);
+            } else {
+                lv_label_set_text(id(light_brightness_percent), "");
+                lv_obj_add_flag(id(light_icon), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(id(light_brightness_percent), LV_OBJ_FLAG_HIDDEN);
+            }
+
+  - platform: homeassistant
+    id: main_light_brightness_table
+    entity_id: light.color_temperature_light_23
+    attribute: brightness
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            if (id(main_light_status_table).state) {
+                float brightness = id(main_light_brightness_table).state;
+                if (isnan(brightness) || brightness <= 0) {
+                    lv_label_set_text(id(light_brightness_percent_table), "- %");
+                } else {
+                    char buf[10];
+                    snprintf(buf, sizeof(buf), "%.0f %%", brightness / 2.55);
+                    lv_label_set_text(id(light_brightness_percent_table), buf);
+                    lv_slider_set_value(id(light_main_brightness_slider_table), brightness, LV_ANIM_OFF);
+                }
+                lv_obj_clear_flag(id(light_icon_table), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(id(light_brightness_percent_table), LV_OBJ_FLAG_HIDDEN);
+            } else {
+                lv_label_set_text(id(light_brightness_percent_table), "");
+                lv_obj_add_flag(id(light_icon_table), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(id(light_brightness_percent_table), LV_OBJ_FLAG_HIDDEN);
+            }
+
+  - platform: homeassistant
+    id: main_light_brightness_bed
+    entity_id: light.schlafzimmerbett
+    attribute: brightness
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            if (id(main_light_status_bed).state) {
+                float brightness = id(main_light_brightness_bed).state;
+                if (isnan(brightness) || brightness <= 0) {
+                    lv_label_set_text(id(light_brightness_percent_bed), "- %");
+                } else {
+                    char buf[10];
+                    snprintf(buf, sizeof(buf), "%.0f %%", brightness / 2.55);
+                    lv_label_set_text(id(light_brightness_percent_bed), buf);
+                    lv_slider_set_value(id(light_main_brightness_slider_bed), brightness, LV_ANIM_OFF);
+                }
+                lv_obj_clear_flag(id(light_icon_bed), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(id(light_brightness_percent_bed), LV_OBJ_FLAG_HIDDEN);
+            } else {
+                lv_label_set_text(id(light_brightness_percent_bed), "");
+                lv_obj_add_flag(id(light_icon_bed), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(id(light_brightness_percent_bed), LV_OBJ_FLAG_HIDDEN);
+            }
+
+  - platform: homeassistant
+    id: cw_sensor
+    name: "Kalenderwoche"
+    entity_id: sensor.swedish_calendar_week
+    on_value:
+      then:
+        - lambda: |-
+            ESP_LOGI("CW", "Received week: %.1f", x);
 
   - platform: homeassistant
     id: battery_percentage_schlafzimmer
@@ -1721,41 +2393,131 @@ sensor:
             float pct = x;
             std::string icon;
             if (pct >= 100.0f) {
-              icon = "\U000F0079";  // mdi-battery
+              icon = "\U000F0079";
             } else if (pct > 90.0f) {
-              icon = "\U000F0082";  // mdi-battery-90
+              icon = "\U000F0082";
             } else if (pct > 80.0f) {
-              icon = "\U000F0081";  // mdi-battery-80
+              icon = "\U000F0081";
             } else if (pct > 70.0f) {
-              icon = "\U000F0080";  // mdi-battery-70
+              icon = "\U000F0080";
             } else if (pct > 60.0f) {
-              icon = "\U000F007F";  // mdi-battery-60
+              icon = "\U000F007F";
             } else if (pct > 50.0f) {
-              icon = "\U000F007E";  // mdi-battery-50
+              icon = "\U000F007E";
             } else if (pct > 40.0f) {
-              icon = "\U000F007D";  // mdi-battery-40
+              icon = "\U000F007D";
             } else if (pct > 30.0f) {
-              icon = "\U000F007C";  // mdi-battery-30
+              icon = "\U000F007C";
             } else if (pct > 20.0f) {
-              icon = "\U000F007B";  // mdi-battery-20
+              icon = "\U000F007B";
             } else if (pct > 10.0f) {
-              icon = "\U000F007A";  // mdi-battery-10
+              icon = "\U000F007A";
             } else if (pct > 0.0f) {
-              icon = "\U000F008E";  // mdi-battery-outline
+              icon = "\U000F008E";
             } else {
-              icon = "\U000F0091";  // mdi-battery-unknown
+              icon = "\U000F0091";
             }
             snprintf(buf, sizeof(buf), "%s", icon.c_str());
             return std::string(buf);
           text_color: !lambda |-
             float pct = x;
-            // Normiere zwischen 10% (t=0) und 100% (t=1)
             float t = (pct <= 10.0f)  ? 0.0f
                       : (pct >= 100.0f) ? 1.0f
                       : (pct - 10.0f) / 90.0f;
             int r = int((1.0f - t) * 255.0f);
             int g = int(t * 255.0f);
-            // b bleibt 0
+            return lv_color_make(r, g, 0);
+
+  - platform: homeassistant
+    id: battery_percentage_kueche
+    entity_id: sensor.thermostatkueche_battery
+    on_value:
+      - lvgl.label.update:
+          id: lbl_battery_status_kueche
+          text: !lambda |-
+            static char buf[8];
+            float pct = x;
+            std::string icon;
+            if (pct >= 100.0f) {
+              icon = "\U000F0079";
+            } else if (pct > 90.0f) {
+              icon = "\U000F0082";
+            } else if (pct > 80.0f) {
+              icon = "\U000F0081";
+            } else if (pct > 70.0f) {
+              icon = "\U000F0080";
+            } else if (pct > 60.0f) {
+              icon = "\U000F007F";
+            } else if (pct > 50.0f) {
+              icon = "\U000F007E";
+            } else if (pct > 40.0f) {
+              icon = "\U000F007D";
+            } else if (pct > 30.0f) {
+              icon = "\U000F007C";
+            } else if (pct > 20.0f) {
+              icon = "\U000F007B";
+            } else if (pct > 10.0f) {
+              icon = "\U000F007A";
+            } else if (pct > 0.0f) {
+              icon = "\U000F008E";
+            } else {
+              icon = "\U000F0091";
+            }
+            snprintf(buf, sizeof(buf), "%s", icon.c_str());
+            return std::string(buf);
+          text_color: !lambda |-
+            float pct = x;
+            float t = (pct <= 10.0f)  ? 0.0f
+                      : (pct >= 100.0f) ? 1.0f
+                      : (pct - 10.0f) / 90.0f;
+            int r = int((1.0f - t) * 255.0f);
+            int g = int(t * 255.0f);
+            return lv_color_make(r, g, 0);
+
+  - platform: homeassistant
+    id: battery_percentage_livingroom
+    entity_id: sensor.thermostat_garderobe_battery
+    on_value:
+      - lvgl.label.update:
+          id: lbl_battery_status_livingroom
+          text: !lambda |-
+            static char buf[8];
+            float pct = x;
+            std::string icon;
+            if (pct >= 100.0f) {
+              icon = "\U000F0079";
+            } else if (pct > 90.0f) {
+              icon = "\U000F0082";
+            } else if (pct > 80.0f) {
+              icon = "\U000F0081";
+            } else if (pct > 70.0f) {
+              icon = "\U000F0080";
+            } else if (pct > 60.0f) {
+              icon = "\U000F007F";
+            } else if (pct > 50.0f) {
+              icon = "\U000F007E";
+            } else if (pct > 40.0f) {
+              icon = "\U000F007D";
+            } else if (pct > 30.0f) {
+              icon = "\U000F007C";
+            } else if (pct > 20.0f) {
+              icon = "\U000F007B";
+            } else if (pct > 10.0f) {
+              icon = "\U000F007A";
+            } else if (pct > 0.0f) {
+              icon = "\U000F008E";
+            } else {
+              icon = "\U000F0091";
+            }
+            snprintf(buf, sizeof(buf), "%s", icon.c_str());
+            return std::string(buf);
+          text_color: !lambda |-
+            float pct = x;
+            float t = (pct <= 10.0f)  ? 0.0f
+                      : (pct >= 100.0f) ? 1.0f
+                      : (pct - 10.0f) / 90.0f;
+            int r = int((1.0f - t) * 255.0f);
+            int g = int(t * 255.0f);
             return lv_color_make(r, g, 0);
 
   - platform: template
@@ -1844,6 +2606,17 @@ sensor:
               args: [id(sensor_temperature_wohnzimmer).state]
 
   - platform: homeassistant
+    id: sensor_temperature_wohnzimmer2
+    entity_id: sensor.wohnzimmer_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: room_temp_label_wohnzimmer2
+            text:
+              format: "$temp %.1f °C"
+              args: [id(sensor_temperature_wohnzimmer2).state]
+
+  - platform: homeassistant
     id: wohnzimmer_temperature
     entity_id: sensor.wohnzimmer_temperature
 
@@ -1906,24 +2679,6 @@ sensor:
   - platform: homeassistant
     id: schlafzimmer_temperature
     entity_id: sensor.schlafzimmer_temperature
-
-  - platform: homeassistant
-    id: button_1_device_brightness
-    entity_id: light.schlafzimmerbett
-    attribute: brightness
-    on_value:
-      - lvgl.slider.update:
-          id: lv_button_1_slider
-          value: !lambda return x;
-
-  - platform: homeassistant
-    id: button_2_device_brightness
-    entity_id: light.color_temperature_light_23
-    attribute: brightness
-    on_value:
-      - lvgl.slider.update:
-          id: lv_button_2_slider
-          value: !lambda return x;
 
   - platform: homeassistant
     id: volet_porche_pos
@@ -1995,7 +2750,6 @@ sensor:
             text:
               format: "%.1f°C"
               args: [id(sensor_temperature).state]
-
         - lvgl.arc.update:
             id: arc_sensor_temp
             value: !lambda return x;
@@ -2038,12 +2792,12 @@ sensor:
   - platform: wifi_signal
     id: wifi_signal_dbm
     name: "WiFi Signal (dBm)"
-    update_interval: 180s
+    update_interval: 60s
 
   - platform: wifi_signal
     id: wifi_signal_percent
     name: "WiFi Signal (%)"
-    update_interval: 180s
+    update_interval: 60s
     filters:
       - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
     unit_of_measurement: "%"
@@ -2078,23 +2832,142 @@ sensor:
               format: "$house_temp %.1f °C"
               args: ["id(house_temp_sensor).state"]
 
+online_image:
+  - id: sonos_cover_image
+    url: "http://192.168.1.22:8123/local/sonos-cover/vardagsrum.jpg"
+    format: JPEG
+    type: RGB565
+    resize: 140x140
+    placeholder: sonos_cover_placeholder
+    update_interval: never
+    on_download_finished:
+      then:
+        - delay: 3s
+        - lvgl.image.update:
+            id: sonos_cover_widget
+            src: sonos_cover_image
+        - lambda: |-
+            ESP_LOGI("cover", "Cover updated after delay");
+        - if:
+            condition:
+              lambda: |-
+                return true;
+            then:
+              - lambda: |-
+                  ESP_LOGD("cover", "Assuming update successful");
+            else:
+              - lambda: |-
+                  ESP_LOGE("cover", "Update failed");
+              - delay: 10s
+              - online_image.set_url:
+                  id: sonos_cover_image
+                  url: !lambda 'return id(sonos_cover_url).state;'
+
+text_sensor:
   - platform: homeassistant
-    id: uv_sensor
-    entity_id: sensor.home_uv_index_tag_0
+    id: sonos_vardagsrum_state
+    entity_id: media_player.vardagsrum
+    on_value:
+      then:
+        - lambda: |-
+            if (x == "playing") {
+              lv_label_set_text(id(sonos_play_pause_icon), "\U000F03E4");
+            } else {
+              lv_label_set_text(id(sonos_play_pause_icon), "\U000F040E");
+            }
+
+  - platform: homeassistant
+    id: media_channel
+    entity_id: media_player.vardagsrum
+    attribute: media_channel
+    internal: true
+
+  - platform: homeassistant
+    id: sonos_cover_url
+    entity_id: media_player.vardagsrum
+    attribute: entity_picture
+    on_value:
+      then:
+        - delay: 5s
+        - if:
+            condition:
+              lambda: 'return x.length() < 10;'
+            then:
+              - online_image.set_url:
+                  id: sonos_cover_image
+                  url: "http://192.168.1.22:8123/local/sonos-cover/vardagsrum.jpg"
+            else:
+              - online_image.set_url:
+                  id: sonos_cover_image
+                  url: "http://192.168.1.22:8123/local/sonos-cover/vardagsrum.jpg"
+
+  - platform: homeassistant
+    id: sonos_artist
+    entity_id: media_player.vardagsrum
+    attribute: media_artist
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            if (!x.empty()) {
+              lv_label_set_text(id(display_sonos_vardagsrum_media_artist), x.c_str());
+            } else {
+              auto channel = id(media_channel).state;
+              if (!channel.empty()) {
+                lv_label_set_text(id(display_sonos_vardagsrum_media_artist), channel.c_str());
+              }
+            }
+
+  - platform: homeassistant
+    id: sonos_title
+    entity_id: media_player.vardagsrum
+    attribute: media_title
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(display_sonos_vardagsrum_title), x.c_str());
+            if (x == "TV") {
+              lv_img_set_src(id(sonos_cover_widget), &tv_cover);
+              lv_label_set_text(id(display_sonos_vardagsrum_media_artist), "");
+            } else {
+              id(sonos_cover_image).set_url("http://192.168.1.22:8123/local/sonos-cover/vardagsrum.jpg");
+              lv_img_set_src(id(sonos_cover_widget), id(sonos_cover_image));
+            }
+
+  - platform: homeassistant
+    id: media_title
+    entity_id: media_player.vardagsrum
+    attribute: media_title
+
+  - platform: homeassistant
+    id: thermostat_action
+    entity_id: climate.thermostatbadezimmervorne
+    attribute: hvac_action
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: 'return x == "heating";'
+            then:
+              - script.execute: therm_status_update_on
+            else:
+              - script.execute: therm_status_update_off
+
+  - platform: template
+    id: cw_display
+    lambda: |-
+      auto week = id(cw_sensor).state;
+      if (isnan(week)) {
+        return {"$calendar_icon KW: --"};
+      }
+      return {"$calendar_icon KW: " + std::to_string((int)round(week))};
     on_value:
       then:
         - lvgl.label.update:
-            id: display_uv_index
-            text: !lambda |-
-              if (isnan(id(uv_sensor).state)) {
-                return "UV: ---";
-              } else {
-                char buf[32];
-                snprintf(buf, sizeof(buf), "UV: %.1f", id(uv_sensor).state);
-                return std::string(buf);
-              }
+            id: display_cw_index
+            text: !lambda return id(cw_display).state;
 
-text_sensor:
   - platform: homeassistant
     id: sun_state
     entity_id: sun.sun
@@ -2202,7 +3075,6 @@ text_sensor:
             }
 
   - platform: homeassistant
-    name: "TV Status"
     id: tv_status
     entity_id: media_player.tv_schlafzimmer_2
 
@@ -2211,33 +3083,13 @@ text_sensor:
     entity_id: media_player.tv_schlafzimmer_2
 
   - platform: homeassistant
-    id: heating_status_sensor
+    id: heating_status_sensor_header
     entity_id: climate.thermostatbadezimmervorne
     attribute: hvac_action
     on_value:
       then:
-        - if:
-            condition:
-              lambda: 'return id(heating_status_sensor).state == "heating";'
-            then:
-              - lvgl.label.update:
-                  id: heating_icon_label
-                  text: $radiator2
-                  text_color: 0xFF0000
-            else:
-              - if:
-                  condition:
-                    lambda: 'return id(heating_status_sensor).state == "idle";'
-                  then:
-                    - lvgl.label.update:
-                        id: heating_icon_label
-                        text: $radiator2
-                        text_color: 0x56acfa
-                  else:
-                    - lvgl.label.update:
-                        id: heating_icon_label
-                        text: $power_off
-                        text_color: 0x808080
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_header).state, id(heating_icon_label_header));
 
   - platform: homeassistant
     id: heating_status_sensor_kueche
@@ -2245,28 +3097,8 @@ text_sensor:
     attribute: hvac_action
     on_value:
       then:
-        - if:
-            condition:
-              lambda: 'return id(heating_status_sensor_kueche).state == "heating";'
-            then:
-              - lvgl.label.update:
-                  id: heating_icon_label_kueche
-                  text: $radiator2
-                  text_color: 0xFF0000
-            else:
-              - if:
-                  condition:
-                    lambda: 'return id(heating_status_sensor_kueche).state == "idle";'
-                  then:
-                    - lvgl.label.update:
-                        id: heating_icon_label_kueche
-                        text: $radiator2
-                        text_color: 0x56acfa
-                  else:
-                    - lvgl.label.update:
-                        id: heating_icon_label_kueche
-                        text: $power_off
-                        text_color: 0x808080
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_kueche).state, id(heating_icon_label_kueche));
 
   - platform: homeassistant
     id: heating_status_sensor_esszimmer
@@ -2274,28 +3106,8 @@ text_sensor:
     attribute: hvac_action
     on_value:
       then:
-        - if:
-            condition:
-              lambda: 'return id(heating_status_sensor_esszimmer).state == "heating";'
-            then:
-              - lvgl.label.update:
-                  id: heating_icon_label_esszimmer
-                  text: $radiator2
-                  text_color: 0xFF0000
-            else:
-              - if:
-                  condition:
-                    lambda: 'return id(heating_status_sensor_esszimmer).state == "idle";'
-                  then:
-                    - lvgl.label.update:
-                        id: heating_icon_label_esszimmer
-                        text: $radiator2
-                        text_color: 0x56acfa
-                  else:
-                    - lvgl.label.update:
-                        id: heating_icon_label_esszimmer
-                        text: $power_off
-                        text_color: 0x808080
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_esszimmer).state, id(heating_icon_label_esszimmer));
 
   - platform: homeassistant
     id: heating_status_sensor_diele
@@ -2303,28 +3115,8 @@ text_sensor:
     attribute: hvac_action
     on_value:
       then:
-        - if:
-            condition:
-              lambda: 'return id(heating_status_sensor_diele).state == "heating";'
-            then:
-              - lvgl.label.update:
-                  id: heating_icon_label_diele
-                  text: $radiator2
-                  text_color: 0xFF0000
-            else:
-              - if:
-                  condition:
-                    lambda: 'return id(heating_status_sensor_diele).state == "idle";'
-                  then:
-                    - lvgl.label.update:
-                        id: heating_icon_label_diele
-                        text: $radiator2
-                        text_color: 0x56acfa
-                  else:
-                    - lvgl.label.update:
-                        id: heating_icon_label_diele
-                        text: $power_off
-                        text_color: 0x808080
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_diele).state, id(heating_icon_label_diele));
 
   - platform: homeassistant
     id: heating_status_sensor_wohnzimmer
@@ -2332,28 +3124,17 @@ text_sensor:
     attribute: hvac_action
     on_value:
       then:
-        - if:
-            condition:
-              lambda: 'return id(heating_status_sensor_wohnzimmer).state == "heating";'
-            then:
-              - lvgl.label.update:
-                  id: heating_icon_label_wohnzimmer
-                  text: $radiator2
-                  text_color: 0xFF0000
-            else:
-              - if:
-                  condition:
-                    lambda: 'return id(heating_status_sensor_wohnzimmer).state == "idle";'
-                  then:
-                    - lvgl.label.update:
-                        id: heating_icon_label_wohnzimmer
-                        text: $radiator2
-                        text_color: 0x56acfa
-                  else:
-                    - lvgl.label.update:
-                        id: heating_icon_label_wohnzimmer
-                        text: $power_off
-                        text_color: 0x808080
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_wohnzimmer).state, id(heating_icon_label_wohnzimmer));
+
+  - platform: homeassistant
+    id: heating_status_sensor_wohnzimmer2
+    entity_id: climate.garderobe
+    attribute: hvac_action
+    on_value:
+      then:
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_wohnzimmer2).state, id(heating_icon_label_wohnzimmer2));
 
   - platform: homeassistant
     id: heating_status_sensor_buero
@@ -2361,28 +3142,8 @@ text_sensor:
     attribute: hvac_action
     on_value:
       then:
-        - if:
-            condition:
-              lambda: 'return id(heating_status_sensor_buero).state == "heating";'
-            then:
-              - lvgl.label.update:
-                  id: heating_icon_label_buero
-                  text: $radiator2
-                  text_color: 0xFF0000
-            else:
-              - if:
-                  condition:
-                    lambda: 'return id(heating_status_sensor_buero).state == "idle";'
-                  then:
-                    - lvgl.label.update:
-                        id: heating_icon_label_buero
-                        text: $radiator2
-                        text_color: 0x56acfa
-                  else:
-                    - lvgl.label.update:
-                        id: heating_icon_label_buero
-                        text: $power_off
-                        text_color: 0x808080
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_buero).state, id(heating_icon_label_buero));
 
   - platform: homeassistant
     id: heating_status_sensor_bad
@@ -2390,33 +3151,17 @@ text_sensor:
     attribute: hvac_action
     on_value:
       then:
-        - if:
-            condition:
-              lambda: 'return id(heating_status_sensor_bad).state == "heating";'
-            then:
-              - lvgl.label.update:
-                  id: heating_icon_label_bad
-                  text: $radiator2
-                  text_color: 0xFF0000
-            else:
-              - if:
-                  condition:
-                    lambda: 'return id(heating_status_sensor_bad).state == "idle";'
-                  then:
-                    - lvgl.label.update:
-                        id: heating_icon_label_bad
-                        text: $radiator2
-                        text_color: 0x56acfa
-                  else:
-                    - lvgl.label.update:
-                        id: heating_icon_label_bad
-                        text: $power_off
-                        text_color: 0x808080
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_bad).state, id(heating_icon_label_bad));
 
   - platform: homeassistant
-    id: thermostat_action
+    id: heating_status_sensor_schlafzimmer
     entity_id: climate.thermostatbadezimmervorne
     attribute: hvac_action
+    on_value:
+      then:
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_schlafzimmer).state, id(heating_icon_label_bad));
 
   - platform: homeassistant
     id: volet_porche_state
@@ -2463,27 +3208,13 @@ text_sensor:
       then:
         - lvgl.label.update:
             id: motion_status
-            text_color: !lambda |-
-              if (id(sensor_motion).state == "on") {
-                return lv_color_hex(0x56acfa);
-              } else if (id(sensor_motion).state == "unavailable") {
-                return lv_color_hex(0xFF0000);
-              }
-              return lv_color_hex(0x333333);
-
-  - platform: homeassistant
-    id: heating_action
-    entity_id: climate.thermostatbadezimmervorne
-    attribute: hvac_action
-    on_value:
-      then:
-        - if:
-            condition:
-              lambda: 'return x == "heating";'
-            then:
-              - lvgl.widget.show: heating_status
-            else:
-              - lvgl.widget.hide: heating_status
+            hidden: !lambda "return id(sensor_motion).state != \"on\";"
+        - lvgl.label.update:
+            id: motion_status_off
+            hidden: !lambda "return id(sensor_motion).state == \"on\";"
+        - lvgl.label.update:
+            id: motion_status_unavailable
+            hidden: !lambda "return id(sensor_motion).state != \"unavailable\";"
 
   - platform: homeassistant
     id: ha_time_string
@@ -2493,15 +3224,27 @@ text_sensor:
         - lvgl.label.update:
             id: display_time
             text: !lambda 'return id(ha_time_string).state.c_str();'
-
-  - platform: homeassistant
-    id: ha_time_string_standby
-    entity_id: sensor.time
-    on_value:
-      then:
         - lvgl.label.update:
             id: display_time_standby
-            text: !lambda 'return id(ha_time_string_standby).state.c_str();'
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
+            id: display_time_header
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
+            id: display_time_header_livingroom
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
+            id: display_time_header_thermostat
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
+            id: display_time_header_cover
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
+            id: display_time_header_general
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
+            id: display_time_header_sonos
+            text: !lambda 'return id(ha_time_string).state.c_str();'
 
   - platform: homeassistant
     id: ha_date
@@ -2527,7 +3270,7 @@ text_sensor:
         - lvgl.label.update:
             id: display_date_standby
             text: !lambda |-
-              std::string date_str = id(ha_date_standby).state;  // "2025-04-30"
+              std::string date_str = id(ha_date_standby).state;
               std::tm timeinfo = {};
               strptime(date_str.c_str(), "%Y-%m-%d", &timeinfo);
               const char* wochentage[] = {"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"};
@@ -2609,7 +3352,6 @@ text_sensor:
             id: display_weather_icon_standby
             text: !lambda 'return id(weather_condition_icon_standby).state;'
 
-
   - platform: homeassistant
     id: ha_weather_temp
     entity_id: weather.pirateweather
@@ -2621,13 +3363,6 @@ text_sensor:
             text:
               format: "\U000F050F %s °C"
               args: ["id(ha_weather_temp).state.c_str()"]
-
-  - platform: homeassistant
-    id: ha_weather_temp_standby
-    entity_id: weather.pirateweather
-    attribute: temperature
-    on_value:
-      then:
         - lvgl.label.update:
             id: display_temp_standby
             text:
@@ -2649,6 +3384,52 @@ text_sensor:
     update_interval: 60s
 
 binary_sensor:
+  - platform: homeassistant
+    id: sonos_vardagsrum_mute
+    entity_id: media_player.vardagsrum
+    attribute: is_volume_muted
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.label.update:
+            id: sonos_vardagsrum_mute_button
+            text: !lambda 'return x ? std::string("${mute_icon}") : std::string("${volume_icon}");'
+
+  - platform: homeassistant
+    id: main_light_status
+    entity_id: light.haustur
+    internal: true
+
+  - platform: homeassistant
+    id: main_light_status_table
+    entity_id: light.color_temperature_light_23
+    internal: true
+
+  - platform: homeassistant
+    id: main_light_status_bed
+    entity_id: light.schlafzimmerbett
+    internal: true
+
+  - platform: homeassistant
+    id: heating_active
+    entity_id: climate.thermostatbadezimmervorne
+    attribute: hvac_action
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(heating_active).state;'
+            then:
+              - lvgl.label.update:
+                  id: thermostat_status
+                  text: "Heizen"
+                  text_color: 0xea6733
+            else:
+              - lvgl.label.update:
+                  id: thermostat_status
+                  text: "Aus"
+                  text_color: 0xffffff
+
   - platform: homeassistant
     entity_id: binary_sensor.bewegungsmelder_schlafzimmer
     id: ha_motion_sensor
@@ -2726,13 +3507,13 @@ binary_sensor:
                   text_color: 0xffffff
 
   - platform: homeassistant
-    id: light_status
+    id: light_status_schlafzimmer
     entity_id: light.schlafzimmer_relay_1
     on_state:
       then:
         - if:
             condition:
-              lambda: 'return id(light_status).state;'
+              lambda: 'return id(light_status_schlafzimmer).state;'
             then:
               - lvgl.label.update:
                   id: room_temp_label
@@ -2775,19 +3556,6 @@ binary_sensor:
               - lvgl.label.update:
                   id: room_temp_label_haustuer
                   text_color: 0xffffff
-
-  - platform: homeassistant
-    id: ha_heating_active
-    entity_id: climate.thermostatbadezimmervorne
-    on_state:
-      then:
-        - if:
-            condition:
-              lambda: return id(ha_heating_active).state;
-            then:
-              - lvgl.widget.show: heating_status
-            else:
-              - lvgl.widget.hide: heating_status
 
   - platform: homeassistant
     id: living_room_light_l1
@@ -2903,6 +3671,72 @@ binary_sensor:
               checked: !lambda "return x;"
 
   - platform: homeassistant
+    id: wohnzimmer_decke_sensor
+    entity_id: light.wohnzimmer_relay_2
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: btn_wohnzimmer_decke
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: wohnzimmer_front_sensor
+    entity_id: light.wohnzimmer_relay_1
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: btn_wohnzimmer_front
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: wohnzimmer_stehlampe_sensor
+    entity_id: light.stehlampe_wohnzimmer
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: btn_wohnzimmer_stehlampe
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: wohnzimmer_links_sensor
+    entity_id: light.fensterbank_links_wohnzimmer
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: btn_wohnzimmer_links
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: wohnzimmer_rechts_sensor
+    entity_id: light.wohnzimmer_fenster_rechts
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: btn_wohnzimmer_rechts
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: wohnzimmer_couch_sensor
+    entity_id: light.couch_hinten
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: btn_wohnzimmer_couch
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
     id: aut_bedroom_sensor1
     entity_id: light.esszimmer_decke
     publish_initial_state: true
@@ -2975,21 +3809,21 @@ output:
     id: pwm_backlight
     frequency: 1000 Hz
 # Built in 240v relay
-#  - platform: gpio
-#    pin: 40
-#    id: panel_output
+  - platform: gpio
+    pin: 40
+    id: panel_output
+#  - id: internal_relay_2
+#    platform: gpio
+#    pin: 2
+#    id: panel_output2
+#  - id: internal_relay_3
+#    platform: gpio
+#    pin: 1
+#    id: panel_output3
 #-------------------------------------------
 # LIGHTS
 #-------------------------------------------
 light:
-#  - platform: monochromatic
-#    output: GPIO38
-#    name: Backlight
-#    id: display_backlight
-##    internal: true
-#    restore_mode: ALWAYS_ON
-#    default_transition_length: 0s
-
   - platform: monochromatic
     output: pwm_backlight
     id: display_backlight
@@ -2999,7 +3833,6 @@ light:
     on_turn_off:
       then:
         - lambda: |-
-            // Ignoriere Turn-Off von Home Assistant
             ESP_LOGW("Backlight", "!!! TURN_OFF ignoriert von extern um %02d:%02d !!!",
               id(ha_time).now().hour, id(ha_time).now().minute);
         - light.turn_on:
@@ -3008,10 +3841,6 @@ light:
               return id(is_nighttime) ? 0.01f : 0.90f;
             transition_length: 0s
 
-#  - platform: binary
-#    name: "Panel Switch"
-#    id: panel_switch
-#    output: panel_output
 #-------------------------------------------
 # Touchscreen gt911 i2c
 #-------------------------------------------
@@ -3036,7 +3865,33 @@ touchscreen:
             then:
               - lvgl.resume:
               - lvgl.widget.redraw:
+
 globals:
+  - id: current_brightness
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: radiator2
+    type: std::string
+    initial_value: '"\U000F0438"'
+  - id: power_off
+    type: std::string
+    initial_value: '"\U000F0911"'
+  - id: update_heating_icon
+    type: std::function<void(std::string, lv_obj_t*)>
+    restore_value: no
+    initial_value: '[](std::string state, lv_obj_t* label) {
+      if (state == "heating") {
+        lv_label_set_text(label, id(radiator2).c_str());
+        lv_obj_set_style_text_color(label, lv_color_hex(0xFF0000), LV_PART_MAIN);
+      } else if (state == "idle") {
+        lv_label_set_text(label, id(radiator2).c_str());
+        lv_obj_set_style_text_color(label, lv_color_hex(0x56acfa), LV_PART_MAIN);
+      } else {
+        lv_label_set_text(label, id(power_off).c_str());
+        lv_obj_set_style_text_color(label, lv_color_hex(0x808080), LV_PART_MAIN);
+      }
+    }'
   - id: last_touch_timestamp
     type: uint32_t
     restore_value: no
@@ -3070,9 +3925,6 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
-  - id: dimmer_level
-    type: int
-    restore_value: no
   - id: aut_boiler
     type: std::string
   - id: aut_bedroom
@@ -3161,9 +4013,7 @@ script:
                 animation: LV_SCR_LOAD_ANIM_NONE
                 time: 50ms
       - script.execute: standby_timer
-      - logger.log: "touch_wakeup_and_restart_timer was called"
 
-# Script: Standby-Timer Ablauf (Dimmen & Seite wechseln)
   - id: standby_timer
     mode: restart
     then:
@@ -3185,7 +4035,28 @@ script:
           transition_length: 0s
       - lambda: |-
           lv_scr_load(id(standby_page).obj);
-      - logger.log: "standby_timer was called"
+
+  - id: therm_status_update_on
+    then:
+      - lvgl.label.update:
+          id: thermostat_status
+          text_color: 0xea6733
+          text: !lambda return "Heizen";
+      - lvgl.label.update:
+          id: heating_icon
+          text_color: 0xea6733
+          text: "$heating"
+
+  - id: therm_status_update_off
+    then:
+      - lvgl.label.update:
+          id: thermostat_status
+          text_color: 0xffffff
+          text: !lambda return "Aus";
+      - lvgl.label.update:
+          id: heating_icon
+          text_color: 0x56acfa
+          text: "$heating"
 
 #-------------------------------------------
 # Display st7701s spi
@@ -3194,7 +4065,7 @@ spi:
   - id: lcd_spi
     clk_pin: GPIO48
     mosi_pin: GPIO47
-    
+
 display:
   - platform: st7701s
     id: my_display
@@ -3210,12 +4081,12 @@ display:
       mirror_x: false
       mirror_y: false
     cs_pin: 39
-      # reset not defined 
+      # reset not defined
     de_pin: 18
     hsync_pin: 16
     vsync_pin: 17
     pclk_pin: 21
-    init_sequence: 
+    init_sequence:
       - 1
       - [0xFF, 0x77, 0x01, 0x00, 0x00, 0x10]
       - [0xCD, 0x00]
@@ -3234,7 +4105,7 @@ display:
         - 3          # G2
         - 46         # G3
         - 9          # G4
-        - 10         # G5 
+        - 10         # G5
       blue:
         - 4          # B1
         - 5          # B2
