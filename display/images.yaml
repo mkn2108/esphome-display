@@ -2,10 +2,6 @@
   id: sonos_cover_placeholder
   resize: 140x140
   type: RGB565
-- file: "img/idle.png"
-  id: idle_cover
-  resize: 140x140
-  type: RGB565
 - file: "img/music.png"
   id: music_cover
   resize: 140x140

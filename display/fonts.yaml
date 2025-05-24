@@ -165,6 +165,8 @@
         "\U000F04AD",
         "\U000F04C4",
         "\U000F03E4",
+        "\U000F0839",
+        "\U000F0CB8",
         $house_temp,
         $uv_state,
       ]
@@ -191,6 +193,15 @@
   id: roboto12
   size: 14
   bpp: 4
+  glyphs: [
+    " ", "!", "\"", "#", "%", "&", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    ":", ";", "<", "=", ">", "?", "@", "°", "´", "`", "'",
+    "A","B","C","D","E","F","G","H","I","J","K","L","M",
+    "N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+    "a","b","c","d","e","f","g","h","i","j","k","l","m",
+    "n","o","p","q","r","s","t","u","v","w","x","y","z",
+    "Ä", "Ö", "Ü", "ä", "ö", "ü", "ß",
+  ]
   extras:
     - file: 'fonts/materialdesignicons-webfont.ttf'
       glyphs: [
@@ -208,6 +219,9 @@
           "\U000F0D91",
           "\U000F1435",
           "\U000F07D0",
+          "\U000F1068",
+          "\U000F0839",
+          "\U000F0CB8",
           ]
 
 - file: "gfonts://Roboto"
@@ -249,7 +263,14 @@
           $windyvariant,
           $happyface
         ]
-
+- file: 'fonts/hass_hue_icons.ttf'
+  id: hass_hue_icons24
+  size: 24
+  bpp: 4
+  glyphs: [
+  "\U0000EA89",
+  "\U0000EA88",
+  ]
 - file: 'fonts/hass_hue_icons.ttf'
   id: hass_hue_icons
   size: 48
@@ -279,6 +300,7 @@
   "\U0000E9FC",
   "\U0000E9CA",
   "\U0000E9F8",
+  "\U0000E91A",
   ]
 - file: 'fonts/Roboto-Regular.ttf'
   id: btn_icons_font
