@@ -116,7 +116,7 @@ substitutions:
 
 esphome:
   name: hapanel3
-  friendly_name: Display Test
+  friendly_name: Display Schlafzimmer
   platformio_options:
     board_build.flash_mode: dio
   on_boot:
@@ -183,7 +183,7 @@ ota:
 
 wifi:
   manual_ip:
-    static_ip: 192.168.1.71
+    static_ip: 192.168.1.70
     gateway: 192.168.1.1
     subnet: 255.255.255.0
   networks:
@@ -1778,10 +1778,35 @@ lvgl:
                   radius: 110
               - label:
                   id: heating_icon
-                  y: 40
+                  y: 30
                   align: CENTER
                   text_font: icons_24
                   text: "${heating}"
+              - obj:
+                  id: valve_box
+                  y: 98
+                  align: CENTER
+                  hidden: true
+                  width: 60
+                  height: 40
+                  bg_opa: TRANSP
+                  border_opa: TRANSP
+                  shadow_opa: TRANSP
+                  widgets:
+                    - label:
+                        id: valve_icon
+                        x: -10
+                        align: LEFT_MID
+                        text_font: roboto12
+                        text_color: 0xffffff
+                        text: "\U000F1068"
+                    - label:
+                        id: heating_valve_position
+                        x: 5
+                        align: LEFT_MID
+                        text_font: roboto12
+                        text_color: 0xffffff
+                        text: ""
               - label:
                   id: thermostat_status
                   y: -80
@@ -2062,19 +2087,20 @@ lvgl:
                   width: 280
                   height: 30
                   min_value: 0
-                  max_value: 100
+                  max_value: 20
                   adv_hittest: true
                   knob:
                     bg_color: 0xffffff
-                    pad_left: 0px
-                    pad_right: 0px
-                    pad_top: 0px
-                    pad_bottom: 0px
+                    bg_grad_color: 0xdddddd
+                    pad_left: 10px
+                    pad_right: 10px
+                    pad_top: 10px
+                    pad_bottom: 10px
                   indicator:
                     radius: 8px
                     bg_color: 0xb1b1b1
                   value: 30
-                  on_value:
+                  on_change:
                     then:
                       - lambda: |-
                           lv_label_set_text_fmt(id(sonos_volume_label), "%d%%", (int)x);
@@ -2207,10 +2233,46 @@ lvgl:
                           entity_id: media_player.vardagsrum
                           is_volume_muted: !lambda 'return !id(sonos_vardagsrum_mute).state;'
               - button:
-                  id: sonos_vardagsrum_stubru_button
-                  width: 80
+                  id: sonos_vardagsrum_1live_button
+                  width: 55
                   height: 55
-                  x: 160
+                  x: 25
+                  y: 320
+                  widgets:
+                    - label:
+                        text_font: roboto12
+                        text: "1LIVE"
+                        align: CENTER
+                  on_click:
+                    - homeassistant.service:
+                        service: media_player.play_media
+                        data:
+                          entity_id: media_player.vardagsrum
+                          media_content_type: "music"
+                          media_content_id: "x-rincon-mp3radio://wdr-1live.icecast.wdr.de/wdr/1live/mp3/128/stream.mp3"
+              - button:
+                  id: sonos_vardagsrum_mdrjump_button
+                  width: 55
+                  height: 55
+                  x: 100
+                  y: 320
+                  widgets:
+                    - label:
+                        text_font: roboto12
+                        text: "JUMP"
+                        align: CENTER
+                  on_click:
+                    - homeassistant.service:
+                        service: media_player.play_media
+                        data:
+                          entity_id: media_player.vardagsrum
+                          media_content_type: "music"
+                          media_content_id: "x-rincon-mp3radio://mdr-284340-0.cast.mdr.de/mdr/284340/0/mp3/128/stream.mp3"
+              - button:
+                  id: sonos_vardagsrum_stubru_button
+                  width: 55
+                  height: 55
+                  x: 175
                   y: 320
                   widgets:
                     - label:
@@ -2226,23 +2288,41 @@ lvgl:
                             media_content_type: "music"
                             media_content_id: "x-rincon-mp3radio://http://wdr-wdr2-rheinland.icecast.wdr.de/wdr/wdr2/rheinland/mp3/128/stream.mp3"
               - button:
-                  id: sonos_vardagsrum_pinguin_button
-                  width: 80
+                  id: sonos_vardagsrum_tv_button
+                  width: 55
                   height: 55
-                  x: 290
+                  x: 250
                   y: 320
                   widgets:
                     - label:
                         text_font: roboto24
-                        text: "\U000F0EC0"
+                        text: "\U000F0839"
+                        align: CENTER
+                  on_click:
+                    - homeassistant.service:
+                        service: media_player.select_source
+                        data:
+                          entity_id: media_player.vardagsrum
+                          source: "TV"
+              - button:
+                  id: sonos_vardagsrum_goodvibes_button
+                  width: 55
+                  height: 55
+                  x: 325
+                  y: 320
+                  widgets:
+                    - label:
+                        text_font: roboto24
+                        text: "\U000F0CB8"
                         align: CENTER
                   on_click:
                     - homeassistant.service:
                         service: media_player.play_media
                         data:
                           entity_id: media_player.vardagsrum
-                          media_content_type: "music"
-                          media_content_id: "http://streams.pinguinradio.com/PinguinClassics192.mp3"
+                          media_content_type: "playlist"
+                          media_content_id: "Good Vibes"
+
 
 time:
   - platform: homeassistant
@@ -2282,6 +2362,11 @@ switch:
             - lvgl.resume:
             - lvgl.widget.redraw:
 sensor:
+  - platform: homeassistant
+    id: thermostat_valve_position
+    entity_id: sensor.thermostatbadezimmervorne_position
+    internal: true
+
   - platform: homeassistant
     id: sonos_volume_state
     entity_id: media_player.vardagsrum
@@ -2927,13 +3012,30 @@ text_sensor:
         - lambda: |-
             if (!x.empty()) {
               lv_label_set_text(id(display_sonos_vardagsrum_title), x.c_str());
+
               if (x == "TV") {
+              // TV-Icon anzeigen
                 lv_img_set_src(id(sonos_cover_widget), &tv_cover);
+              // Artist-Label leeren
                 lv_label_set_text(id(display_sonos_vardagsrum_media_artist), "");
               } else {
+              // Dynamisches Cover setzen
                 id(sonos_cover_image).set_url("http://192.168.1.22:8123/local/sonos-cover/vardagsrum.jpg");
+
+              // Channel statt Artist anzeigen, wenn vorhanden
+                if (!id(sonos_channel).state.empty()) {
+                  lv_label_set_text(id(display_sonos_vardagsrum_media_artist), id(sonos_channel).state.c_str());
+                } else {
+                  lv_label_set_text(id(display_sonos_vardagsrum_media_artist), id(sonos_artist).state.c_str());
+                }
               }
             }
+
+  - platform: homeassistant
+    id: sonos_channel
+    entity_id: media_player.vardagsrum
+    attribute: media_channel
+    internal: true
 
   - platform: homeassistant
     id: media_title
@@ -3809,9 +3911,9 @@ output:
     id: pwm_backlight
     frequency: 1000 Hz
 # Built in 240v relay
-  - platform: gpio
-    pin: 40
-    id: panel_output
+#  - platform: gpio
+#    pin: 40
+#    id: panel_output
 #  - id: internal_relay_2
 #    platform: gpio
 #    pin: 2
@@ -4046,6 +4148,16 @@ script:
           id: heating_icon
           text_color: 0xea6733
           text: "$heating"
+      - lambda: |-
+          float valve = id(thermostat_valve_position).state;
+          if (!isnan(valve) && valve > 0.0f) {
+            lv_obj_clear_flag(id(valve_box), LV_OBJ_FLAG_HIDDEN);
+            char buffer[16];
+            snprintf(buffer, sizeof(buffer), "%.0f %%", valve);
+            lv_label_set_text(id(heating_valve_position), buffer);
+          } else {
+            lv_obj_add_flag(id(valve_box), LV_OBJ_FLAG_HIDDEN);
+          }
 
   - id: therm_status_update_off
     then:
@@ -4057,7 +4169,8 @@ script:
           id: heating_icon
           text_color: 0x56acfa
           text: "$heating"
-
+      - lambda: |-
+          lv_obj_add_flag(id(valve_box), LV_OBJ_FLAG_HIDDEN);
 #-------------------------------------------
 # Display st7701s spi
 #-------------------------------------------
@@ -4112,4 +4225,3 @@ display:
         - 6          # B3
         - 7          # B4
         - 15         # B5
-
