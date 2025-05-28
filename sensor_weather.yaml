@@ -1,0 +1,266 @@
+# sensor_weather.yaml
+template:
+- trigger:
+    - platform: homeassistant
+      event: start
+    - platform: time_pattern
+      minutes: "/30"
+    - platform: state
+      entity_id:
+        - sensor.weather_data
+        - sensor.home_windgeschwindigkeit_tag_0
+        - sensor.home_windgeschwindigkeit_tag_1
+        - sensor.home_windgeschwindigkeit_tag_2
+        - sensor.home_windgeschwindigkeit_tag_3
+        - sensor.home_windgeschwindigkeit_nacht_0
+        - sensor.home_windgeschwindigkeit_nacht_1
+        - sensor.home_windgeschwindigkeit_nacht_2
+        - sensor.home_windgeschwindigkeit_nacht_3
+        - sensor.home_realfeel_temperatur_max_tag_0
+        - sensor.home_realfeel_temperatur_max_tag_1
+        - sensor.home_realfeel_temperatur_max_tag_2
+        - sensor.home_realfeel_temperatur_max_tag_3
+        - sensor.home_realfeel_temperatur_min_tag_0
+        - sensor.home_realfeel_temperatur_min_tag_1
+        - sensor.home_realfeel_temperatur_min_tag_2
+        - sensor.home_realfeel_temperatur_min_tag_3
+        - sensor.home_uv_index_tag_0
+        - sensor.home_uv_index_tag_1
+        - sensor.home_uv_index_tag_2
+        - sensor.home_uv_index_tag_3
+        - sensor.home_bewolkung_tag_0
+        - sensor.home_bewolkung_tag_1
+        - sensor.home_bewolkung_tag_2
+        - sensor.home_bewolkung_tag_3
+        - sensor.home_bewolkung_nacht_0
+        - sensor.home_bewolkung_nacht_1
+        - sensor.home_bewolkung_nacht_2
+        - sensor.home_bewolkung_nacht_3
+        - sensor.home_bedingung_tag_0
+        - sensor.home_bedingung_tag_1
+        - sensor.home_bedingung_tag_2
+        - sensor.home_bedingung_tag_3
+        - sensor.home_bedingung_nacht_0
+        - sensor.home_bedingung_nacht_1
+        - sensor.home_bedingung_nacht_2
+        - sensor.home_bedingung_nacht_3
+
+  sensor:
+    - name: "weather_data"
+      unique_id: weather_data
+      state: >
+        {% set s = states('sensor.weather_data') %}
+        {{ s if s not in ['unavailable', 'unknown', 'none'] else this.state }}
+      attributes:
+        weather_description_day_0: >
+          {% set day = states('sensor.home_bedingung_tag_0') %}
+          {% set night = states('sensor.home_bedingung_nacht_0') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_description_day_0 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_description_day_0 }}
+          {% endif %}
+        weather_description_day_1: >
+          {% set day = states('sensor.home_bedingung_tag_1') %}
+          {% set night = states('sensor.home_bedingung_nacht_1') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_description_day_1 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_description_day_1 }}
+          {% endif %}
+        weather_description_day_2: >
+          {% set day = states('sensor.home_bedingung_tag_2') %}
+          {% set night = states('sensor.home_bedingung_nacht_2') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_description_day_2 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_description_day_2 }}
+          {% endif %}
+        weather_description_day_3: >
+          {% set day = states('sensor.home_bedingung_tag_3') %}
+          {% set night = states('sensor.home_bedingung_nacht_3') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_description_day_3 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_description_day_3 }}
+          {% endif %}
+        weather_clouds_day_0: >
+          {% set day = states('sensor.home_bewolkung_tag_0') %}
+          {% set night = states('sensor.home_bewolkung_nacht_0') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_clouds_day_0 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_clouds_day_0 }}
+          {% endif %}
+        weather_clouds_day_1: >
+          {% set day = states('sensor.home_bewolkung_tag_1') %}
+          {% set night = states('sensor.home_bewolkung_nacht_1') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_clouds_day_1 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_clouds_day_1 }}
+          {% endif %}
+        weather_clouds_day_2: >
+          {% set day = states('sensor.home_bewolkung_tag_2') %}
+          {% set night = states('sensor.home_bewolkung_nacht_2') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_clouds_day_2 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_clouds_day_2 }}
+          {% endif %}
+        weather_clouds_day_3: >
+          {% set day = states('sensor.home_bewolkung_tag_3') %}
+          {% set night = states('sensor.home_bewolkung_nacht_3') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_clouds_day_3 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_clouds_day_3 }}
+          {% endif %}
+        weather_wind_day_0: >
+          {% set day = states('sensor.home_windgeschwindigkeit_tag_0') %}
+          {% set night = states('sensor.home_windgeschwindigkeit_nacht_0') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_wind_day_0 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_wind_day_0 }}
+          {% endif %}
+        weather_wind_day_1: >
+          {% set day = states('sensor.home_windgeschwindigkeit_tag_1') %}
+          {% set night = states('sensor.home_windgeschwindigkeit_nacht_1') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_wind_day_1 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_wind_day_1 }}
+          {% endif %}
+        weather_wind_day_2: >
+          {% set day = states('sensor.home_windgeschwindigkeit_tag_2') %}
+          {% set night = states('sensor.home_windgeschwindigkeit_nacht_2') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_wind_day_2 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_wind_day_2 }}
+          {% endif %}
+        weather_wind_day_3: >
+          {% set day = states('sensor.home_windgeschwindigkeit_tag_3') %}
+          {% set night = states('sensor.home_windgeschwindigkeit_nacht_3') %}
+          {% if now().hour >= 20 %}
+            {{ night if night not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_wind_day_3 }}
+          {% else %}
+            {{ day if day not in ['unknown', 'unavailable', 'none'] else this.attributes.weather_wind_day_3 }}
+          {% endif %}
+        weather_realfeel_max_day_0: >
+          {% set s = states('sensor.home_realfeel_temperatur_max_tag_0') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_realfeel_max_day_0 }}
+        weather_realfeel_max_day_1: >
+          {% set s = states('sensor.home_realfeel_temperatur_max_tag_1') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_realfeel_max_day_1 }}
+        weather_realfeel_max_day_2: >
+          {% set s = states('sensor.home_realfeel_temperatur_max_tag_2') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_realfeel_max_day_2 }}
+        weather_realfeel_max_day_3: >
+          {% set s = states('sensor.home_realfeel_temperatur_max_tag_3') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_realfeel_max_day_3 }}
+        weather_realfeel_min_day_0: >
+          {% set s = states('sensor.home_realfeel_temperatur_min_tag_0') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_realfeel_min_day_0 }}
+        weather_realfeel_min_day_1: >
+          {% set s = states('sensor.home_realfeel_temperatur_min_tag_1') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_realfeel_min_day_1 }}
+        weather_realfeel_min_day_2: >
+          {% set s = states('sensor.home_realfeel_temperatur_min_tag_2') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_realfeel_min_day_2 }}
+        weather_realfeel_min_day_3: >
+          {% set s = states('sensor.home_realfeel_temperatur_min_tag_3') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_realfeel_min_day_3 }}
+        weather_uv_index_day_0: >
+          {% set s = states('sensor.home_uv_index_tag_0') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_uv_index_day_0 }}
+        weather_uv_index_day_1: >
+          {% set s = states('sensor.home_uv_index_tag_1') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_uv_index_day_1 }}
+        weather_uv_index_day_2: >
+          {% set s = states('sensor.home_uv_index_tag_2') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_uv_index_day_2 }}
+        weather_uv_index_day_3: >
+          {% set s = states('sensor.home_uv_index_tag_3') %}
+          {{ s if s not in ['unavailable', 'unknown', 'none'] else this.attributes.weather_uv_index_day_3 }}
+        weather_week_day_0: >
+          {% set weekdays = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'] %}
+          {{ weekdays[now().weekday()] }}
+        weather_week_day_1: >
+          {% set weekdays = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'] %}
+          {{ weekdays[(now().weekday() + 1) % 7] }}
+        weather_week_day_2: >
+          {% set weekdays = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'] %}
+          {{ weekdays[(now().weekday() + 2) % 7] }}
+        weather_week_day_3: >
+          {% set weekdays = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'] %}
+          {{ weekdays[(now().weekday() + 3) % 7] }}
+        weather_condition_day_0: >
+          {% set clouds = states('sensor.home_bewolkung_tag_0')|int(0) %}
+          {% set rain = states('sensor.home_regenwahrscheinlichkeit_tag_0')|int(0) %}
+          {% set thunder = states('sensor.home_gewitterwahrscheinlichkeit_tag_0')|int(0) %}
+          {% if thunder >= 40 %}
+            gewitter
+          {% elif rain >= 50 %}
+            regnerisch
+          {% elif clouds <= 20 %}
+            sonnig
+          {% elif clouds <= 50 %}
+            leicht bewölkt
+          {% elif clouds <= 85 %}
+            bewölkt
+          {% else %}
+            stark bewölkt
+          {% endif %}
+        weather_condition_day_1: >
+          {% set clouds = states('sensor.home_bewolkung_tag_1')|int(0) %}
+          {% set rain = states('sensor.home_regenwahrscheinlichkeit_tag_1')|int(0) %}
+          {% set thunder = states('sensor.home_gewitterwahrscheinlichkeit_tag_1')|int(0) %}
+          {% if thunder >= 40 %}
+            gewitter
+          {% elif rain >= 50 %}
+            regnerisch
+          {% elif clouds <= 20 %}
+            sonnig
+          {% elif clouds <= 50 %}
+            leicht bewölkt
+          {% elif clouds <= 85 %}
+            bewölkt
+          {% else %}
+            stark bewölkt
+          {% endif %}
+        weather_condition_day_2: >
+          {% set clouds = states('sensor.home_bewolkung_tag_2')|int(0) %}
+          {% set rain = states('sensor.home_regenwahrscheinlichkeit_tag_2')|int(0) %}
+          {% set thunder = states('sensor.home_gewitterwahrscheinlichkeit_tag_2')|int(0) %}
+          {% if thunder >= 40 %}
+            gewitter
+          {% elif rain >= 50 %}
+            regnerisch
+          {% elif clouds <= 20 %}
+            sonnig
+          {% elif clouds <= 50 %}
+            leicht bewölkt
+          {% elif clouds <= 85 %}
+            bewölkt
+          {% else %}
+            stark bewölkt
+          {% endif %}
+        weather_condition_day_3: >
+          {% set clouds = states('sensor.home_bewolkung_tag_3')|int(0) %}
+          {% set rain = states('sensor.home_regenwahrscheinlichkeit_tag_3')|int(0) %}
+          {% set thunder = states('sensor.home_gewitterwahrscheinlichkeit_tag_3')|int(0) %}
+          {% if thunder >= 40 %}
+            gewitter
+          {% elif rain >= 50 %}
+            regnerisch
+          {% elif clouds <= 20 %}
+            sonnig
+          {% elif clouds <= 50 %}
+            leicht bewölkt
+          {% elif clouds <= 85 %}
+            bewölkt
+          {% else %}
+            stark bewölkt
+          {% endif %}
