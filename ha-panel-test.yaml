@@ -1,10 +1,7 @@
 substitutions:
-  sonos_entity: media_player.vardagsrum
   brightness:         "\U0000e916"
   radiator_icon:      "\U000f0438"
   power_off_icon:     "\U000F0906"
-  standby_delay_day:   "60"
-  standby_delay_night: "30"
   play_pause_icon:    "\U000F040E"
   mute_icon:          "\U000F075F"
   volume_icon:        "\U000F057F"
@@ -191,16 +188,12 @@ wifi:
     password: !secret wifi_password
 
 http_request:
-#-----------------------------------------------------------------------------------------------------------
-# Content
-#-------------------------------------------
+
 lvgl:
   displays:
     - my_display
-
   touchscreens:
     - my_touchscreen
-
   on_idle:
     timeout: 2min
     then:
@@ -212,7 +205,7 @@ lvgl:
       bg_color: 0x333333
       bg_opa: 85%
       border_color: 0x333333
-      border_width: 0
+      border_width: 1
       text_color: 0xFFFFFF
       pressed:
         bg_color: 0xFFFFFF
@@ -224,7 +217,7 @@ lvgl:
     buttonmatrix:
       bg_opa: TRANSP
       border_color: 0x6b6b6b
-      border_width: 0
+      border_width: 1
       text_color: 0xFFFFFF
       pad_all: 0
       items:
@@ -274,6 +267,12 @@ lvgl:
         border_width: 1
         text_color: 0xFFFFFF
   style_definitions:
+    - id: bg_white
+      text_font: roboto18
+      border_width: 1
+      radius: 10
+      text_color: 0xFFFFFF
+      scrollbar_mode: "OFF"
     - id: button_icon
       text_font: icon_font
       text_color: 0xFFFFFF
@@ -391,7 +390,7 @@ lvgl:
                 src: boot_logo
             - spinner:
                 align: CENTER
-                y: 75
+                y: 25
                 height: 50
                 width: 50
                 spin_time: 1s
@@ -455,6 +454,16 @@ lvgl:
             y: 2
     - id: clock_page
       widgets:
+        - label:
+            id: full_touch_catcher_weather
+            text: ""
+            width: 70%
+            height: 85%
+            text_color: 0x000000
+            align: center
+            on_click:
+              then:
+                - script.execute: touch_weather_page
         - image:
             align: CENTER
             src: back1
@@ -2323,6 +2332,258 @@ lvgl:
                           media_content_type: "playlist"
                           media_content_id: "Good Vibes"
 
+    - id: weather_page
+      skip: true
+      widgets:
+        - image:
+            align: CENTER
+            src: back1
+            widgets:
+              - label:
+                  align: top_left
+                  y: 6
+                  x: 62
+                  id: display_time_header_weather
+                  text: "00:00"
+                  text_font: roboto12
+                  text_color: 0xffffff
+              - label:
+                  text: "Wettervorschau"
+                  align: TOP_MID
+                  y: 6
+                  text_font: roboto12
+                  text_color: 0xffffff
+            on_press:
+                then:
+                  lvgl.page.show: clock_page
+        - obj:
+            x: 25
+            y: 100
+            width: 100
+            height: 300
+            styles: bg_white
+            bg_color: 0x333333
+            scrollbar_mode: "OFF"
+            widgets:
+              - label:
+                  id: text_day_0
+                  text: "Tag"
+                  align: TOP_MID
+                  y: 5
+              - label:
+                  text_font: weather_icons_small
+                  id: home_weather_icon_0
+                  text: "-"
+                  align: TOP_MID
+                  y: 30
+              - label:
+                  id: text_weather_summary_0
+                  text: "-"
+                  text_font: roboto10
+                  text_color: 0xFFFFFF
+                  align: TOP_MID
+                  y: 85
+                  width: 90
+                  long_mode: WRAP
+              - label:
+                  id: text_temperature_high_0
+                  text: "-"
+                  align: TOP_MID
+                  y: 135
+              - label:
+                  id: text_temperature_low_0
+                  text: "/-"
+                  align: TOP_MID
+                  y: 160
+              - label:
+                  id: text_weather_wind_0
+                  text: "/-"
+                  align: TOP_MID
+                  y: 185
+              - label:
+                  id: text_uv_index_0
+                  text: "UV: -"
+                  align: TOP_MID
+                  y: 210
+              - label:
+                  id: text_bw_index_0
+                  text: "-"
+                  align: TOP_MID
+                  y: 235
+            on_press:
+                then:
+                  lvgl.page.show: clock_page
+        - obj:
+            x: 135
+            y: 100
+            width: 100
+            height: 300
+            styles: bg_white
+            bg_color: 0x333333
+            scrollbar_mode: "OFF"
+            widgets:
+              - label:
+                  id: text_day_1
+                  text: "Tag"
+                  align: TOP_MID
+                  y: 5
+              - label:
+                  text_font: weather_icons_small
+                  id: home_weather_icon_1
+                  text: "-"
+                  align: TOP_MID
+                  y: 30
+              - label:
+                  id: text_weather_summary_1
+                  text: "-"
+                  text_font: roboto10
+                  text_color: 0xFFFFFF
+                  align: TOP_MID
+                  y: 85
+                  width: 90
+                  long_mode: WRAP
+              - label:
+                  id: text_temperature_high_1
+                  text: "-"
+                  align: TOP_MID
+                  y: 135
+              - label:
+                  id: text_temperature_low_1
+                  text: "/-"
+                  align: TOP_MID
+                  y: 160
+              - label:
+                  id: text_weather_wind_1
+                  text: "/-"
+                  align: TOP_MID
+                  y: 185
+              - label:
+                  id: text_uv_index_1
+                  text: "UV: -"
+                  align: TOP_MID
+                  y: 210
+              - label:
+                  id: text_bw_index_1
+                  text: "-"
+                  align: TOP_MID
+                  y: 235
+            on_press:
+                then:
+                  lvgl.page.show: clock_page
+        - obj:
+            x: 245
+            y: 100
+            width: 100
+            height: 300
+            styles: bg_white
+            bg_color: 0x333333
+            scrollbar_mode: "OFF"
+            widgets:
+              - label:
+                  id: text_day_2
+                  text: "Tag"
+                  align: TOP_MID
+                  y: 5
+              - label:
+                  text_font: weather_icons_small
+                  id: home_weather_icon_2
+                  text: "-"
+                  align: TOP_MID
+                  y: 30
+              - label:
+                  id: text_weather_summary_2
+                  text: "-"
+                  text_font: roboto10
+                  text_color: 0xFFFFFF
+                  align: TOP_MID
+                  y: 85
+                  width: 90
+                  long_mode: WRAP
+              - label:
+                  id: text_temperature_high_2
+                  text: "-"
+                  align: TOP_MID
+                  y: 135
+              - label:
+                  id: text_temperature_low_2
+                  text: "/-"
+                  align: TOP_MID
+                  y: 160
+              - label:
+                  id: text_weather_wind_2
+                  text: "/-"
+                  align: TOP_MID
+                  y: 185
+              - label:
+                  id: text_uv_index_2
+                  text: "UV: -"
+                  align: TOP_MID
+                  y: 210
+              - label:
+                  id: text_bw_index_2
+                  text: "-"
+                  align: TOP_MID
+                  y: 235
+            on_press:
+                then:
+                  lvgl.page.show: clock_page
+        - obj:
+            x: 355
+            y: 100
+            width: 100
+            height: 300
+            styles: bg_white
+            bg_color: 0x333333
+            scrollbar_mode: "OFF"
+            widgets:
+              - label:
+                  id: text_day_3
+                  text: "Tag"
+                  align: TOP_MID
+                  y: 5
+              - label:
+                  text_font: weather_icons_small
+                  id: home_weather_icon_3
+                  text: "-"
+                  align: TOP_MID
+                  y: 30
+              - label:
+                  id: text_weather_summary_3
+                  text: "-"
+                  text_font: roboto10
+                  text_color: 0xFFFFFF
+                  align: TOP_MID
+                  y: 85
+                  width: 90
+                  long_mode: WRAP
+              - label:
+                  id: text_temperature_high_3
+                  text: "-"
+                  align: TOP_MID
+                  y: 135
+              - label:
+                  id: text_temperature_low_3
+                  text: "/-"
+                  align: TOP_MID
+                  y: 160
+              - label:
+                  id: text_weather_wind_3
+                  text: "/-"
+                  align: TOP_MID
+                  y: 185
+              - label:
+                  id: text_uv_index_3
+                  text: "UV: -"
+                  align: TOP_MID
+                  y: 210
+              - label:
+                  id: text_bw_index_3
+                  text: "-"
+                  align: TOP_MID
+                  y: 235
+            on_press:
+                then:
+                  lvgl.page.show: clock_page
 
 time:
   - platform: homeassistant
@@ -2953,6 +3214,370 @@ online_image:
                   url: !lambda 'return id(sonos_cover_url).state;'
 
 text_sensor:
+  - platform: homeassistant
+    id: weather_description_day_0
+    entity_id: sensor.weather_data
+    attribute: weather_description_day_0
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_weather_summary_0), x.c_str());
+
+  - platform: homeassistant
+    id: weather_description_day_1
+    entity_id: sensor.weather_data
+    attribute: weather_description_day_1
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_weather_summary_1), x.c_str());
+
+  - platform: homeassistant
+    id: weather_description_day_2
+    entity_id: sensor.weather_data
+    attribute: weather_description_day_2
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_weather_summary_2), x.c_str());
+
+  - platform: homeassistant
+    id: weather_description_day_3
+    entity_id: sensor.weather_data
+    attribute: weather_description_day_3
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_weather_summary_3), x.c_str());
+
+  - platform: homeassistant
+    id: weather_week_day_0
+    entity_id: sensor.weather_data
+    attribute: weather_week_day_0
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_day_0), id(weather_week_day_0).state.c_str());
+
+  - platform: homeassistant
+    id: weather_week_day_1
+    entity_id: sensor.weather_data
+    attribute: weather_week_day_1
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_day_1), id(weather_week_day_1).state.c_str());
+
+  - platform: homeassistant
+    id: weather_week_day_2
+    entity_id: sensor.weather_data
+    attribute: weather_week_day_2
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_day_2), id(weather_week_day_2).state.c_str());
+
+  - platform: homeassistant
+    id: weather_week_day_3
+    entity_id: sensor.weather_data
+    attribute: weather_week_day_3
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_day_3), id(weather_week_day_3).state.c_str());
+
+  - platform: homeassistant
+    id: weather_uv_index_0
+    entity_id: sensor.weather_data
+    attribute: weather_uv_index_day_0
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_uv_index_0), ("UV:" + (id(weather_uv_index_0).state)).c_str());
+
+  - platform: homeassistant
+    id: weather_uv_index_1
+    entity_id: sensor.weather_data
+    attribute: weather_uv_index_day_1
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_uv_index_1), ("UV:" + (id(weather_uv_index_1).state)).c_str());
+
+  - platform: homeassistant
+    id: weather_uv_index_2
+    entity_id: sensor.weather_data
+    attribute: weather_uv_index_day_2
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_uv_index_2), ("UV:" + (id(weather_uv_index_2).state)).c_str());
+
+  - platform: homeassistant
+    id: weather_uv_index_3
+    entity_id: sensor.weather_data
+    attribute: weather_uv_index_day_3
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_uv_index_3), ("UV:" + (id(weather_uv_index_3).state)).c_str());
+
+  - platform: homeassistant
+    id: weather_bw_index_0
+    entity_id: sensor.weather_data
+    attribute: weather_clouds_day_0
+    on_value:
+      then:
+        - lambda: |-
+            std::string txt = "\U000F1BE6 " + id(weather_bw_index_0).state + "%";
+            lv_label_set_text(id(text_bw_index_0), txt.c_str());
+
+  - platform: homeassistant
+    id: weather_bw_index_1
+    entity_id: sensor.weather_data
+    attribute: weather_clouds_day_1
+    on_value:
+      then:
+        - lambda: |-
+            std::string txt = "\U000F1BE6 " + id(weather_bw_index_1).state + "%";
+            lv_label_set_text(id(text_bw_index_1), txt.c_str());
+
+  - platform: homeassistant
+    id: weather_bw_index_2
+    entity_id: sensor.weather_data
+    attribute: weather_clouds_day_2
+    on_value:
+      then:
+        - lambda: |-
+            std::string txt = "\U000F1BE6 " + id(weather_bw_index_2).state + "%";
+            lv_label_set_text(id(text_bw_index_2), txt.c_str());
+
+  - platform: homeassistant
+    id: weather_bw_index_3
+    entity_id: sensor.weather_data
+    attribute: weather_clouds_day_3
+    on_value:
+      then:
+        - lambda: |-
+            std::string txt = "\U000F1BE6 " + id(weather_bw_index_3).state + "%";
+            lv_label_set_text(id(text_bw_index_3), txt.c_str());
+
+  - platform: homeassistant
+    id: weather_temp_high_0
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_max_day_0
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_high_0), ("\U000F10C2 " + (id(weather_temp_high_0).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_high_1
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_max_day_1
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_high_1), ("\U000F10C2 " + (id(weather_temp_high_1).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_high_2
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_max_day_2
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_high_2), ("\U000F10C2 " + (id(weather_temp_high_2).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_high_3
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_max_day_3
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_high_3), ("\U000F10C2 " + (id(weather_temp_high_3).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_low_0
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_min_day_0
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_low_0), ("\U000F10C3 " + (id(weather_temp_low_0).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_low_1
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_min_day_1
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_low_1), ("\U000F10C3 " + (id(weather_temp_low_1).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_low_2
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_min_day_2
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_low_2), ("\U000F10C3 " + (id(weather_temp_low_2).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_low_3
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_min_day_3
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_low_3), ("\U000F10C3 " + (id(weather_temp_low_3).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_wind_0
+    entity_id: sensor.weather_data
+    attribute: weather_wind_day_0
+    on_value:
+      then:
+        - lambda: |-
+            std::string wind = "\U000F059D " + to_string(id(weather_wind_0).state) + "km/h";
+            lv_label_set_text(id(text_weather_wind_0), wind.c_str());
+
+  - platform: homeassistant
+    id: weather_wind_1
+    entity_id: sensor.weather_data
+    attribute: weather_wind_day_1
+    on_value:
+      then:
+        - lambda: |-
+            std::string wind = "\U000F059D " + to_string(id(weather_wind_1).state) + "km/h";
+            lv_label_set_text(id(text_weather_wind_1), wind.c_str());
+
+  - platform: homeassistant
+    id: weather_wind_2
+    entity_id: sensor.weather_data
+    attribute: weather_wind_day_2
+    on_value:
+      then:
+        - lambda: |-
+            std::string wind = "\U000F059D " + to_string(id(weather_wind_2).state) + "km/h";
+            lv_label_set_text(id(text_weather_wind_2), wind.c_str());
+
+  - platform: homeassistant
+    id: weather_wind_3
+    entity_id: sensor.weather_data
+    attribute: weather_wind_day_3
+    on_value:
+      then:
+        - lambda: |-
+            std::string wind = "\U000F059D " + to_string(id(weather_wind_3).state) + "km/h";
+            lv_label_set_text(id(text_weather_wind_3), wind.c_str());
+
+  - platform: homeassistant
+    id: weather_condition_0
+    entity_id: sensor.weather_data
+    attribute: weather_condition_day_0
+    on_value:
+      then:
+        - lambda: |-
+            std::string condition = id(weather_condition_0).state;
+            std::string icon;
+            if (condition == "sonnig") {
+              icon = "\U000F0599";
+            } else if (condition == "leicht bewölkt") {
+              icon = "\U000F0595";
+            } else if (condition == "bewölkt") {
+              icon = "\U000F0590";
+            } else if (condition == "stark bewölkt") {
+              icon = "\U000F0F2F";
+            } else if (condition == "regnerisch") {
+              icon = "\U000F0597";
+            } else if (condition == "gewitter") {
+              icon = "\U000F067E";
+            } else {
+              icon = "\U000F05A9";
+            }
+            lv_label_set_text(id(home_weather_icon_0), icon.c_str());
+
+  - platform: homeassistant
+    id: weather_condition_1
+    entity_id: sensor.weather_data
+    attribute: weather_condition_day_1
+    on_value:
+      then:
+        - lambda: |-
+            std::string condition = id(weather_condition_1).state;
+            std::string icon;
+            if (condition == "sonnig") {
+              icon = "\U000F0599";
+            } else if (condition == "leicht bewölkt") {
+              icon = "\U000F0595";
+            } else if (condition == "bewölkt") {
+              icon = "\U000F0590";
+            } else if (condition == "stark bewölkt") {
+              icon = "\U000F0F2F";
+            } else if (condition == "regnerisch") {
+              icon = "\U000F0597";
+            } else if (condition == "gewitter") {
+              icon = "\U000F067E";
+            } else {
+              icon = "\U000F05A9";
+            }
+            lv_label_set_text(id(home_weather_icon_1), icon.c_str());
+
+  - platform: homeassistant
+    id: weather_condition_2
+    entity_id: sensor.weather_data
+    attribute: weather_condition_day_2
+    on_value:
+      then:
+        - lambda: |-
+            std::string condition = id(weather_condition_2).state;
+            std::string icon;
+            if (condition == "sonnig") {
+              icon = "\U000F0599";
+            } else if (condition == "leicht bewölkt") {
+              icon = "\U000F0595";
+            } else if (condition == "bewölkt") {
+              icon = "\U000F0590";
+            } else if (condition == "stark bewölkt") {
+              icon = "\U000F0F2F";
+            } else if (condition == "regnerisch") {
+              icon = "\U000F0597";
+            } else if (condition == "gewitter") {
+              icon = "\U000F067E";
+            } else {
+              icon = "\U000F05A9";
+            }
+            lv_label_set_text(id(home_weather_icon_2), icon.c_str());
+
+  - platform: homeassistant
+    id: weather_condition_3
+    entity_id: sensor.weather_data
+    attribute: weather_condition_day_3
+    on_value:
+      then:
+        - lambda: |-
+            std::string condition = id(weather_condition_3).state;
+            std::string icon;
+            if (condition == "sonnig") {
+              icon = "\U000F0599";
+            } else if (condition == "leicht bewölkt") {
+              icon = "\U000F0595";
+            } else if (condition == "bewölkt") {
+              icon = "\U000F0590";
+            } else if (condition == "stark bewölkt") {
+              icon = "\U000F0F2F";
+            } else if (condition == "regnerisch") {
+              icon = "\U000F0597";
+            } else if (condition == "gewitter") {
+              icon = "\U000F067E";
+            } else {
+              icon = "\U000F05A9";
+            }
+            lv_label_set_text(id(home_weather_icon_3), icon.c_str());
+
   - platform: homeassistant
     id: sonos_vardagsrum_state
     entity_id: media_player.vardagsrum
@@ -3911,9 +4536,9 @@ output:
     id: pwm_backlight
     frequency: 1000 Hz
 # Built in 240v relay
-#  - platform: gpio
-#    pin: 40
-#    id: panel_output
+  - platform: gpio
+    pin: 40
+    id: panel_output
 #  - id: internal_relay_2
 #    platform: gpio
 #    pin: 2
@@ -3931,7 +4556,7 @@ light:
     id: display_backlight
     name: "Backlight"
     restore_mode: ALWAYS_OFF
-    default_transition_length: 0s
+    default_transition_length: 100ms
     on_turn_off:
       then:
         - lambda: |-
@@ -3940,8 +4565,10 @@ light:
         - light.turn_on:
             id: display_backlight
             brightness: !lambda |-
-              return id(is_nighttime) ? 0.01f : 0.90f;
-            transition_length: 0s
+              float brightness = id(is_nighttime) ? 0.01f : 0.90f;
+              id(display_backlight_brightness) = brightness * 100.0f;
+              return brightness;
+            transition_length: 100ms
 
 #-------------------------------------------
 # Touchscreen gt911 i2c
@@ -3969,6 +4596,10 @@ touchscreen:
               - lvgl.widget.redraw:
 
 globals:
+  - id: display_backlight_brightness
+    type: float
+    restore_value: no
+    initial_value: '0.9'
   - id: current_brightness
     type: float
     restore_value: no
@@ -4069,8 +4700,11 @@ script:
           id(is_standby_active)  = true;
       - light.turn_on:
           id: display_backlight
-          brightness: !lambda 'return id(is_nighttime) ? 0.01f : 0.65f;'
-          transition_length: 0s
+          brightness: !lambda |-
+            float brightness = id(is_nighttime) ? 0.01f : 0.65f;
+            id(display_backlight_brightness) = brightness * 100.0f;
+            return brightness;
+          transition_length: 100ms
       - lvgl.page.show:
           id: standby_page
       - logger.log: "Standby aktiv – standby_page shown"
@@ -4106,7 +4740,9 @@ script:
                 id: display_backlight
                 brightness: !lambda |-
                   auto now = id(ha_time).now();
-                  return (now.hour >= 23 || now.hour < 7) ? 0.65f : 0.90f;
+                  float brightness = (now.hour >= 23 || now.hour < 7) ? 0.65f : 0.90f;
+                  id(display_backlight_brightness) = brightness * 100.0f;
+                  return brightness;
                 transition_length: 1s
             - lvgl.resume:
             - lvgl.widget.redraw:
@@ -4115,6 +4751,18 @@ script:
                 animation: LV_SCR_LOAD_ANIM_NONE
                 time: 50ms
       - script.execute: standby_timer
+
+  - id: touch_weather_page
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: 'return id(display_backlight_brightness) > 20;'
+          then:
+            - lvgl.page.show:
+                id: weather_page
+                animation: LV_SCR_LOAD_ANIM_NONE
+                time: 50ms
 
   - id: standby_timer
     mode: restart
@@ -4133,8 +4781,10 @@ script:
       - light.turn_on:
           id: display_backlight
           brightness: !lambda |-
-            return (id(is_nighttime) ? 0.01f : 0.65f);
-          transition_length: 0s
+            float brightness = id(is_nighttime) ? 0.01f : 0.65f;
+            id(display_backlight_brightness) = brightness * 100.0f;
+            return brightness;
+          transition_length: 100ms
       - lambda: |-
           lv_scr_load(id(standby_page).obj);
 
