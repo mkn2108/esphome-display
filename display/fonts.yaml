@@ -167,6 +167,10 @@
         "\U000F03E4",
         "\U000F0839",
         "\U000F0CB8",
+        "\U000F0114",
+        "\U000F0213",
+        "\U000F0212",
+        "\U000F0410",
         $house_temp,
         $uv_state,
       ]
@@ -188,6 +192,13 @@
           "\U000F075D",
           "\U000F075E",
           "\U000F04C3",
+          "\U000F10C3",
+          "\U000F10C2",
+          "\U000F0213",
+          "\U000F0212",
+          "\U000F0410",
+          "\U000F059D",
+          "\U000F1BE6",
           ]
 - file: "gfonts://Roboto"
   id: roboto12
@@ -222,8 +233,37 @@
           "\U000F1068",
           "\U000F0839",
           "\U000F0CB8",
+          "\U000F0213",
+          "\U000F0212",
+          "\U000F0410",
+          "\U000F1BE6",
           ]
 
+- file: "fonts/materialdesignicons-webfont.ttf"
+  id: weather_icons_small
+  size: 48
+  bpp: 4
+  glyphs: [
+      "\U000F0594",
+      "\U000F0590",
+      "\U000F0F2F",
+      "\U000F0591",
+      "\U000F0592",
+      "\U000F0593",
+      "\U000F067E",
+      "\U000F0595",
+      "\U000F0596",
+      "\U000F0597",
+      "\U000F0598",
+      "\U000F067F",
+      "\U000F0599",
+      "\U000F059D",
+      "\U000F059E",
+      "\U000F14E4",
+      "\U000F0F31",
+      "\U000F05A9",
+      "\U000F052C",
+    ]
 - file: "gfonts://Roboto"
   id: weather_icons
   size: 110
@@ -361,6 +401,20 @@
   size: 90
   bpp: 4
 
+- file: "gfonts://Roboto"
+  id: roboto10
+  size: 10
+  bpp: 4
+  glyphs: [
+    " ", "!", "\"", "#", "%", "&", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    ":", ";", "<", "=", ">", "?", "@", "°",
+    "A","B","C","D","E","F","G","H","I","J","K","L","M",
+    "N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+    "a","b","c","d","e","f","g","h","i","j","k","l","m",
+    "n","o","p","q","r","s","t","u","v","w","x","y","z",
+    "Ä", "Ö", "Ü", "ä", "ö", "ü", "ß",
+  ]
+
 - file: "fonts/materialdesignicons-webfont.ttf"
   id: icon_font
   size: 28
@@ -376,6 +430,6 @@
   size: 24
   bpp: 4
   glyphs: [
-    "󰝝",  # U+F075D (volume-plus)
-    "󰝞",  # U+F075E (volume-minus)
+    "󰝝",
+    "󰝞",
   ]
