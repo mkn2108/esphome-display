@@ -21,9 +21,7 @@ Weather page.
 
 Standby Page
 ![DSC_0021](https://github.com/user-attachments/assets/f4fc63e4-7fa5-411d-aaea-88964df3df4e)
-
-![DSC_0014](https://github.com/user-attachments/assets/14e962a4-1b8e-4969-b4c5-3a831ca513ca)
-
+Clock Page
 ![DSC_0020](https://github.com/user-attachments/assets/01b3cccf-4131-4efd-8f82-b675879fe5c8)
 
 ![DSC_0019](https://github.com/user-attachments/assets/f13b72cb-e8d7-4281-bd76-28e2d6d59981)
@@ -31,5 +29,7 @@ Standby Page
 ![DSC_0017](https://github.com/user-attachments/assets/0ae7fe59-28a8-4330-8ef7-aaf6279a14e5)
 ![DSC_0016](https://github.com/user-attachments/assets/69ec7d10-4f3c-4684-b7bd-52ba1cfd2de5)
 ![DSC_0015](https://github.com/user-attachments/assets/b7b5ffe8-7ac5-4f96-b3eb-8048e98c49e1)
+Sonos Page
+![DSC_0014](https://github.com/user-attachments/assets/14e962a4-1b8e-4969-b4c5-3a831ca513ca)
 Weather Page
 ![DSC_0025](https://github.com/user-attachments/assets/c46370ee-e5bd-414c-8d11-5b37988f6fd9)
