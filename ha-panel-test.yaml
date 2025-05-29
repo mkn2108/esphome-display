@@ -358,7 +358,7 @@ lvgl:
             styles: header_footer
           rows:
             - buttons:
-                - id: page_prev
+                - id: page_prev1
                   text: "\uF053"
                   on_press:
                     then:
@@ -368,7 +368,7 @@ lvgl:
                   on_press:
                     then:
                       lvgl.page.show: clock_page
-                - id: page_next
+                - id: page_next1
                   text: "\uF054"
                   on_press:
                     then:
@@ -390,7 +390,7 @@ lvgl:
                 src: boot_logo
             - spinner:
                 align: CENTER
-                y: 25
+                y: 5
                 height: 50
                 width: 50
                 spin_time: 1s
@@ -788,7 +788,6 @@ lvgl:
                         service: light.toggle
                         data_template:
                           entity_id: light.color_temperature_light_23
-
     - id: sleeping_page
       widgets:
         - image:
@@ -1482,7 +1481,6 @@ lvgl:
                         service: light.toggle
                         data_template:
                           entity_id: light.schalter_badezimmer_unten_l1
-
     - id: livingroom_page
       widgets:
         - image:
@@ -2584,7 +2582,16 @@ lvgl:
             on_press:
                 then:
                   lvgl.page.show: clock_page
-
+number:
+  - platform: template
+    id: current_page_index
+    name: Aktuelle Seite
+    min_value: 0
+    max_value: 6  # Anzahl der Seiten - 1
+    step: 1
+    initial_value: 0
+    restore_value: false
+    optimistic: true
 time:
   - platform: homeassistant
     id: ha_time
@@ -4111,6 +4118,14 @@ text_sensor:
     update_interval: 60s
 
 binary_sensor:
+  - platform: touchscreen
+    name: change_page_vb
+    id: change_page
+    x_min: 0
+    y_min: 0
+    x_max: 480
+    y_max: 480
+
   - platform: homeassistant
     id: sonos_vardagsrum_mute
     entity_id: media_player.vardagsrum
@@ -4594,7 +4609,19 @@ touchscreen:
             then:
               - lvgl.resume:
               - lvgl.widget.redraw:
-
+    on_update:
+      - lambda: |-
+          for (auto touch : touches) {
+            if ((touch.state == 6) && (id(change_page).state)) {
+              if ((touch.x_org - touch.x_prev) > 100) {
+                ESP_LOGI("touch", "Swipe: right to left");
+                id(page_next).execute();
+              } else if ((touch.x_prev - touch.x_org) > 100) {
+                ESP_LOGI("touch", "Swipe: left to right");
+                id(page_prev).execute();
+              }
+            }
+          }
 globals:
   - id: display_backlight_brightness
     type: float
@@ -4693,6 +4720,62 @@ interval:
                   time: ha_time
 
 script:
+  - id: page_next
+    then:
+      - lambda: |-
+          int idx = (int) id(current_page_index).state;
+          idx = (idx + 1) % 7;  // 0 bis 6
+          id(current_page_index).publish_state(idx);
+      - script.execute: change_page_by_index
+
+  - id: page_prev
+    then:
+      - lambda: |-
+          int idx = (int) id(current_page_index).state;
+          idx = (idx - 1 + 7) % 7;
+          id(current_page_index).publish_state(idx);
+      - script.execute: change_page_by_index
+
+  - id: change_page_by_index
+    then:
+      - lambda: |-
+          ESP_LOGI("change_page", "Change to page %d", (int) id(current_page_index).state);
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 0;'
+          then:
+            - lvgl.page.show: clock_page
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 1;'
+          then:
+            - lvgl.page.show: sleeping_page
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 2;'
+          then:
+            - lvgl.page.show: general_page
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 3;'
+          then:
+            - lvgl.page.show: livingroom_page
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 4;'
+          then:
+            - lvgl.page.show: page_thermostat
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 5;'
+          then:
+            - lvgl.page.show: cover_page
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 6;'
+          then:
+            - lvgl.page.show: sonos
+
   - id: enter_standby
     then:
       - lambda: |-
