@@ -1,3 +1,4 @@
+@29.05.: Added swipe function to change between the pages, instead of only use the footer buttons.
 @28.05.: Added weather page, which is only visible by touching the clock_page (standard page after standby). Day and night values where available will change over HA at 8pm.
 
 Just my adaption of the display
