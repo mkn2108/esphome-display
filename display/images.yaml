@@ -2,11 +2,11 @@
   id: sonos_cover_placeholder
   resize: 140x140
   type: RGB565
-- file: "img/music.png"
-  id: music_cover
-  resize: 140x140
-  type: RGB565
-- file: "img/tv.png"
+#- file: "img/music.png"
+#  id: music_cover
+#  resize: 140x140
+#  type: RGB565
+- file: "img/tv.jpg"
   id: tv_cover
   resize: 140x140
   type: RGB565
