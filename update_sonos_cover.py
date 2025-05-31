@@ -7,6 +7,7 @@ import requests
 from PIL import Image
 from datetime import datetime
 import logging
+import time
 
 # --- Konfiguration ---
 HA_URL = "http://192.168.1.22:8123"
@@ -35,7 +36,11 @@ def download_cover(url, output_path):
             with open(output_path, 'wb') as f:
                 for chunk in response.iter_content(1024):
                     f.write(chunk)
-            logprint(f"Cover erfolgreich heruntergeladen: {output_path}")
+            size = os.path.getsize(output_path)
+            if size == 0:
+                logprint("Heruntergeladene Datei ist 0 Byte groß!", "warning")
+                return False
+            logprint(f"Cover erfolgreich heruntergeladen ({size} Bytes): {output_path}")
             return True
         else:
             logprint(f"HTTP-Fehler beim Download: {response.status_code}", "error")
@@ -83,11 +88,21 @@ def save_hashes(hashes):
     except Exception as e:
         logprint(f"Fehler beim Speichern der Hash-Datei: {e}", "error")
 
+def try_download_with_retry():
+    for attempt in range(1, 3):  # max 2 Versuche
+        logprint(f"Download-Versuch {attempt}")
+        success = download_cover(COVER_URL, TEMP_PATH)
+        if success:
+            return True
+        logprint("Warte 2 Sekunden vor erneutem Versuch...")
+        time.sleep(2)
+    return False
+
 def main():
     hashes = load_hashes()
     old_hash = hashes.get('vardagsrum')
 
-    if download_cover(COVER_URL, TEMP_PATH):
+    if try_download_with_retry():
         new_hash = get_hash(TEMP_PATH)
         if not new_hash:
             logprint("Hash konnte nicht berechnet werden. Abbruch.", "error")
@@ -111,4 +126,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
