@@ -180,7 +180,7 @@ ota:
 
 wifi:
   manual_ip:
-    static_ip: 192.168.1.70
+    static_ip: 192.168.1.70 #30
     gateway: 192.168.1.1
     subnet: 255.255.255.0
   networks:
@@ -197,7 +197,6 @@ lvgl:
   on_idle:
     timeout: 2min
     then:
-      - logger.log: "Wechsel in Standby"
       - script.execute: enter_standby
 
   theme:
@@ -301,7 +300,7 @@ lvgl:
       - label:
           id: wifi_status
           align: top_right
-          x: -2
+          x: -8
           y: 6
           text_align: right
           text: "${wifi_25}"
@@ -310,7 +309,7 @@ lvgl:
       - label:
           id: motion_status
           align: top_left
-          x: 2
+          x: 8
           y: 6
           text: "${motion}"
           text_color: 0x56acfa
@@ -319,7 +318,7 @@ lvgl:
       - label:
           id: motion_status_off
           align: top_left
-          x: 2
+          x: 8
           y: 6
           text: "${motion_off}"
           text_color: 0x333333
@@ -328,7 +327,7 @@ lvgl:
       - label:
           id: motion_status_unavailable
           align: top_left
-          x: 2
+          x: 8
           y: 6
           text: "${motion_unavailable}"
           text_color: 0xFF0000
@@ -344,7 +343,7 @@ lvgl:
       - label:
           id: ha_status
           align: TOP_RIGHT
-          x: -35
+          x: -32
           y: 6
           text: "${ha}"
           text_color: 0xFFFFFF
@@ -368,7 +367,15 @@ lvgl:
                   text: "\uF015"
                   on_press:
                     then:
-                      lvgl.page.show: clock_page
+                      - lambda: |-
+                          uint32_t now = millis();
+                          if (now - id(last_tap_time) < 400) {
+                            id(last_tap_time) = 0;
+                            id(enter_standby).execute();
+                          } else {
+                            id(last_tap_time) = now;
+                            id(clock_page_button_script).execute();
+                          }
                 - id: page_next1
                   text: "\uF054"
                   on_press:
@@ -426,12 +433,12 @@ lvgl:
             align: CENTER
             text_color: 0xAAAAAA
         - label:
-            id: display_date_standby
-            text_font: roboto40
-            text: "date"
-            align: bottom_mid
+            align: top_mid
+            id: display_temp_standby
+            text: "temp"
+            text_font: roboto24
             text_color: 0xAAAAAA
-            y: -55
+            y: 2
         - label:
             align: top_mid
             id: display_weather_icon_standby
@@ -444,25 +451,32 @@ lvgl:
             align: CENTER
             id: display_weather_standby
             text: "weather"
-            text_font: regular18
-            text_color: 0xAAAAAA
-            y: 100
-        - label:
-            align: top_mid
-            id: display_temp_standby
-            text: "temp"
             text_font: roboto24
             text_color: 0xAAAAAA
-            y: 2
+            y: 70
+        - label:
+            align: CENTER
+            id: display_cw_index2
+            text: "$calendar_icon KW"
+            y: 110
+            text_font: roboto24
+            text_color: 0xAAAAAA
+        - label:
+            id: display_date_standby
+            text_font: roboto40
+            text: "date"
+            align: bottom_mid
+            text_color: 0xAAAAAA
+            y: -55
     - id: clock_page
       widgets:
         - label:
             id: full_touch_catcher_weather
             text: ""
             width: 40%
-            height: 85%
+            height: 35%
             text_color: 0x000000
-            align: center
+            align: TOP_MID
             on_click:
               then:
                 - script.execute: touch_weather_page
@@ -1076,7 +1090,7 @@ lvgl:
                           entity_id: light.diele_alle
               - button:
                   id: tv_btn
-                  checkable: true
+                  checkable: false #true
                   grid_cell_column_pos: 2
                   grid_cell_row_pos: 1
                   grid_cell_x_align: STRETCH
@@ -2654,7 +2668,6 @@ switch:
     optimistic: true
     entity_category: "config"
     turn_on_action:
-      - logger.log: "Starting Antiburn"
       - if:
           condition: lvgl.is_paused
           then:
@@ -2663,7 +2676,6 @@ switch:
       - lvgl.pause:
           show_snow: true
     turn_off_action:
-      - logger.log: "Stopping Antiburn"
       - if:
           condition: lvgl.is_paused
           then:
@@ -3230,7 +3242,7 @@ sensor:
 
 online_image:
   - id: sonos_cover_image
-    url: "http://dummy.local/dummy.jpg"  # Wird nie geladen
+    url: "http://192.168.1.22:8123/local/sonos-cover/vardagsrum.jpg"
     format: JPEG
     type: RGB565
     resize: 140x140
@@ -3238,12 +3250,27 @@ online_image:
     update_interval: never
     on_download_finished:
       then:
-        - delay: 3s
+        - delay: 3s  # Wait for image processing
         - lvgl.image.update:
             id: sonos_cover_widget
             src: sonos_cover_image
         - lambda: |-
-            ESP_LOGI("cover", "Cover update abgeschlossen");
+            ESP_LOGI("cover", "Cover updated after delay");
+        - if:
+            condition:
+              lambda: |-
+                // Simple error checking that always returns true
+                return true;
+            then:
+              - lambda: |-
+                  ESP_LOGD("cover", "Assuming update successful");
+            else:
+              - lambda: |-
+                  ESP_LOGE("cover", "Update failed");
+              - delay: 10s
+              - online_image.set_url:
+                  id: sonos_cover_image
+                  url: !lambda 'return id(sonos_cover_url).state;'
 
 text_sensor:
   - platform: homeassistant
@@ -3746,6 +3773,20 @@ text_sensor:
             id: display_cw_index
             text: !lambda return id(cw_display).state;
 
+  - platform: template
+    id: cw_display2
+    lambda: |-
+      auto week = id(cw_sensor).state;
+      if (isnan(week)) {
+        return {"$calendar_icon KW: --"};
+      }
+      return {"$calendar_icon KW: " + std::to_string((int)round(week))};
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: display_cw_index2
+            text: !lambda return id(cw_display2).state;
+
   - platform: homeassistant
     id: sun_state
     entity_id: sun.sun
@@ -4224,7 +4265,6 @@ binary_sensor:
     id: ha_motion_sensor
     on_press:
       then:
-        - logger.log: "Bewegung erkannt via HA -> Display wecken"
         - script.execute: touch_wakeup_and_restart_timer
 
   - platform: homeassistant
@@ -4596,11 +4636,11 @@ output:
   - platform: ledc
     pin: GPIO38
     id: pwm_backlight
-    frequency: 1000 Hz
+    frequency: 100Hz
 # Built in 240v relay
-  - platform: gpio
-    pin: 40
-    id: panel_output
+#  - platform: gpio
+#    pin: 40
+#    id: panel_output
 #  - id: internal_relay_2
 #    platform: gpio
 #    pin: 2
@@ -4627,10 +4667,10 @@ light:
         - light.turn_on:
             id: display_backlight
             brightness: !lambda |-
-              float brightness = id(is_nighttime) ? 0.01f : 0.90f;
+              float brightness = id(is_nighttime) ? 0.01f : 1.00f;
               id(display_backlight_brightness) = brightness * 100.0f;
               return brightness;
-            transition_length: 100ms
+            transition_length: 500ms
 
 #-------------------------------------------
 # Touchscreen gt911 i2c
@@ -4648,7 +4688,6 @@ touchscreen:
         - lambda: |-
             id(last_touch_timestamp) = millis();
         - script.execute: touch_wakeup_and_restart_timer
-        - logger.log: "gt911 was called"
     on_release:
       then:
         - if:
@@ -4659,7 +4698,7 @@ touchscreen:
     on_update:
       - lambda: |-
           for (auto touch : touches) {
-            if ((touch.state == 6) && (id(change_page).state)) {
+            if ((touch.state == 5) && (id(change_page).state)) {
               if ((touch.x_org - touch.x_prev) > 100) {
                 ESP_LOGI("touch", "Swipe: rechts nach links");
                 id(page_next).execute();
@@ -4670,13 +4709,21 @@ touchscreen:
             }
           }
 globals:
+  - id: last_tap_time
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: page_change_locked
+    type: bool
+    restore_value: no
+    initial_value: "false"
   - id: cover_retry_once
     type: bool
     initial_value: 'false'
   - id: display_backlight_brightness
     type: float
     restore_value: no
-    initial_value: '0.9'
+    initial_value: '1.0'
   - id: current_brightness
     type: float
     restore_value: no
@@ -4770,6 +4817,12 @@ interval:
                   time: ha_time
 
 script:
+  - id: clock_page_button_script
+    mode: restart
+    then:
+      - lvgl.page.show:
+          id: clock_page
+
   - id: update_sonos_cover_script
     mode: restart
     then:
@@ -4841,18 +4894,22 @@ script:
   - id: enter_standby
     then:
       - lambda: |-
+          if (id(page_change_locked)) {
+            ESP_LOGD("Page", "Seitenwechsel blockiert");
+            return;
+          }
+          id(page_change_locked) = true;
           id(display_in_standby) = true;
           id(is_standby_active)  = true;
       - light.turn_on:
           id: display_backlight
           brightness: !lambda |-
-            float brightness = id(is_nighttime) ? 0.01f : 0.65f;
+            float brightness = id(is_nighttime) ? 0.01f : 0.35f;
             id(display_backlight_brightness) = brightness * 100.0f;
             return brightness;
-          transition_length: 100ms
+          transition_length: 500ms
       - lvgl.page.show:
           id: standby_page
-      - logger.log: "Standby aktiv – standby_page shown"
       - script.execute: standby_followup
 
   - id: standby_followup
@@ -4860,10 +4917,10 @@ script:
     then:
       - delay: 30s
       - lambda: |-
+          id(page_change_locked) = false;
           if (id(is_standby_active)) ESP_LOGD("main","30s im Standby ohne Touch -> clock_page");
       - lvgl.page.show:
           id: clock_page
-      - logger.log: "clock_page shown after 30s"
 
   - id: touch_wakeup_and_restart_timer
     mode: restart
@@ -4877,6 +4934,7 @@ script:
             - lambda: |-
                 auto now = id(ha_time).now();
                 bool is_night = (now.hour >= 23 || now.hour < 7);
+                id(page_change_locked) = false;
                 id(display_in_standby) = false;
                 id(is_standby_active) = false;
                 id(is_nighttime) = is_night;
@@ -4885,7 +4943,7 @@ script:
                 id: display_backlight
                 brightness: !lambda |-
                   auto now = id(ha_time).now();
-                  float brightness = (now.hour >= 23 || now.hour < 7) ? 0.65f : 0.90f;
+                  float brightness = (now.hour >= 23 || now.hour < 7) ? 0.35f : 1.0f;
                   id(display_backlight_brightness) = brightness * 100.0f;
                   return brightness;
                 transition_length: 1s
@@ -4894,18 +4952,14 @@ script:
             - lvgl.page.show:
                 id: clock_page
                 animation: LV_SCR_LOAD_ANIM_NONE
-                time: 50ms
+                time: 500ms
       - script.execute: standby_timer
 
   - id: touch_weather_page
     mode: restart
     then:
-      - if:
-          condition:
-            lambda: 'return id(display_backlight_brightness) > 20;'
-          then:
-            - lvgl.page.show:
-                id: weather_page
+      - lvgl.page.show:
+          id: weather_page
 
   - id: standby_timer
     mode: restart
@@ -4924,10 +4978,10 @@ script:
       - light.turn_on:
           id: display_backlight
           brightness: !lambda |-
-            float brightness = id(is_nighttime) ? 0.01f : 0.65f;
+            float brightness = id(is_nighttime) ? 0.01f : 0.35f;
             id(display_backlight_brightness) = brightness * 100.0f;
             return brightness;
-          transition_length: 100ms
+          transition_length: 500ms
       - lambda: |-
           lv_scr_load(id(standby_page).obj);
 
