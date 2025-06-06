@@ -1,4 +1,6 @@
 substitutions:
+  standby_delay_day: "360"
+  standby_delay_night: "60"
   brightness:         "\U0000e916"
   radiator_icon:      "\U000f0438"
   power_off_icon:     "\U000F0906"
@@ -180,7 +182,7 @@ ota:
 
 wifi:
   manual_ip:
-    static_ip: 192.168.1.70 #30
+    static_ip: 192.168.1.30 #70 #30
     gateway: 192.168.1.1
     subnet: 255.255.255.0
   networks:
@@ -4805,6 +4807,117 @@ interval:
                   time: ha_time
 
 script:
+  - id: standby_timer
+    mode: restart
+    then:
+      - delay: !lambda |-
+          auto now = id(ha_time).now();
+          return (now.hour >= 7 && now.hour < 23) ? id(standby_delay_day) * 1000 : id(standby_delay_night) * 1000;
+      - lambda: |-
+          auto now = id(ha_time).now();
+          id(is_nighttime) = (now.hour < 7 || now.hour >= 23);
+          id(display_in_standby) = true;
+          id(is_standby_active) = true;
+      - script.execute: enter_standby
+
+  - id: enter_standby
+    then:
+      - lambda: |-
+          if (id(page_change_locked)) {
+            ESP_LOGD("Page", "Seitenwechsel blockiert");
+            return;
+          }
+          id(page_change_locked) = true;
+          id(display_in_standby) = true;
+          id(is_standby_active) = true;
+      - light.turn_on:
+          id: display_backlight
+          brightness: !lambda |-
+            float brightness = 0.35f;
+            id(display_backlight_brightness) = brightness * 100.0f;
+            return brightness;
+          transition_length: 500ms
+      - lvgl.page.show:
+          id: standby_page
+      - script.execute: standby_followup
+      - if:
+          condition:
+            lambda: return id(is_nighttime);
+          then:
+            - script.execute: standby_dim_night_off
+          else:
+            - script.execute: standby_dim_day_off
+
+  - id: standby_dim_day_off
+    mode: restart
+    then:
+      - delay: 5min
+      - lambda: |-
+          if (id(is_standby_active)) {
+            ESP_LOGD("Standby", "Tag: Display komplett aus");
+            id(display_backlight_brightness) = 0.0;
+          }
+      - light.turn_off:
+          id: display_backlight
+          transition_length: 1s
+
+  - id: standby_dim_night_off
+    mode: restart
+    then:
+      - delay: 2min
+      - lambda: |-
+          if (id(is_standby_active)) {
+            ESP_LOGD("Standby", "Nacht: Display komplett aus");
+            id(display_backlight_brightness) = 0.0;
+          }
+      - light.turn_off:
+          id: display_backlight
+          transition_length: 1s
+
+  - id: touch_wakeup_and_restart_timer
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: return id(display_in_standby);
+          then:
+            - script.stop: standby_timer
+            - script.stop: standby_dim_day_off
+            - script.stop: standby_dim_night_off
+            - lambda: |-
+                auto now = id(ha_time).now();
+                bool is_night = (now.hour >= 23 || now.hour < 7);
+                id(page_change_locked) = false;
+                id(display_in_standby) = false;
+                id(is_standby_active) = false;
+                id(is_nighttime) = is_night;
+                ESP_LOGD("Standby", "Display geweckt durch Touch oder Bewegung");
+            - light.turn_on:
+                id: display_backlight
+                brightness: !lambda |-
+                  auto now = id(ha_time).now();
+                  float brightness = (now.hour >= 23 || now.hour < 7) ? 0.35f : 1.0f;
+                  id(display_backlight_brightness) = brightness * 100.0f;
+                  return brightness;
+                transition_length: 1s
+            - lvgl.resume:
+            - lvgl.widget.redraw:
+            - lvgl.page.show:
+                id: clock_page
+                animation: LV_SCR_LOAD_ANIM_NONE
+                time: 500ms
+      - script.execute: standby_timer
+
+  - id: standby_followup
+    mode: restart
+    then:
+      - delay: 30s
+      - lambda: |-
+          id(page_change_locked) = false;
+          if (id(is_standby_active)) ESP_LOGD("main","30s im Standby ohne Touch -> clock_page");
+      - lvgl.page.show:
+          id: clock_page
+
   - id: clock_page_button_script
     mode: restart
     then:
@@ -4879,132 +4992,11 @@ script:
           then:
             - lvgl.page.show: sonos
 
-  - id: standby_dim_day_further
-    mode: restart
-    then:
-      - delay: 5min
-      - lambda: |-
-          if (id(is_standby_active)) {
-            ESP_LOGD("Standby", "Tag: display off");
-            id(display_backlight_brightness) = 0.0;
-          }
-      - light.turn_off:
-          id: display_backlight
-          transition_length: 1s
-
-  - id: standby_dim_night_off
-    mode: restart
-    then:
-      - delay: 2min
-      - lambda: |-
-          if (id(is_standby_active)) {
-            ESP_LOGD("Standby", "Night: display off");
-            id(display_backlight_brightness) = 0.0;
-          }
-      - light.turn_off:
-          id: display_backlight
-          transition_length: 1s
-
-  - id: enter_standby
-    then:
-      - lambda: |-
-          if (id(page_change_locked)) {
-            ESP_LOGD("Page", "Seitenwechsel blockiert");
-            return;
-          }
-          id(page_change_locked) = true;
-          id(display_in_standby) = true;
-          id(is_standby_active)  = true;
-      - light.turn_on:
-          id: display_backlight
-          brightness: !lambda |-
-            float brightness = id(is_nighttime) ? 0.01f : 0.35f;
-            id(display_backlight_brightness) = brightness * 100.0f;
-            return brightness;
-          transition_length: 500ms
-      - lvgl.page.show:
-          id: standby_page
-      - script.execute: standby_followup
-      - if:
-          condition:
-            lambda: return id(is_nighttime);
-          then:
-            - script.execute: standby_dim_night_off
-          else:
-            - script.execute: standby_dim_day_further
-
-  - id: standby_followup
-    mode: restart
-    then:
-      - delay: 30s
-      - lambda: |-
-          id(page_change_locked) = false;
-          if (id(is_standby_active)) ESP_LOGD("main","30s in standby without touch -> clock_page");
-      - lvgl.page.show:
-          id: clock_page
-
-  - id: touch_wakeup_and_restart_timer
-    mode: restart
-    then:
-      - if:
-          condition:
-            lambda: |-
-              return id(display_in_standby);
-          then:
-            - script.stop: standby_timer
-            - lambda: |-
-                auto now = id(ha_time).now();
-                bool is_night = (now.hour >= 23 || now.hour < 7);
-                id(page_change_locked) = false;
-                id(display_in_standby) = false;
-                id(is_standby_active) = false;
-                id(is_nighttime) = is_night;
-                ESP_LOGD("Standby", "Display wakeup through touch or motion");
-            - light.turn_on:
-                id: display_backlight
-                brightness: !lambda |-
-                  auto now = id(ha_time).now();
-                  float brightness = (now.hour >= 23 || now.hour < 7) ? 0.35f : 1.0f;
-                  id(display_backlight_brightness) = brightness * 100.0f;
-                  return brightness;
-                transition_length: 1s
-            - lvgl.resume:
-            - lvgl.widget.redraw:
-            - lvgl.page.show:
-                id: clock_page
-                animation: LV_SCR_LOAD_ANIM_NONE
-                time: 500ms
-      - script.execute: standby_timer
-
   - id: touch_weather_page
     mode: restart
     then:
       - lvgl.page.show:
           id: weather_page
-
-  - id: standby_timer
-    mode: restart
-    then:
-      - delay: !lambda |-
-          auto now = id(ha_time).now();
-          int secs = (now.hour >= 7 && now.hour < 23)
-                     ? id(standby_delay_day)
-                     : id(standby_delay_night);
-          return secs * 1000;
-      - lambda: |-
-          auto now = id(ha_time).now();
-          id(is_nighttime) = (now.hour < 7 || now.hour >= 23);
-          id(display_in_standby) = true;
-          id(is_standby_active) = true;
-      - light.turn_on:
-          id: display_backlight
-          brightness: !lambda |-
-            float brightness = id(is_nighttime) ? 0.01f : 0.35f;
-            id(display_backlight_brightness) = brightness * 100.0f;
-            return brightness;
-          transition_length: 500ms
-      - lambda: |-
-          lv_scr_load(id(standby_page).obj);
 
   - id: therm_status_update_on
     then:
