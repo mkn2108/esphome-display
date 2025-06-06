@@ -4658,19 +4658,7 @@ light:
     id: display_backlight
     name: "Backlight"
     restore_mode: ALWAYS_OFF
-    default_transition_length: 100ms
-    on_turn_off:
-      then:
-        - lambda: |-
-            ESP_LOGW("Backlight", "!!! TURN_OFF ignoriert von extern um %02d:%02d !!!",
-              id(ha_time).now().hour, id(ha_time).now().minute);
-        - light.turn_on:
-            id: display_backlight
-            brightness: !lambda |-
-              float brightness = id(is_nighttime) ? 0.01f : 1.00f;
-              id(display_backlight_brightness) = brightness * 100.0f;
-              return brightness;
-            transition_length: 500ms
+    default_transition_length: 2000ms
 
 #-------------------------------------------
 # Touchscreen gt911 i2c
@@ -4891,6 +4879,32 @@ script:
           then:
             - lvgl.page.show: sonos
 
+  - id: standby_dim_day_further
+    mode: restart
+    then:
+      - delay: 5min
+      - lambda: |-
+          if (id(is_standby_active)) {
+            ESP_LOGD("Standby", "Tag: display off");
+            id(display_backlight_brightness) = 0.0;
+          }
+      - light.turn_off:
+          id: display_backlight
+          transition_length: 1s
+
+  - id: standby_dim_night_off
+    mode: restart
+    then:
+      - delay: 2min
+      - lambda: |-
+          if (id(is_standby_active)) {
+            ESP_LOGD("Standby", "Night: display off");
+            id(display_backlight_brightness) = 0.0;
+          }
+      - light.turn_off:
+          id: display_backlight
+          transition_length: 1s
+
   - id: enter_standby
     then:
       - lambda: |-
@@ -4911,6 +4925,13 @@ script:
       - lvgl.page.show:
           id: standby_page
       - script.execute: standby_followup
+      - if:
+          condition:
+            lambda: return id(is_nighttime);
+          then:
+            - script.execute: standby_dim_night_off
+          else:
+            - script.execute: standby_dim_day_further
 
   - id: standby_followup
     mode: restart
@@ -4918,7 +4939,7 @@ script:
       - delay: 30s
       - lambda: |-
           id(page_change_locked) = false;
-          if (id(is_standby_active)) ESP_LOGD("main","30s im Standby ohne Touch -> clock_page");
+          if (id(is_standby_active)) ESP_LOGD("main","30s in standby without touch -> clock_page");
       - lvgl.page.show:
           id: clock_page
 
@@ -4938,7 +4959,7 @@ script:
                 id(display_in_standby) = false;
                 id(is_standby_active) = false;
                 id(is_nighttime) = is_night;
-                ESP_LOGD("Standby", "Display geweckt durch Bewegung/Touch");
+                ESP_LOGD("Standby", "Display wakeup through touch or motion");
             - light.turn_on:
                 id: display_backlight
                 brightness: !lambda |-
