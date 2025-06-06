@@ -1,3 +1,11 @@
+@06.06.: Standby mode adaption fo display where no permanent standby clock is needed:
+Day touch or motion wakeup → display 100%
+Day	Standby active	→ 35 % brightness
+after 5 minutes	→ display off
+
+Night touch or motion wakeup → display 35%
+after 2 minutes	→ display off
+
 @04.06.: Add "double" touch for standby script on home button. Good for night modus to switch off the display.
 
 @29.05.: Added swipe function to change between the pages, instead of only use the footer buttons.
