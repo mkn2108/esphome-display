@@ -1,3 +1,5 @@
+@16.06.: Added setting page to change on the fly display brightness for day, night, standby, the same for display on, dimm or display off time.
+
 @06.06.: Standby mode adaption fo display where no permanent standby clock is needed:
 Day touch or motion wakeup → display 100%
 Day	Standby active	→ 35 % brightness
