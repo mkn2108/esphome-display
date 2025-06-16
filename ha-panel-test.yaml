@@ -1,6 +1,4 @@
 substitutions:
-  standby_delay_day: "360"
-  standby_delay_night: "60"
   brightness:         "\U0000e916"
   radiator_icon:      "\U000f0438"
   power_off_icon:     "\U000F0906"
@@ -119,12 +117,40 @@ esphome:
   platformio_options:
     board_build.flash_mode: dio
   on_boot:
-    priority: 800
+    priority: 100
     then:
+      - lvgl.slider.update: { id: slider_brightness_day, value: !lambda 'return id(brightness_day) * 100.0f;' }
+      - lvgl.slider.update: { id: slider_brightness_night, value: !lambda 'return id(brightness_night) * 100.0f;' }
+      - lvgl.slider.update: { id: slider_standby_brightness_day, value: !lambda 'return id(standby_brightness_day) * 100.0f;' }
+      - lvgl.slider.update: { id: slider_standby_brightness_night, value: !lambda 'return id(standby_brightness_night) * 100.0f;' }
+      - lvgl.slider.update: { id: slider_standby_day, value: !lambda 'return id(standby_timeout_day);' }
+      - lvgl.slider.update: { id: slider_standby_night, value: !lambda 'return id(standby_timeout_night);' }
+      - delay: 1s
+      - lambda: |-
+          auto now = id(ha_time).now();
+          bool is_night = now.is_valid() && (now.hour >= 23 || now.hour < 7);
+          id(is_nighttime) = is_night;
+
+          float brightness = is_night ? id(brightness_night) : id(brightness_day);
+          id(display_backlight_brightness) = brightness * 100.0f;
+          ESP_LOGD("BOOT", "Initiale Helligkeit (is_night=%s): %.0f%%", is_night ? "ja" : "nein", id(display_backlight_brightness));
+      - light.turn_on:
+          id: display_backlight
+          brightness: !lambda |-
+            auto now = id(ha_time).now();
+            return (now.is_valid() && (now.hour >= 23 || now.hour < 7)) ? id(brightness_night) : id(brightness_day);
+          transition_length: 800ms
       - delay: 5s
       - lvgl.widget.hide: boot_screen
       - delay: 10s
-      - script.execute: standby_timer
+      - lambda: |-
+          auto now = id(ha_time).now();
+          if (now.is_valid()) {
+            ESP_LOGI("boot", "Uhrzeit gültig – standby_timer wird gestartet");
+            id(standby_timer).execute();
+          } else {
+            ESP_LOGW("boot", "Uhrzeit ungültig – standby_timer wird nicht gestartet");
+          }
       - script.execute: touch_wakeup_and_restart_timer
       - lambda: |-
           if (!isnan(id(main_light_brightness).state)) {
@@ -182,7 +208,7 @@ ota:
 
 wifi:
   manual_ip:
-    static_ip: 192.168.1.30 #70 #30
+    static_ip: 192.168.1.70
     gateway: 192.168.1.1
     subnet: 255.255.255.0
   networks:
@@ -342,6 +368,14 @@ lvgl:
           text: "${radiator2}"
           text_color: 0xFF8000
           text_font: roboto12
+      - label:
+          id: lights_status_label
+          x: 56
+          y: 6
+          text: ""
+          text_color: 0x333333
+          text_font: roboto12
+          hidden: true
       - label:
           id: ha_status
           align: TOP_RIGHT
@@ -820,7 +854,7 @@ lvgl:
         - label:
             align: top_left
             y: 6
-            x: 62
+            x: 82
             id: display_time_header
             text: "00:00"
             text_font: roboto12
@@ -1195,7 +1229,7 @@ lvgl:
         - label:
             align: top_left
             y: 6
-            x: 62
+            x: 82
             id: display_time_header_general
             text: "00:00"
             text_font: roboto12
@@ -1513,7 +1547,7 @@ lvgl:
         - label:
             align: top_left
             y: 6
-            x: 62
+            x: 82
             id: display_time_header_livingroom
             text: "00:00"
             text_font: roboto12
@@ -1712,7 +1746,7 @@ lvgl:
         - label:
             align: top_left
             y: 6
-            x: 62
+            x: 82
             id: display_time_header_thermostat
             text: "00:00"
             text_font: roboto12
@@ -1946,7 +1980,7 @@ lvgl:
               - label:
                   align: top_left
                   y: 6
-                  x: 62
+                  x: 82
                   id: display_time_header_cover
                   text: "00:00"
                   text_font: roboto12
@@ -2076,7 +2110,7 @@ lvgl:
               - label:
                   align: top_left
                   y: 6
-                  x: 62
+                  x: 82
                   id: display_time_header_sonos
                   text: "00:00"
                   text_font: roboto12
@@ -2283,7 +2317,6 @@ lvgl:
                     - lambda: |-
                         lv_label_set_text(id(display_sonos_vardagsrum_title), "1LIVE");
                         lv_label_set_text(id(display_sonos_vardagsrum_media_artist), "");
-
               - button:
                   id: sonos_vardagsrum_mdrjump_button
                   width: 55
@@ -2355,7 +2388,6 @@ lvgl:
                     - lambda: |-
                         lv_label_set_text(id(display_sonos_vardagsrum_title), "TV");
                         lv_label_set_text(id(display_sonos_vardagsrum_media_artist), "");
-
               - button:
                   id: sonos_vardagsrum_goodvibes_button
                   width: 55
@@ -2380,7 +2412,334 @@ lvgl:
                     - lambda: |-
                         lv_label_set_text(id(display_sonos_vardagsrum_title), "Good Vibes");
                         lv_label_set_text(id(display_sonos_vardagsrum_media_artist), "");
+    - id: setting_page
+      widgets:
+        - image:
+            align: CENTER
+            src: back2
+        - label:
+            text: "Einstellungen"
+            align: TOP_MID
+            y: 6
+            text_font: roboto12
+            text_color: 0xffffff
+        - label:
+            align: top_left
+            y: 6
+            x: 92
+            id: display_time_setting
+            text: "00:00"
+            text_font: roboto12
+            text_color: 0xffffff
+        # Day Slider
+        - label:
+            text: "Taghelligkeit"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 20
+            y: 50
+        - slider:
+            id: slider_brightness_day
+            x: 20
+            y: 80
+            width: 300
+            height: 20
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            min_value: 1
+            max_value: 100
+            value: !lambda "return id(brightness_day) * 100;"
+            on_value:
+              - lambda: |-
+                  id(brightness_day) = x / 100.0f;
+                  ESP_LOGD("Slider", "brightness_day: %.2f", id(brightness_day));
+                  if (id(display_backlight).remote_values.is_on()) {
+                    id(display_backlight_brightness) = id(brightness_day) * 100.0f;
+                    id(display_backlight).turn_on().set_brightness(id(brightness_day)).perform();
+                  }
+              - lvgl.label.update:
+                  id: slider_label_brightness_day
+                  text:
+                    format: "%.0f%%"
+                    args: [ x ]
+        - label:
+            id: slider_label_brightness_day
+            x: 360
+            y: 80
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "100"
+    # Night Slider
+        - label:
+            text: "Nachthelligkeit"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 20
+            y: 110
+        - slider:
+            id: slider_brightness_night
+            x: 20
+            y: 140
+            width: 300
+            height: 20
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            min_value: 1
+            max_value: 100
+            value: !lambda "return id(brightness_night) * 100;"
+            on_value:
+              - lambda: |-
+                  id(brightness_night) = x / 100.0f;
+                  ESP_LOGD("Slider", "brightness_night: %.2f", id(brightness_night));
+                  auto now = id(ha_time).now();
+                  if ((now.hour >= 23 || now.hour < 7) && id(display_backlight).remote_values.is_on()) {
+                    id(display_backlight_brightness) = id(brightness_night) * 100.0f;
+                    id(display_backlight).turn_on().set_brightness(id(brightness_night)).perform();
+                  }
+              - lvgl.label.update:
+                  id: slider_label_brightness_night
+                  text:
+                    format: "%.0f%%"
+                    args: [ x ]
+        - label:
+            id: slider_label_brightness_night
+            x: 360
+            y: 140
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "35"
+        # Standby-Time Day
+        - label:
+            text: "Standby Tag"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 20
+            y: 170
+        - slider:
+            id: slider_standby_day
+            x: 20
+            y: 200
+            width: 300
+            height: 20
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            min_value: 15
+            max_value: 300
+            value: !lambda "return id(standby_timeout_day);"
+            on_value:
+              - lambda: |-
+                  id(standby_timeout_day) = x;
+                  ESP_LOGD("Slider", "standby_timeout_day: %d", id(standby_timeout_day));
+              - lvgl.label.update:
+                  id: slider_label_standby_day
+                  text: !lambda |-
+                    int value = static_cast<int>(x);
+                    int minutes = value / 60;
+                    int seconds = value % 60;
+                    char buffer[32];
+                    if (minutes > 0) {
+                      snprintf(buffer, sizeof(buffer), "%dmin%s%ds", minutes, (seconds > 0 ? ", " : ""), seconds);
+                    } else {
+                      snprintf(buffer, sizeof(buffer), "%ds", seconds);
+                    }
+                    return std::string(buffer);
+              - script.execute: touch_wakeup_and_restart_timer
+        - label:
+            id: slider_label_standby_day
+            x: 360
+            y: 200
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "300"
+        # Standby-Time Night
+        - label:
+            text: "Standby Nacht"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 20
+            y: 230
+        - slider:
+            id: slider_standby_night
+            x: 20
+            y: 260
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            width: 300
+            height: 20
+            min_value: 15
+            max_value: 300
+            adv_hittest: true
+            value: !lambda "return id(standby_timeout_night);"
+            on_value:
+              - lambda: |-
+                  id(standby_timeout_night) = x;
+                  ESP_LOGD("Slider", "standby_timeout_night: %d", id(standby_timeout_night));
+              - lvgl.label.update:
+                  id: slider_label_standby_night
+                  text: !lambda |-
+                    int value = static_cast<int>(x);
+                    int minutes = value / 60;
+                    int seconds = value % 60;
+                    char buffer[32];
+                    if (minutes > 0) {
+                      snprintf(buffer, sizeof(buffer), "%dmin%s%ds", minutes, (seconds > 0 ? ", " : ""), seconds);
+                    } else {
+                      snprintf(buffer, sizeof(buffer), "%ds", seconds);
+                    }
+                    return std::string(buffer);
+              - script.execute: touch_wakeup_and_restart_timer
+        - label:
+            id: slider_label_standby_night
+            x: 360
+            y: 260
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "120"
+        # Standby-Brightness Day
+        - label:
+            text: "Standby Taghelligkeit"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 20
+            y: 290
+        - slider:
+            id: slider_standby_brightness_day
+            x: 20
+            y: 320
+            width: 300
+            height: 20
+            min_value: 0
+            max_value: 100
+            value: !lambda "return id(standby_brightness_day) * 100.0f;"
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            on_value:
+              - lambda: |-
+                  id(standby_brightness_day) = x / 100.0f;
+                  ESP_LOGD("Slider", "standby_brightness_day: %.2f", id(standby_brightness_day));
+              - lvgl.label.update:
+                  id: slider_label_standby_brightness_day
+                  text:
+                    format: "%.0f%%"
+                    args: [ x ]
+        - label:
+            id: slider_label_standby_brightness_day
+            x: 360
+            y: 320
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "35"
+        # Standby-Brightness Night
+        - label:
+            text: "Standby Nachthelligkeit"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 20
+            y: 350
+        - slider:
+            id: slider_standby_brightness_night
+            x: 20
+            y: 380
+            width: 300
+            height: 20
+            min_value: 0
+            max_value: 100
+            value: !lambda "return id(standby_brightness_night) * 100.0f;"
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            on_value:
+              - lambda: |-
+                  id(standby_brightness_night) = x / 100.0f;
+                  ESP_LOGD("Slider", "standby_brightness_night: %.2f", id(standby_brightness_night));
+              - lvgl.label.update:
+                  id: slider_label_standby_brightness_night
+                  text:
+                    format: "%.0f%%"
+                    args: [ x ]
+        - label:
+            id: slider_label_standby_brightness_night
+            x: 360
+            y: 380
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "0"
 
+        - label:
+            x: 10
+            y: 420
+            text_font: roboto12
+            text_color: 0xCCCCCC
+            text: BSSID
+            id: settings_wifi_ssid
+        - label:
+            x: 275
+            y: 420
+            width: 200
+            text_font: roboto12
+            text_color: 0xCCCCCC
+            text_align: left
+            text: IP Address
+            id: settings_wifi_ipaddress
     - id: weather_page
       skip: true
       widgets:
@@ -2391,7 +2750,7 @@ lvgl:
               - label:
                   align: top_left
                   y: 6
-                  x: 62
+                  x: 82
                   id: display_time_header_weather
                   text: "00:00"
                   text_font: roboto12
@@ -2640,6 +2999,84 @@ lvgl:
 
 number:
   - platform: template
+    name: "Standby Brightness Day"
+    id: ha_standby_brightness_day
+    min_value: 0
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 35
+    on_value:
+      then:
+        - lambda: 'id(standby_brightness_day) = x / 100.0f;'
+
+  - platform: template
+    name: "Standby Brightness Night"
+    id: ha_standby_brightness_night
+    min_value: 0
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 0
+    on_value:
+      then:
+        - lambda: 'id(standby_brightness_night) = x / 100.0f;'
+
+  - platform: template
+    name: "Brightness Day"
+    id: ha_brightness_day
+    min_value: 1
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 100
+    on_value:
+      then:
+        - lambda: 'id(brightness_day) = x / 100.0f;'
+
+  - platform: template
+    name: "Brightness Night"
+    id: ha_brightness_night
+    min_value: 1
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 35
+    on_value:
+      then:
+        - lambda: 'id(brightness_night) = x / 100.0f;'
+
+  - platform: template
+    name: "Standby Timeout Day"
+    id: ha_standby_timeout_day
+    min_value: 5
+    max_value: 600
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 300
+    on_value:
+      then:
+        - lambda: 'id(standby_timeout_day) = x;'
+
+  - platform: template
+    name: "Standby Timeout Night"
+    id: ha_standby_timeout_night
+    min_value: 5
+    max_value: 300
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 120
+    on_value:
+      then:
+        - lambda: 'id(standby_timeout_night) = x;'
+
+  - platform: template
     id: current_page_index
     name: Aktuelle Seite
     min_value: 0
@@ -2652,13 +3089,13 @@ time:
   - platform: homeassistant
     id: ha_time
     on_time:
-      - hours: 2,3,4,5
+      - hours: 3
         minutes: 5
         seconds: 0
         then:
           - switch.turn_on: switch_antiburn
-      - hours: 2,3,4,5
-        minutes: 35
+      - hours: 3
+        minutes: 15
         seconds: 0
         then:
           - switch.turn_off: switch_antiburn
@@ -2683,7 +3120,26 @@ switch:
           then:
             - lvgl.resume:
             - lvgl.widget.redraw:
+
 sensor:
+  - platform: homeassistant
+    id: current_lights_on_test
+    entity_id: sensor.current_lights_on_test
+    on_value:
+      then:
+        - lambda: |-
+            lv_obj_clear_flag(id(lights_status_label), LV_OBJ_FLAG_HIDDEN);
+            int lights_on = (int)id(current_lights_on_test).state;
+            if (lights_on == 0) {
+              lv_label_set_text(id(lights_status_label), "\U000F12D0");
+              lv_obj_set_style_text_color(id(lights_status_label), lv_color_hex(0x333333), LV_PART_MAIN);
+            } else {
+              char buf[16];
+              snprintf(buf, sizeof(buf), "\U000F1254%d", lights_on);
+              lv_label_set_text(id(lights_status_label), buf);
+              lv_obj_set_style_text_color(id(lights_status_label), lv_color_hex(0x56ACFA), LV_PART_MAIN);
+            }
+
   - platform: homeassistant
     id: thermostat_valve_position
     entity_id: sensor.thermostatbadezimmervorne_position
@@ -2925,12 +3381,6 @@ sensor:
             int r = int((1.0f - t) * 255.0f);
             int g = int(t * 255.0f);
             return lv_color_make(r, g, 0);
-
-  - platform: template
-    name: "Panel User Touched"
-    id: panel_user_touched
-    lambda: "return id(user_touched) ? 1 : 0;"
-    update_interval: 35s
 
   - platform: homeassistant
     id: tv_volume
@@ -3275,6 +3725,24 @@ online_image:
                   url: !lambda 'return id(sonos_cover_url).state;'
 
 text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address"
+      on_value:
+        - lvgl.label.update:
+            id: settings_wifi_ipaddress
+            text:
+              format: "IP Address: %s"
+              args: [ 'x.c_str()' ]
+    ssid:
+      name: "SSID"
+      on_value:
+        - lvgl.label.update:
+            id: settings_wifi_ssid
+            text:
+              format: "SSID: %s"
+              args: [ 'x.c_str()' ]
+
   - platform: homeassistant
     id: sonos_artist
     entity_id: sensor.sonos_artist_filtered
@@ -4067,6 +4535,9 @@ text_sensor:
             id: display_time_header_sonos
             text: !lambda 'return id(ha_time_string).state.c_str();'
         - lvgl.label.update:
+            id: display_time_setting
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
             id: display_time_header_weather
             text: !lambda 'return id(ha_time_string).state.c_str();'
 
@@ -4628,30 +5099,12 @@ binary_sensor:
 #-------------------------------------------
 # Internal outputs
 #-------------------------------------------
-#output:
-#  # Backlight LED
-#  - platform: ledc
-#    pin: GPIO38
-#    id: GPIO38
-#    frequency: 100Hz
 output:
   - platform: ledc
     pin: GPIO38
     id: pwm_backlight
     frequency: 100Hz
-# Built in 240v relay
-#  - platform: gpio
-#    pin: 40
-#    id: panel_output
-#  - id: internal_relay_2
-#    platform: gpio
-#    pin: 2
-#    id: panel_output2
-#  - id: internal_relay_3
-#    platform: gpio
-#    pin: 1
-#    id: panel_output3
-#-------------------------------------------
+#------------------------------------------
 # LIGHTS
 #-------------------------------------------
 light:
@@ -4661,7 +5114,6 @@ light:
     name: "Backlight"
     restore_mode: ALWAYS_OFF
     default_transition_length: 2000ms
-
 #-------------------------------------------
 # Touchscreen gt911 i2c
 #-------------------------------------------
@@ -4699,6 +5151,37 @@ touchscreen:
             }
           }
 globals:
+  - id: standby_display_off
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: standby_brightness_day
+    type: float
+    restore_value: yes
+    initial_value: "0.35"
+  - id: standby_brightness_night
+    type: float
+    restore_value: yes
+    initial_value: "0.0"
+  - id: standby_timeout_day
+    type: int
+    restore_value: true
+    initial_value: "300"
+  - id: standby_timeout_night
+    type: int
+    restore_value: true
+    initial_value: "120"
+  - id: brightness_day
+    type: float
+    restore_value: true
+    initial_value: '1.0'
+  - id: brightness_night
+    type: float
+    restore_value: true
+    initial_value: '0.35'
+  - id: clock_page_index
+    type: int
+    initial_value: '0'
   - id: last_tap_time
     type: uint32_t
     restore_value: no
@@ -4747,12 +5230,12 @@ globals:
     type: uint32_t
     restore_value: no
     initial_value: '0'
-  - id: standby_delay_day
-    type: int
-    initial_value: '180'
-  - id: standby_delay_night
-    type: int
-    initial_value: '60'
+#  - id: standby_delay_day
+#    type: int
+#    initial_value: '360'
+#  - id: standby_delay_night
+#    type: int
+#    initial_value: '60'
   - id: user_touched
     type: bool
     initial_value: 'false'
@@ -4772,26 +5255,6 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
-  - id: aut_boiler
-    type: std::string
-  - id: aut_bedroom
-    type: std::string
-  - id: aut_living_room
-    type: std::string
-  - id: aut_office
-    type: std::string
-  - id: aut_kids
-    type: std::string
-  - id: aut_boiler1
-    type: std::string
-  - id: aut_bedroom1
-    type: std::string
-  - id: aut_living_room1
-    type: std::string
-  - id: aut_office1
-    type: std::string
-  - id: aut_kids1
-    type: std::string
 
 interval:
   - interval: 60s
@@ -4807,20 +5270,54 @@ interval:
                   time: ha_time
 
 script:
-  - id: standby_timer
+  - id: update_brightness_labels
     mode: restart
     then:
-      - delay: !lambda |-
-          auto now = id(ha_time).now();
-          return (now.hour >= 7 && now.hour < 23) ? id(standby_delay_day) * 1000 : id(standby_delay_night) * 1000;
-      - lambda: |-
-          auto now = id(ha_time).now();
-          id(is_nighttime) = (now.hour < 7 || now.hour >= 23);
-          id(display_in_standby) = true;
-          id(is_standby_active) = true;
-      - script.execute: enter_standby
+      - lvgl.label.update:
+          id: slider_label_brightness_day
+          text: !lambda |-
+            char buffer[16];
+            snprintf(buffer, sizeof(buffer), "Tag: %.0f%%", id(brightness_day) * 100.0f);
+            return std::string(buffer);
+      - lvgl.label.update:
+          id: slider_label_brightness_night
+          text: !lambda |-
+            char buffer[16];
+            snprintf(buffer, sizeof(buffer), "Nacht: %.0f%%", id(brightness_night) * 100.0f);
+            return std::string(buffer);
+      - lvgl.label.update:
+          id: slider_label_brightness_day
+          text: !lambda |-
+            char buffer[10];
+            snprintf(buffer, sizeof(buffer), "%.0f%%", id(brightness_day) * 100);
+            return std::string(buffer);
+      - lvgl.label.update:
+          id: slider_label_brightness_night
+          text: !lambda |-
+            char buffer[10];
+            snprintf(buffer, sizeof(buffer), "%.0f%%", id(brightness_night) * 100);
+            return std::string(buffer);
+      - lvgl.label.update:
+          id: slider_label_standby_day
+          text: !lambda |-
+            char buffer[10];
+            snprintf(buffer, sizeof(buffer), "%ds", id(standby_timeout_day));
+            return std::string(buffer);
+      - lvgl.label.update:
+          id: slider_label_standby_night
+          text: !lambda |-
+            char buffer[10];
+            snprintf(buffer, sizeof(buffer), "%ds", id(standby_timeout_night));
+            return std::string(buffer);
+
+  - id: clock_page_button_script
+    mode: restart
+    then:
+      - lvgl.page.show:
+          id: clock_page
 
   - id: enter_standby
+    mode: restart
     then:
       - lambda: |-
           if (id(page_change_locked)) {
@@ -4830,49 +5327,32 @@ script:
           id(page_change_locked) = true;
           id(display_in_standby) = true;
           id(is_standby_active) = true;
-      - light.turn_on:
-          id: display_backlight
-          brightness: !lambda |-
-            float brightness = 0.35f;
-            id(display_backlight_brightness) = brightness * 100.0f;
-            return brightness;
-          transition_length: 500ms
+          bool night = id(is_nighttime);
+          float brightness = night ? id(standby_brightness_night) : id(standby_brightness_day);
+          id(display_backlight_brightness) = brightness * 100.0f;
+          ESP_LOGD("Standby", "Standby aktiviert (%s) – Ziel-Helligkeit: %.0f%%",
+            night ? "Nacht" : "Tag", id(display_backlight_brightness));
+          id(standby_display_off) = brightness <= 0.01f;
       - lvgl.page.show:
           id: standby_page
-      - script.execute: standby_followup
+          animation: LV_SCR_LOAD_ANIM_NONE
+          time: 50ms
       - if:
           condition:
-            lambda: return id(is_nighttime);
+            lambda: return id(standby_display_off);
           then:
-            - script.execute: standby_dim_night_off
+            - light.turn_off:
+                id: display_backlight
+                transition_length: 1s
+            - lambda: |-
+                ESP_LOGD("Standby", "Display komplett ausgeschaltet (%.0f%%)", id(display_backlight_brightness));
           else:
-            - script.execute: standby_dim_day_off
-
-  - id: standby_dim_day_off
-    mode: restart
-    then:
-      - delay: 5min
-      - lambda: |-
-          if (id(is_standby_active)) {
-            ESP_LOGD("Standby", "Tag: Display komplett aus");
-            id(display_backlight_brightness) = 0.0;
-          }
-      - light.turn_off:
-          id: display_backlight
-          transition_length: 1s
-
-  - id: standby_dim_night_off
-    mode: restart
-    then:
-      - delay: 2min
-      - lambda: |-
-          if (id(is_standby_active)) {
-            ESP_LOGD("Standby", "Nacht: Display komplett aus");
-            id(display_backlight_brightness) = 0.0;
-          }
-      - light.turn_off:
-          id: display_backlight
-          transition_length: 1s
+            - light.turn_on:
+                id: display_backlight
+                brightness: !lambda 'return id(display_backlight_brightness) / 100.0f;'
+                transition_length: 1s
+            - lambda: |-
+                ESP_LOGD("Standby", "Display gedimmt auf %.0f%%", id(display_backlight_brightness));
 
   - id: touch_wakeup_and_restart_timer
     mode: restart
@@ -4882,8 +5362,6 @@ script:
             lambda: return id(display_in_standby);
           then:
             - script.stop: standby_timer
-            - script.stop: standby_dim_day_off
-            - script.stop: standby_dim_night_off
             - lambda: |-
                 auto now = id(ha_time).now();
                 bool is_night = (now.hour >= 23 || now.hour < 7);
@@ -4891,12 +5369,15 @@ script:
                 id(display_in_standby) = false;
                 id(is_standby_active) = false;
                 id(is_nighttime) = is_night;
+                id(standby_display_off) = false;  // Wichtig: Display ist jetzt an
                 ESP_LOGD("Standby", "Display geweckt durch Touch oder Bewegung");
             - light.turn_on:
                 id: display_backlight
                 brightness: !lambda |-
                   auto now = id(ha_time).now();
-                  float brightness = (now.hour >= 23 || now.hour < 7) ? 0.35f : 1.0f;
+                  float brightness = (now.hour >= 23 || now.hour < 7)
+                    ? id(brightness_night)
+                    : id(brightness_day);
                   id(display_backlight_brightness) = brightness * 100.0f;
                   return brightness;
                 transition_length: 1s
@@ -4908,21 +5389,61 @@ script:
                 time: 500ms
       - script.execute: standby_timer
 
-  - id: standby_followup
+  - id: standby_timer
     mode: restart
     then:
-      - delay: 30s
+      - delay: !lambda |-
+          auto now = id(ha_time).now();
+          bool is_night = (now.hour < 7 || now.hour >= 23);
+          int timeout = is_night ? id(standby_timeout_night) : id(standby_timeout_day);
+          ESP_LOGD("Standby", "Verzögerung: %d Sekunden (%s)", timeout, is_night ? "Nacht" : "Tag");
+          return timeout * 1000;
       - lambda: |-
-          id(page_change_locked) = false;
-          if (id(is_standby_active)) ESP_LOGD("main","30s im Standby ohne Touch -> clock_page");
-      - lvgl.page.show:
-          id: clock_page
+          auto now = id(ha_time).now();
+          bool is_night = (now.hour < 7 || now.hour >= 23);
+          id(is_nighttime) = is_night;
+          id(display_in_standby) = true;
+          id(is_standby_active) = true;
+          float brightness = is_night ? id(standby_brightness_night) : id(standby_brightness_day);
+          id(display_backlight_brightness) = brightness * 100.0f;
+          id(standby_display_off) = brightness <= 0.01f;
+          ESP_LOGD("Standby", "Standby aktiviert (%s) – Ziel-Helligkeit: %.0f%%",
+            is_night ? "Nacht" : "Tag", id(display_backlight_brightness));
+      - if:
+          condition:
+            lambda: return id(is_nighttime);
+          then:
+            - if:
+                condition:
+                  lambda: return id(standby_brightness_night) <= 0.01f;
+                then:
+                  - light.turn_off:
+                      id: display_backlight
+                      transition_length: 1s
+                  - lambda: |-
+                      id(display_backlight_brightness) = 0.0f;
+                      ESP_LOGD("Standby", "Nacht: Display aus");
+                else:
+                  - light.turn_on:
+                      id: display_backlight
+                      brightness: !lambda |-
+                        id(display_backlight_brightness) = id(standby_brightness_night) * 100.0f;
+                        return id(standby_brightness_night);
+                      transition_length: 1s
+                  - lambda: |-
+                      ESP_LOGD("Standby", "Nacht: gedimmt auf %.0f%%", id(display_backlight_brightness));
 
-  - id: clock_page_button_script
+  - id: touch_weather_page
     mode: restart
     then:
-      - lvgl.page.show:
-          id: clock_page
+      - if:
+          condition:
+            lambda: 'return id(display_backlight_brightness) > 80;'
+          then:
+            - lvgl.page.show:
+                id: weather_page
+                animation: LV_SCR_LOAD_ANIM_NONE
+                time: 50ms
 
   - id: update_sonos_cover_script
     mode: restart
@@ -4991,12 +5512,11 @@ script:
             lambda: 'return (int) id(current_page_index).state == 6;'
           then:
             - lvgl.page.show: sonos
-
-  - id: touch_weather_page
-    mode: restart
-    then:
-      - lvgl.page.show:
-          id: weather_page
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 7;'
+          then:
+            - lvgl.page.show: setting_page
 
   - id: therm_status_update_on
     then:
