@@ -237,6 +237,8 @@
           "\U000F0212",
           "\U000F0410",
           "\U000F1BE6",
+          "\U000F12D0",
+          "\U000F1254",
           ]
 
 - file: "fonts/materialdesignicons-webfont.ttf"
@@ -341,6 +343,12 @@
   "\U0000E9CA",
   "\U0000E9F8",
   "\U0000E91A",
+  "\U0000E986",
+  "\U0000E9EA",
+  "\U0000E9EE",
+  "\U0000E9DC",
+  "\U0000E9E6",
+  "\U0000E991",
   ]
 - file: 'fonts/Roboto-Regular.ttf'
   id: btn_icons_font
@@ -403,7 +411,7 @@
 
 - file: "gfonts://Roboto"
   id: roboto10
-  size: 10
+  size: 12
   bpp: 4
   glyphs: [
     " ", "!", "\"", "#", "%", "&", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
@@ -432,4 +440,23 @@
   glyphs: [
     "󰝝",
     "󰝞",
+  ]
+- file: "fonts/materialdesignicons-webfont.ttf"
+  id: mdi
+  size: 32
+  glyphs: [
+    "󰔡", # mower
+    "󰞷", # blade
+    "󰖎", # alert
+    "󰖝", # map-marker-distance
+    "󰁹", # battery
+    "󰤥", # wifi
+    "󰔚", # temperature
+    "󱊣", # humidity
+    "󰑓", # play
+    "󰟠", # timer
+    "󰖇", # auto-fix (für auto)
+    "󰚥", # current
+    "󰚦", # voltage
+    "󰧁", # battery-heart
   ]

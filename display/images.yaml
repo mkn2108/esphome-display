@@ -438,6 +438,9 @@
 - file: 'img/back1.png'
   id: back1
   type: RGB565
+- file: 'img/back2.png'
+  id: back2
+  type: RGB565
 - file: 'img/back3.png'
   id: back3
   type: RGB565
