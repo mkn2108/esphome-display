@@ -222,10 +222,6 @@ lvgl:
     - my_display
   touchscreens:
     - my_touchscreen
-  on_idle:
-    timeout: 2min
-    then:
-      - script.execute: enter_standby
 
   theme:
     button:
@@ -398,7 +394,7 @@ lvgl:
                   text: "\uF053"
                   on_press:
                     then:
-                      lvgl.page.previous:
+                       - script.execute: page_prev
                 - id: page_home
                   text: "\uF015"
                   on_press:
@@ -410,13 +406,14 @@ lvgl:
                             id(enter_standby).execute();
                           } else {
                             id(last_tap_time) = now;
-                            id(clock_page_button_script).execute();
+                            id(current_page_index).publish_state(0);
+                            id(change_page_by_index).execute();
                           }
                 - id: page_next1
                   text: "\uF054"
                   on_press:
                     then:
-                      lvgl.page.next:
+                      - script.execute: page_next
       - obj:
           id: boot_screen
           x: 0
@@ -2427,7 +2424,7 @@ lvgl:
             align: top_left
             y: 6
             x: 92
-            id: display_time_setting
+            id: display_time_header_setting
             text: "00:00"
             text_font: roboto12
             text_color: 0xffffff
@@ -2723,7 +2720,6 @@ lvgl:
             text_color: 0xCCCCCC
             text_align: LEFT
             text: "0"
-
         - label:
             x: 10
             y: 420
@@ -2740,6 +2736,7 @@ lvgl:
             text_align: left
             text: IP Address
             id: settings_wifi_ipaddress
+
     - id: weather_page
       skip: true
       widgets:
@@ -3080,7 +3077,7 @@ number:
     id: current_page_index
     name: Aktuelle Seite
     min_value: 0
-    max_value: 6  # Anzahl der Seiten - 1
+    max_value: 7  # Anzahl der Seiten - 1 = 8
     step: 1
     initial_value: 0
     restore_value: false
@@ -4535,7 +4532,7 @@ text_sensor:
             id: display_time_header_sonos
             text: !lambda 'return id(ha_time_string).state.c_str();'
         - lvgl.label.update:
-            id: display_time_setting
+            id: display_time_header_setting
             text: !lambda 'return id(ha_time_string).state.c_str();'
         - lvgl.label.update:
             id: display_time_header_weather
@@ -5132,25 +5129,47 @@ touchscreen:
         - script.execute: touch_wakeup_and_restart_timer
     on_release:
       then:
+        - lambda: |-
+            id(swipe_locked) = false;
         - if:
-            condition: lvgl.is_paused
+            condition:
+              lambda: 'return id(lvgl_paused);'
             then:
               - lvgl.resume:
+              - lambda: 'id(lvgl_paused) = false;'
               - lvgl.widget.redraw:
     on_update:
       - lambda: |-
-          for (auto touch : touches) {
-            if ((touch.state == 5) && (id(change_page).state)) {
-              if ((touch.x_org - touch.x_prev) > 100) {
-                ESP_LOGI("touch", "Swipe: rechts nach links");
-                id(page_next).execute();
-              } else if ((touch.x_prev - touch.x_org) > 100) {
-                ESP_LOGI("touch", "Swipe: links nach rechts");
-                id(page_prev).execute();
-              }
+          uint32_t now = millis();
+          if (now - id(last_swipe_time) < 700) return;
+          for (auto &touch : touches) {
+            int delta = touch.x_org - touch.x_prev;
+            if (delta > 100 && id(change_page).state) {
+              ESP_LOGI("touch", "Swipe erkannt → page_next");
+              id(last_swipe_time) = now;
+              id(page_next).execute();
+              break;
+            } else if (delta < -100 && id(change_page).state) {
+              ESP_LOGI("touch", "Swipe erkannt → page_prev");
+              id(last_swipe_time) = now;
+              id(page_prev).execute();
+              break;
             }
           }
+
 globals:
+  - id: last_swipe_time
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: swipe_locked
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  - id: lvgl_paused
+    type: bool
+    initial_value: "false"
+    restore_value: no
   - id: standby_display_off
     type: bool
     restore_value: no
@@ -5179,9 +5198,6 @@ globals:
     type: float
     restore_value: true
     initial_value: '0.35'
-  - id: clock_page_index
-    type: int
-    initial_value: '0'
   - id: last_tap_time
     type: uint32_t
     restore_value: no
@@ -5230,12 +5246,6 @@ globals:
     type: uint32_t
     restore_value: no
     initial_value: '0'
-#  - id: standby_delay_day
-#    type: int
-#    initial_value: '360'
-#  - id: standby_delay_night
-#    type: int
-#    initial_value: '60'
   - id: user_touched
     type: bool
     initial_value: 'false'
@@ -5337,22 +5347,21 @@ script:
           id: standby_page
           animation: LV_SCR_LOAD_ANIM_NONE
           time: 50ms
-      - if:
-          condition:
-            lambda: return id(standby_display_off);
-          then:
-            - light.turn_off:
-                id: display_backlight
-                transition_length: 1s
-            - lambda: |-
-                ESP_LOGD("Standby", "Display komplett ausgeschaltet (%.0f%%)", id(display_backlight_brightness));
-          else:
-            - light.turn_on:
-                id: display_backlight
-                brightness: !lambda 'return id(display_backlight_brightness) / 100.0f;'
-                transition_length: 1s
-            - lambda: |-
-                ESP_LOGD("Standby", "Display gedimmt auf %.0f%%", id(display_backlight_brightness));
+      - lambda: |-
+          if (id(standby_display_off)) {
+            auto call = id(display_backlight).make_call();
+            call.set_state(false);
+            call.set_transition_length(2000);
+            call.perform();
+            ESP_LOGD("Standby", "Display komplett ausgeschaltet (%.0f%%)", id(display_backlight_brightness));
+          } else {
+            auto call = id(display_backlight).make_call();
+            call.set_state(true);
+            call.set_brightness(id(display_backlight_brightness) / 100.0f);
+            call.set_transition_length(2000);
+            call.perform();
+            ESP_LOGD("Standby", "Display gedimmt auf %.0f%%", id(display_backlight_brightness));
+          }
 
   - id: touch_wakeup_and_restart_timer
     mode: restart
@@ -5369,18 +5378,15 @@ script:
                 id(display_in_standby) = false;
                 id(is_standby_active) = false;
                 id(is_nighttime) = is_night;
-                id(standby_display_off) = false;  // Wichtig: Display ist jetzt an
-                ESP_LOGD("Standby", "Display geweckt durch Touch oder Bewegung");
-            - light.turn_on:
-                id: display_backlight
-                brightness: !lambda |-
-                  auto now = id(ha_time).now();
-                  float brightness = (now.hour >= 23 || now.hour < 7)
-                    ? id(brightness_night)
-                    : id(brightness_day);
-                  id(display_backlight_brightness) = brightness * 100.0f;
-                  return brightness;
-                transition_length: 1s
+                id(standby_display_off) = false;
+                float brightness = is_night ? id(brightness_night) : id(brightness_day);
+                id(display_backlight_brightness) = brightness * 100.0f;
+                auto call = id(display_backlight).make_call();
+                call.set_state(true);
+                call.set_brightness(brightness);
+                call.set_transition_length(2000);
+                call.perform();
+                ESP_LOGD("Standby", "Display geweckt → Zielhelligkeit: %.0f%%", id(display_backlight_brightness));
             - lvgl.resume:
             - lvgl.widget.redraw:
             - lvgl.page.show:
@@ -5398,40 +5404,7 @@ script:
           int timeout = is_night ? id(standby_timeout_night) : id(standby_timeout_day);
           ESP_LOGD("Standby", "Verzögerung: %d Sekunden (%s)", timeout, is_night ? "Nacht" : "Tag");
           return timeout * 1000;
-      - lambda: |-
-          auto now = id(ha_time).now();
-          bool is_night = (now.hour < 7 || now.hour >= 23);
-          id(is_nighttime) = is_night;
-          id(display_in_standby) = true;
-          id(is_standby_active) = true;
-          float brightness = is_night ? id(standby_brightness_night) : id(standby_brightness_day);
-          id(display_backlight_brightness) = brightness * 100.0f;
-          id(standby_display_off) = brightness <= 0.01f;
-          ESP_LOGD("Standby", "Standby aktiviert (%s) – Ziel-Helligkeit: %.0f%%",
-            is_night ? "Nacht" : "Tag", id(display_backlight_brightness));
-      - if:
-          condition:
-            lambda: return id(is_nighttime);
-          then:
-            - if:
-                condition:
-                  lambda: return id(standby_brightness_night) <= 0.01f;
-                then:
-                  - light.turn_off:
-                      id: display_backlight
-                      transition_length: 1s
-                  - lambda: |-
-                      id(display_backlight_brightness) = 0.0f;
-                      ESP_LOGD("Standby", "Nacht: Display aus");
-                else:
-                  - light.turn_on:
-                      id: display_backlight
-                      brightness: !lambda |-
-                        id(display_backlight_brightness) = id(standby_brightness_night) * 100.0f;
-                        return id(standby_brightness_night);
-                      transition_length: 1s
-                  - lambda: |-
-                      ESP_LOGD("Standby", "Nacht: gedimmt auf %.0f%%", id(display_backlight_brightness));
+      - script.execute: enter_standby
 
   - id: touch_weather_page
     mode: restart
@@ -5461,7 +5434,7 @@ script:
     then:
       - lambda: |-
           int idx = (int) id(current_page_index).state;
-          idx = (idx + 1) % 7;  // 0 bis 6
+          idx = (idx + 1) % 8;  // 8 Seiten
           id(current_page_index).publish_state(idx);
       - script.execute: change_page_by_index
 
@@ -5469,7 +5442,7 @@ script:
     then:
       - lambda: |-
           int idx = (int) id(current_page_index).state;
-          idx = (idx - 1 + 7) % 7;
+          idx = (idx - 1 + 8) % 8;
           id(current_page_index).publish_state(idx);
       - script.execute: change_page_by_index
 
