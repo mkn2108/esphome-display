@@ -1,5 +1,106 @@
-# sensor_weather.yaml
 template:
+- trigger:
+    - platform: time_pattern
+      seconds: "/1"
+    - platform: state
+      entity_id: timer.timer_garderobe
+  sensor:
+    - name: "timer_garderobe_remaining"
+      unit_of_measurement: "s"
+      state: >
+        {% set end = state_attr('timer.timer_garderobe', 'finishes_at') %}
+        {% if end and states('timer.timer_garderobe') == 'active' %}
+          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+          {{ [seconds | int, 0] | max }}
+        {% else %}
+          0
+        {% endif %}
+
+- trigger:
+    - platform: time_pattern
+      seconds: "/1"
+    - platform: state
+      entity_id: timer.timer_haustur
+  sensor:
+    - name: "timer_haustuer_remaining"
+      unit_of_measurement: "s"
+      state: >
+        {% set end = state_attr('timer.timer_haustur', 'finishes_at') %}
+        {% if end and states('timer.timer_haustur') == 'active' %}
+          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+          {{ [seconds | int, 0] | max }}
+        {% else %}
+          0
+        {% endif %}
+
+- trigger:
+    - platform: time_pattern
+      seconds: "/1"
+    - platform: state
+      entity_id: timer.timer_eingang
+  sensor:
+    - name: "timer_eingang_remaining"
+      unit_of_measurement: "s"
+      state: >
+        {% set end = state_attr('timer.timer_eingang', 'finishes_at') %}
+        {% if end and states('timer.timer_eingang') == 'active' %}
+          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+          {{ [seconds | int, 0] | max }}
+        {% else %}
+          0
+        {% endif %}
+
+- trigger:
+    - platform: time_pattern
+      seconds: "/1"
+    - platform: state
+      entity_id: timer.timer_treppe_oben
+  sensor:
+    - name: "timer_balkon_remaining"
+      unit_of_measurement: "s"
+      state: >
+        {% set end = state_attr('timer.timer_treppe_oben', 'finishes_at') %}
+        {% if end and states('timer.timer_treppe_oben') == 'active' %}
+          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+          {{ [seconds | int, 0] | max }}
+        {% else %}
+          0
+        {% endif %}
+
+- trigger:
+    - platform: time_pattern
+      seconds: "/1"
+    - platform: state
+      entity_id: timer.flur_lea
+  sensor:
+    - name: "timer_flur_lea_remaining"
+      unit_of_measurement: "s"
+      state: >
+        {% set end = state_attr('timer.flur_lea', 'finishes_at') %}
+        {% if end and states('timer.flur_lea') == 'active' %}
+          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+          {{ [seconds | int, 0] | max }}
+        {% else %}
+          0
+        {% endif %}
+
+- trigger:
+    - platform: time_pattern
+      seconds: "/1"
+    - platform: state
+      entity_id: timer.flur_maja
+  sensor:
+    - name: "timer_flur_maja_remaining"
+      unit_of_measurement: "s"
+      state: >
+        {% set end = state_attr('timer.flur_maja', 'finishes_at') %}
+        {% if end and states('timer.flur_maja') == 'active' %}
+          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+          {{ [seconds | int, 0] | max }}
+        {% else %}
+          0
+        {% endif %}
+
 - trigger:
     - platform: homeassistant
       event: start
