@@ -1,0 +1,4499 @@
+substitutions:
+  brightness:         "\U0000e916"
+  radiator_icon:      "\U000f0438"
+  power_off_icon:     "\U000F0906"
+  play_pause_icon:    "\U000F040E"
+  mute_icon:          "\U000F075F"
+  volume_icon:        "\U000F057F"
+  powerbutton:        "\U000F0906"
+  calendar_icon:      "\U000F00ED"
+  watt:               "\U000F0241"
+  television:         "\U0000E9DE"
+  power:              "\U0000E907"
+  temp_icon:          "\uF50F"
+  temp:               "\U000F050F"
+  icon_0000:          "\U00000000"
+  icon_0001:          "\U00000001"
+  icon_space:         "\U00000020"
+  ceiling_light1:     "\U0000E904"
+  icon_e9f8:          "\U0000E9F8"
+  icon_e9fc:          "\U0000E9FC"
+  icon_e9ca:          "\U0000E9CA"
+  icon_e948:          "\U0000E948"
+  icon_e915:          "\U0000E915"
+  icon_e9f7:          "\U0000E9f7"
+  icon_e900:          "\U0000E900"
+  icon_e901:          "\U0000E901"
+  icon_e902:          "\U0000E902"
+  icon_e903:          "\U0000E903"
+  icon_e905:          "\U0000E905"
+  icon_e906:          "\U0000E906"
+  icon_e918:          "\U0000E918"
+  icon_e90D:          "\U0000E90D"
+  icon_e9c5:          "\U0000E9C5"
+  icon_e950:          "\U0000E950"
+  icon_e9ed:          "\U0000E9ED"
+  icon_e90a:          "\U0000E90A"
+  volume_plus:        "\U000f075d"
+  volume_minus:       "\U000f075e"
+  volume_mute:        "\U000f075f"
+  radio:              "\U000F0439"
+  speaker:            "\U000F04C3"
+  stop:               "\U000F04DB"
+  up:                 "\U000F005D"
+  down:               "\U000F0045"
+  lightbulb:          "\U000F1802"
+  snowflake:          "\U000F1A3C"
+  power_off:          "\U000F0114"
+  lamp:               "\U000F06B5"
+  floor_lamp:         "\U000F08DD"
+  string_lights:      "\U000F12BA"
+  track_light:        "\U000F0914"
+  bulkhead_light:     "\U000F1A2F"
+  led_strip:          "\U000F07D6"
+  coach_lamp:         "\U000F1020"
+  bed:                "\U000F02E3"
+  heating:            "\U0000E908"
+  ha:                 "\U000F07D0"
+  boiler_on:          "\U000F0238"
+  color_temp:         "\U0000e90c"
+  humidity:           "\U0000e912"
+  temperature:        "\U0000e915"
+  illumination:       "\U0000e916"
+  empty:              "\U000F01A9"
+  vacuum_cleaner:     "\U0000e918"
+  logo:               "\U0000e919"
+  thermostat:         "\U0000e901"
+  boiler_off:         "\U000F1722"
+  motion:             "\U000F0D91"
+  motion_unavailable: "\U000F1435"
+  motion_off:         "\U000F1435"
+  radiator:           "\U000F0636"
+  radiator2:          "\U000f0438"
+  ceiling_light:      "\U000F0769"
+  bed_light:          "\U0000E944"
+  house_temp:         "\U000F0F55"
+  uv_state:           "\U000F0F2F"
+  cloudy:             "\U000F0590"
+  cloudyalert:        "\U000F0F2F"
+  cloudyarrowright:   "\U000F0E6E"
+  fog:                "\U000F0591"
+  hail:               "\U000F0592"
+  hazy:               "\U000F0F30"
+  hurricane:          "\U000F0898"
+  lightning:          "\U000F0593"
+  lightningrainy:     "\U000F067E"
+  night:              "\U000F0594"
+  nightpartlycloudy:  "\U000F0F31"
+  partlycloudy:       "\U000F0595"
+  partlylightning:    "\U000F0F32"
+  partlyrainy:        "\U000F0F33"
+  partlysnowy:        "\U000F0F34"
+  partlysnowyrainy:   "\U000F0F35"
+  pouring:            "\U000F0596"
+  rainy:              "\U000F0597"
+  snowy:              "\U000F0598"
+  snowyheavy:         "\U000F0F36"
+  snowyrainy:         "\U000F067F"
+  sunny:              "\U000F0599"
+  sunnyalert:         "\U000F0F37"
+  sunnyoff:           "\U000F14E4"
+  sunset:             "\U000F059A"
+  sunsetdown:         "\U000F059B"
+  sunsetup:           "\U000F059C"
+  tornado:            "\U000F0F38"
+  windy:              "\U000F059D"
+  windyvariant:       "\U000F059E"
+  happyface:          "\U000F01F5"
+  wifi_25:            "\U0000E90E"
+  wifi_50:            "\U0000E90F"
+  wifi_75:            "\U0000E910"
+  wifi_100:           "\U0000E911"
+
+esphome:
+  name: hapanel4
+  friendly_name: Display Diele
+  platformio_options:
+    board_build.flash_mode: dio
+  on_boot:
+    priority: 100
+    then:
+      - lvgl.slider.update: { id: slider_brightness_day, value: !lambda 'return id(brightness_day) * 100.0f;' }
+      - lvgl.slider.update: { id: slider_brightness_night, value: !lambda 'return id(brightness_night) * 100.0f;' }
+      - lvgl.slider.update: { id: slider_standby_brightness_day, value: !lambda 'return id(standby_brightness_day) * 100.0f;' }
+      - lvgl.slider.update: { id: slider_standby_brightness_night, value: !lambda 'return id(standby_brightness_night) * 100.0f;' }
+      - lvgl.slider.update: { id: slider_standby_day, value: !lambda 'return id(standby_timeout_day);' }
+      - lvgl.slider.update: { id: slider_standby_night, value: !lambda 'return id(standby_timeout_night);' }
+      - delay: 1s
+      - lambda: |-
+          auto now = id(ha_time).now();
+          bool is_night = now.is_valid() && (now.hour >= 23 || now.hour < 7);
+          id(is_nighttime) = is_night;
+
+          float brightness = is_night ? id(brightness_night) : id(brightness_day);
+          id(display_backlight_brightness) = brightness * 100.0f;
+          ESP_LOGD("BOOT", "Initiale Helligkeit (is_night=%s): %.0f%%", is_night ? "ja" : "nein", id(display_backlight_brightness));
+      - light.turn_on:
+          id: display_backlight
+          brightness: !lambda |-
+            auto now = id(ha_time).now();
+            return (now.is_valid() && (now.hour >= 23 || now.hour < 7)) ? id(brightness_night) : id(brightness_day);
+          transition_length: 1500ms
+      - delay: 5s
+      - lvgl.widget.hide: boot_screen
+      - delay: 10s
+      - lambda: |-
+          auto now = id(ha_time).now();
+          if (now.is_valid()) {
+            ESP_LOGI("boot", "Uhrzeit gültig – standby_timer wird gestartet");
+            id(standby_timer).execute();
+          } else {
+            ESP_LOGW("boot", "Uhrzeit ungültig – standby_timer wird nicht gestartet");
+          }
+      - script.execute: touch_wakeup_and_restart_timer
+      - lambda: |-
+          if (!isnan(id(main_light_brightness).state)) {
+            lv_slider_set_value(id(light_main_brightness_slider), id(main_light_brightness).state, LV_ANIM_OFF);
+          }
+          if (!isnan(id(main_light_brightness_unterschrank).state)) {
+            lv_slider_set_value(id(light_main_brightness_slider_unterschrank), id(main_light_brightness_unterschrank).state, LV_ANIM_OFF);
+          }
+          if (!isnan(id(main_light_brightness_garderobe).state)) {
+            lv_slider_set_value(id(light_main_brightness_slider_garderobe), id(main_light_brightness_garderobe).state, LV_ANIM_OFF);
+          }
+          if (!isnan(id(main_light_brightness_diele).state)) {
+            lv_slider_set_value(id(light_main_brightness_slider_diele), id(main_light_brightness_diele).state, LV_ANIM_OFF);
+          }
+      - lambda: |-
+          if (!isnan(id(ha_timer_garderobe).state)) {
+            int seconds = (int) id(ha_timer_garderobe).state;
+            id(last_timer_garderobe) = seconds;
+            if (seconds > 0) {
+              char buf[6];
+              snprintf(buf, sizeof(buf), "%02d:%02d", seconds / 60, seconds % 60);
+              lv_label_set_text(id(label_timer_garderobe), buf);
+              lv_obj_clear_flag(id(label_timer_garderobe), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_clear_flag(id(label_icon_timer_garderobe), LV_OBJ_FLAG_HIDDEN);
+            } else {
+              lv_obj_add_flag(id(label_timer_garderobe), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_add_flag(id(label_icon_timer_garderobe), LV_OBJ_FLAG_HIDDEN);
+            }
+          } else {
+            lv_obj_add_flag(id(label_timer_garderobe), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(id(label_icon_timer_garderobe), LV_OBJ_FLAG_HIDDEN);
+          }
+          if (!isnan(id(ha_timer_eingang).state)) {
+            int seconds = (int) id(ha_timer_eingang).state;
+            id(last_timer_eingang) = seconds;
+          if (seconds > 0) {
+              char buf[6];
+              snprintf(buf, sizeof(buf), "%02d:%02d", seconds / 60, seconds % 60);
+              lv_label_set_text(id(label_timer_eingang), buf);
+              lv_obj_clear_flag(id(label_timer_eingang), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_clear_flag(id(label_icon_timer_eingang), LV_OBJ_FLAG_HIDDEN);
+            } else {
+              lv_obj_add_flag(id(label_timer_eingang), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_add_flag(id(label_icon_timer_eingang), LV_OBJ_FLAG_HIDDEN);
+            }
+          } else {
+            lv_obj_add_flag(id(label_timer_eingang), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(id(label_icon_timer_eingang), LV_OBJ_FLAG_HIDDEN);
+          }
+          if (!isnan(id(ha_timer_haustuer).state)) {
+            int seconds = (int) id(ha_timer_haustuer).state;
+            id(last_timer_haustuer) = seconds;
+            if (seconds > 0) {
+              char buf[6];
+              snprintf(buf, sizeof(buf), "%02d:%02d", seconds / 60, seconds % 60);
+              lv_label_set_text(id(label_timer_haustuer), buf);
+              lv_obj_clear_flag(id(label_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_clear_flag(id(label_icon_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
+            } else {
+              lv_obj_add_flag(id(label_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
+              lv_obj_add_flag(id(label_icon_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
+            }
+          } else {
+            lv_obj_add_flag(id(label_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(id(label_icon_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
+          }
+
+font: !include display/fonts.yaml
+image: !include display/images.yaml
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: "y"
+      CONFIG_ESP32S3_DATA_CACHE_64KB: "y"
+      CONFIG_ESP32S3_DATA_CACHE_LINE_64B: "y"
+      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: y
+      CONFIG_SPIRAM_RODATA: y
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+logger:
+
+api:
+  on_client_connected:
+    - if:
+        condition:
+          lambda: 'return (0 == client_info.find("Home Assistant "));'
+        then:
+          - lvgl.label.update:
+              id: ha_status
+              text_color: 0x56acfa
+  on_client_disconnected:
+    - if:
+        condition:
+          lambda: 'return (0 == client_info.find("Home Assistant "));'
+        then:
+          - lvgl.label.update:
+              id: ha_status
+              text_color: 0xfa3744
+ota:
+  - platform: esphome
+    password: "secretsecret"
+
+wifi:
+  manual_ip:
+    static_ip: 192.168.1.30
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+  networks:
+  - ssid: !secret wifi_ssid
+    password: !secret wifi_password
+
+http_request:
+
+lvgl:
+  displays:
+    - my_display
+  touchscreens:
+    - my_touchscreen
+
+  theme:
+    button:
+      bg_color: 0x333333
+      bg_opa: 65%
+      border_color: 0x333333
+      border_width: 1
+      radius: 25
+      text_color: 0xFFFFFF
+      pressed:
+        bg_color: 0xFFFFFF
+        bg_grad_color: 0xFFFFFF
+      checked:
+        bg_color: 0xFFFFFF
+        bg_grad_color: 0xFFFFFF
+        text_color: 0x56acfa
+    buttonmatrix:
+      bg_opa: TRANSP
+      border_color: 0x6b6b6b
+      border_width: 1
+      text_color: 0xFFFFFF
+      pad_all: 0
+      items:
+        bg_color: 0x333333
+        bg_grad_color: 0x333333
+        bg_grad_dir: VER
+        bg_opa: COVER
+        border_color: 0x6b6b6b
+        border_width: 1
+        text_color: 0xFFFFFF
+        pressed:
+          bg_color: 0xffffff
+          bg_grad_color: 0xffffff
+        checked:
+          bg_color: 0xffffff
+          bg_grad_color: 0xffffff
+          text_color: 0xEEEEEE
+    switch:
+      bg_color: 0xC0C0C0
+      bg_grad_color: 0xb0b0b0
+      bg_grad_dir: VER
+      bg_opa: COVER
+      checked:
+        bg_color: 0x56acfa
+        bg_grad_color: 0x03324A
+        bg_grad_dir: VER
+        bg_opa: COVER
+      knob:
+        bg_color: 0xFFFFFF
+        bg_grad_color: 0xC0C0C0
+        bg_grad_dir: VER
+        bg_opa: COVER
+    slider:
+      border_width: 1
+      border_opa: 30%
+      bg_color: 0x333333
+      bg_opa: 15%
+      indicator:
+        bg_color: 0x333333
+        bg_grad_color: 0x333333
+        bg_opa: COVER
+      knob:
+        bg_color: 0x444444
+        bg_grad_color: 0x444444
+        bg_opa: COVER
+        border_color: 0x444444
+        border_width: 1
+        text_color: 0xFFFFFF
+  style_definitions:
+    - id: bg_white
+      text_font: roboto18
+      border_width: 1
+      radius: 10
+      text_color: 0xFFFFFF
+      scrollbar_mode: "OFF"
+    - id: button_icon
+      text_font: icon_font
+      text_color: 0xFFFFFF
+    - id: header_footer
+      bg_color: 0x444444
+      bg_grad_color: 0x6b6b6b
+      bg_grad_dir: VER
+      bg_opa: COVER
+      border_opa: TRANSP
+      border_color:  0x6b6b6b
+      text_color: 0xFFFFFF
+      width: 100%
+      height: 40
+    - id: wifi_icon_style
+      text_font: icon_font
+      text_color: 0xFFFFFF
+    - id: motion_style
+      text_font: icon_font
+      text_color: 0xFFFFFF
+    - id: heating_style
+      text_font: icon_font
+      text_color: 0xFF8000
+  top_layer:
+    widgets:
+      - label:
+          id: wifi_status
+          align: top_right
+          x: -8
+          y: 7
+          text_align: right
+          text: "${wifi_25}"
+          text_color: 0xFFFFFF
+          text_font: icons_12
+      - label:
+          id: motion_status
+          align: top_left
+          x: 8
+          y: 6
+          text: "${motion}"
+          text_color: 0x56acfa
+          text_font: roboto12
+          hidden: true
+      - label:
+          id: motion_status_off
+          align: top_left
+          x: 8
+          y: 6
+          text: "${motion_off}"
+          text_color: 0x333333
+          text_font: roboto12
+          hidden: true
+      - label:
+          id: motion_status_unavailable
+          align: top_left
+          x: 8
+          y: 6
+          text: "${motion_unavailable}"
+          text_color: 0xFF0000
+          text_font: roboto12
+          hidden: true
+      - label:
+          id: heating_icon_label_header
+          x: 32
+          y: 6
+          text: "${radiator2}"
+          text_color: 0xFF8000
+          text_font: roboto12
+      - label:
+          id: lights_status_label
+          x: 56
+          y: 7
+          text: ""
+          text_color: 0x333333
+          text_font: roboto12
+          hidden: true
+      - label:
+          id: ha_status
+          align: TOP_RIGHT
+          x: -32
+          y: 6
+          text: "${ha}"
+          text_color: 0xFFFFFF
+          text_font: roboto12
+      - buttonmatrix:
+          align: bottom_mid
+          styles: header_footer
+          pad_all: 0
+          outline_width: 0
+          id: footer_nav
+          items:
+            styles: header_footer
+          rows:
+            - buttons:
+                - id: page_prev1
+                  text: "\uF053"
+                  on_press:
+                    then:
+                       - script.execute: page_prev
+                - id: page_home
+                  text: "\uF015"
+                  on_press:
+                    then:
+                      - lambda: |-
+                          uint32_t now = millis();
+                          if (now - id(last_tap_time) < 400) {
+                            id(last_tap_time) = 0;
+                            id(enter_standby).execute();
+                          } else {
+                            id(last_tap_time) = now;
+                            id(current_page_index).publish_state(0);
+                            id(change_page_by_index).execute();
+                          }
+                - id: page_next1
+                  text: "\uF054"
+                  on_press:
+                    then:
+                      - script.execute: page_next
+      - obj:
+          id: boot_screen
+          x: 0
+          y: 0
+          width: 100%
+          height: 100%
+          bg_color: 0x000000
+          bg_opa: COVER
+          radius: 0
+          pad_all: 0
+          border_width: 0
+          widgets:
+            - image:
+                align: CENTER
+                src: boot_logo
+            - spinner:
+                align: TOP_MID
+                y: 25
+                height: 50
+                width: 50
+                spin_time: 1s
+                arc_length: 60deg
+                arc_width: 8
+                indicator:
+                  arc_color: 0x18bcf2
+                  arc_width: 8
+          on_press:
+            - lvgl.widget.hide: boot_screen
+
+  page_wrap: true
+  pages:
+    - id: standby_page
+      skip: true
+      widgets:
+        - image:
+            align: CENTER
+            src: back1
+        - label:
+            id: full_touch_catcher
+            text: ""
+            width: 100%
+            height: 100%
+            text_color: 0x000000
+            align: center
+            on_click:
+              then:
+                - script.execute: touch_wakeup_and_restart_timer
+        - label:
+            id: display_time_standby
+            text_font: roboto90
+            text: "00:00"
+            align: CENTER
+            text_color: 0xAAAAAA
+        - label:
+            align: top_mid
+            id: display_temp_standby
+            text: "temp"
+            text_font: roboto24
+            text_color: 0xAAAAAA
+            y: 2
+        - label:
+            align: top_mid
+            id: display_weather_icon_standby
+            text: $happyface
+            text_color: 0xAAAAAA
+            bg_opa: TRANSP
+            text_font: weather_icons
+            y: 60
+        - label:
+            align: CENTER
+            id: display_weather_standby
+            text: "weather"
+            text_font: roboto24
+            text_color: 0xAAAAAA
+            y: 70
+        - label:
+            align: CENTER
+            id: display_cw_index_standby
+            text: "$calendar_icon KW"
+            y: 110
+            text_font: roboto24
+            text_color: 0xAAAAAA
+        - label:
+            id: display_date_standby
+            text_font: roboto40
+            text: "date"
+            align: bottom_mid
+            text_color: 0xAAAAAA
+            y: -55
+
+    - id: general_page
+      widgets:
+        - image:
+            align: CENTER
+            src: back2
+        - label:
+            text: "Diele"
+            align: TOP_MID
+            y: 6
+            text_font: roboto12
+            text_color: 0xffffff
+        - label:
+            align: top_left
+            y: 6
+            x: 92
+            id: display_time_header
+            text: "00:00"
+            text_font: roboto12
+            text_color: 0xffffff
+        - obj:
+            layout:
+              type: GRID
+              grid_columns: [FR(1), FR(1)]
+              grid_rows: [FR(50), FR(50)]
+            width: 100%
+            height: 90%
+            pad_all: 15
+            pad_top: 22
+            bg_opa: TRANSP
+            border_opa: TRANSP
+            widgets:
+              - button:
+                  id: diele_btn
+                  checkable: true
+                  grid_cell_column_pos: 0
+                  grid_cell_row_pos: 0
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  border_width: 1
+                  border_color: 0xffffff
+                  widgets:
+                    - label:
+                        id: lbl_battery_status_diele
+                        align: TOP_LEFT
+                        x: 18
+                        y: 10
+                        text_font: battery_icons_20
+                        text: "\U0000E918"
+                    - label:
+                        text_font: hass_hue_icons
+                        text: "\U0000E944"
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Diele"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: room_temp_label_diele
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        id: heating_icon_label_diele
+                        text: "${radiator2}"
+                        align: TOP_LEFT
+                        x: 3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0x808080
+                    - label:
+                        id: light_icon_diele
+                        align: BOTTOM_MID
+                        text_font: icons_12
+                        text_color: 0x56acfa
+                        text: !lambda |-
+                          return "\U0000e916";
+                        x: -20
+                        y: -30
+                    - label:
+                        id: light_brightness_percent_diele
+                        align: BOTTOM_MID
+                        text_font: roboto12
+                        text_color: 0x56acfa
+                        text: ""
+                        x: 15
+                        y: -30
+                    - label:
+                        id: heating_position_icon_diele
+                        text: "\U000F1067"
+                        text_font: battery_icons_20
+                        text_color: 0x808080
+                        align: TOP_LEFT
+                        x: 37
+                        y: 10
+                    - label:
+                        id: heating_position_value_diele
+                        text: "0%"
+                        text_font: roboto12
+                        text_color: 0x808080
+                        align: TOP_LEFT
+                        x: 55
+                        y: 10
+                    - slider:
+                        id: light_main_brightness_slider_diele
+                        align: bottom_mid
+                        x: 0
+                        y: -5
+                        width: 100
+                        height: 25
+                        pad_all: 0
+                        min_value: 0
+                        max_value: 255
+                        knob:
+                          bg_color: 0xffffff
+                          pad_left: 0px
+                          pad_right: 0px
+                          pad_top: 0px
+                          pad_bottom: 0px
+                        indicator:
+                          radius: 8px
+                          bg_color: 0xb1b1b1
+                        on_release:
+                          - homeassistant.action:
+                              action: light.turn_on
+                              data:
+                                entity_id: light.diele_alle
+                                brightness: !lambda return int(x);
+                          - lambda: |-
+                              float brightness = x;
+                              lv_label_set_text_fmt(id(light_brightness_percent_diele), "%.0f %%", brightness / 2.55);
+                              lv_obj_clear_flag(id(light_icon_diele), LV_OBJ_FLAG_HIDDEN);
+                              lv_obj_clear_flag(id(light_brightness_percent_diele), LV_OBJ_FLAG_HIDDEN);
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.diele_alle
+              - button:
+                  id: garderobe_btn
+                  checkable: true
+                  grid_cell_column_pos: 0
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  border_width: 1
+                  border_color: 0xffffff
+                  widgets:
+                    - label:
+                        id: light_icon_garderobe
+                        align: BOTTOM_MID
+                        text_font: icons_12
+                        text_color: 0x56acfa
+                        text: !lambda |-
+                          return "\U0000e916";
+                        x: -20
+                        y: -30
+                    - label:
+                        id: light_brightness_percent_garderobe
+                        align: BOTTOM_MID
+                        text_font: roboto12
+                        text_color: 0x56acfa
+                        text: ""
+                        x: 15
+                        y: -30
+                    - label:
+                        text_font: hass_hue_icons
+                        text: "\U0000E9E6"
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Garderobe"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: lbl_battery_status_garderobe
+                        align: TOP_LEFT
+                        x: 18
+                        y: 10
+                        text_font: battery_icons_20
+                        text: "\U0000E918"
+                    - label:
+                        id: room_temp_label_garderobe
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        id: heating_icon_label_garderobe
+                        text: "${radiator2}"
+                        align: TOP_LEFT
+                        x: 3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0x808080
+                    - label:
+                        id: heating_position_icon_garderobe
+                        text: "\U000F1067"
+                        text_font: battery_icons_20
+                        text_color: 0x808080
+                        align: TOP_LEFT
+                        x: 37
+                        y: 10
+                    - label:
+                        id: heating_position_value_garderobe
+                        text: "0%"
+                        text_font: roboto12
+                        text_color: 0x808080
+                        align: TOP_LEFT
+                        x: 55
+                        y: 10
+                    - label:
+                        id: label_icon_timer_garderobe
+                        text_font: icons_12
+                        text: "\ue905"
+                        text_color: 0x56acfa
+                        align: CENTER
+                        x: -20
+                        y: 13
+                    - label:
+                        id: label_timer_garderobe
+                        text: "--:--"
+                        text_font: roboto12
+                        text_color: 0x56acfa
+                        align: CENTER
+                        x: 15
+                        y: 13
+                    - slider:
+                        id: light_main_brightness_slider_garderobe
+                        align: bottom_mid
+                        x: 0
+                        y: -5
+                        width: 100
+                        height: 25
+                        pad_all: 0
+                        min_value: 0
+                        max_value: 255
+                        knob:
+                          bg_color: 0xffffff
+                          pad_left: 0px
+                          pad_right: 0px
+                          pad_top: 0px
+                          pad_bottom: 0px
+                        indicator:
+                          radius: 8px
+                          bg_color: 0xb1b1b1
+                        on_release:
+                          - homeassistant.action:
+                              action: light.turn_on
+                              data:
+                                entity_id: light.garderobe
+                                brightness: !lambda return int(x);
+                          - lambda: |-
+                              float brightness = x;
+                              lv_label_set_text_fmt(id(light_brightness_percent_garderobe), "%.0f %%", brightness / 2.55);
+                              lv_obj_clear_flag(id(light_icon_garderobe), LV_OBJ_FLAG_HIDDEN);
+                              lv_obj_clear_flag(id(light_brightness_percent_garderobe), LV_OBJ_FLAG_HIDDEN);
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.garderobe
+              - button:
+                  id: eingang_btn
+                  checkable: true
+                  grid_cell_column_pos: 1
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  border_width: 1
+                  border_color: 0xffffff
+                  widgets:
+                    - label:
+                        id: label_icon_timer_eingang
+                        text_font: icons_12
+                        text: "\ue905"
+                        text_color: 0x56acfa
+                        align: CENTER
+                        x: -20
+                        y: 13
+                    - label:
+                        id: label_timer_eingang
+                        text: "--:--"
+                        text_font: roboto12
+                        text_color: 0x56acfa
+                        align: CENTER
+                        x: 15
+                        y: 13
+                    - label:
+                        id: lbl_battery_status_eingang
+                        align: TOP_LEFT
+                        x: 18
+                        y: 10
+                        text_font: battery_icons_20
+                        text: "\U0000E918"
+                    - label:
+                        id: room_temp_label_eingang
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        text_font: hass_hue_icons
+                        text: "\U0000E9EE"
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Eingang"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.diele_1
+              - button:
+                  id: haustuer_btn
+                  checkable: true
+                  grid_cell_column_pos: 1
+                  grid_cell_row_pos: 0
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  border_width: 1
+                  border_color: 0xffffff
+                  widgets:
+                    - label:
+                        id: light_icon
+                        align: BOTTOM_MID
+                        text_font: icons_12
+                        text_color: 0x56acfa
+                        text: !lambda |-
+                          return "\U0000e916";
+                        x: -20
+                        y: -30
+                    - label:
+                        id: light_brightness_percent
+                        align: BOTTOM_MID
+                        text_font: roboto12
+                        text_color: 0x56acfa
+                        text: ""
+                        x: 15
+                        y: -30
+                    - label:
+                        text_font: btn_icons_font
+                        text: $coach_lamp
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Haustür"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: room_temp_label_haustuer
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        id: label_icon_timer_haustuer
+                        text_font: icons_12
+                        text: "\ue905"
+                        text_color: 0x56acfa
+                        align: CENTER
+                        x: -20
+                        y: 13
+                    - label:
+                        id: label_timer_haustuer
+                        text: "--:--"
+                        text_font: roboto12
+                        text_color: 0x56acfa
+                        align: CENTER
+                        x: 15
+                        y: 13
+                    - slider:
+                        id: light_main_brightness_slider
+                        align: bottom_mid
+                        x: 0
+                        y: -5
+                        width: 100
+                        height: 25
+                        pad_all: 0
+                        min_value: 0
+                        max_value: 255
+                        knob:
+                          bg_color: 0xffffff
+                          pad_left: 0px
+                          pad_right: 0px
+                          pad_top: 0px
+                          pad_bottom: 0px
+                        indicator:
+                          radius: 8px
+                          bg_color: 0xb1b1b1
+                        on_release:
+                          - homeassistant.action:
+                              action: light.turn_on
+                              data:
+                                entity_id: light.haustur
+                                brightness: !lambda return int(x);
+                          - lambda: |-
+                              float brightness = x;
+                              lv_label_set_text_fmt(id(light_brightness_percent), "%.0f %%", brightness / 2.55);
+                              lv_obj_clear_flag(id(light_icon), LV_OBJ_FLAG_HIDDEN);
+                              lv_obj_clear_flag(id(light_brightness_percent), LV_OBJ_FLAG_HIDDEN);
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.haustur
+    - id: sleeping_page
+      widgets:
+        - image:
+            align: CENTER
+            src: back3
+        - label:
+            text: "Allgemein"
+            align: TOP_MID
+            y: 6
+            text_font: roboto12
+            text_color: 0xffffff
+        - label:
+            align: top_left
+            y: 6
+            x: 92
+            id: display_time_header_general
+            text: "00:00"
+            text_font: roboto12
+            text_color: 0xffffff
+        - obj:
+            layout:
+              type: GRID
+              grid_columns: [FR(1), FR(1), FR(1)]
+              grid_rows: [FR(50), FR(50)]
+            width: 100%
+            height: 90%
+            pad_all: 15
+            pad_top: 22
+            bg_opa: TRANSP
+            border_opa: TRANSP
+            widgets:
+              - button:
+                  id: kueche_btn
+                  checkable: true
+                  grid_cell_column_pos: 0
+                  grid_cell_row_pos: 0
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        id: lbl_battery_status_kueche
+                        align: TOP_LEFT
+                        x: 18
+                        y: 10
+                        text_font: battery_icons_20
+                        text: "\U000F0091"
+                    - label:
+                        text_font: hass_hue_icons
+                        text: "\U0000E9DF"
+                        align: CENTER
+                        y: -20
+                    - label:
+                        id: room_temp_label_kueche
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        text_font: roboto24
+                        text: "Küche"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: heating_icon_label_kueche
+                        text: "${radiator2}"
+                        align: TOP_LEFT
+                        x: 3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0x808080
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.kuche_alle
+              - button:
+                  id: esszimmer_btn
+                  checkable: true
+                  grid_cell_column_pos: 1
+                  grid_cell_row_pos: 0
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        text_font: btn_icons_font
+                        text: $ceiling_light
+                        align: CENTER
+                        y: -20
+                    - label:
+                        id: room_temp_label_esszimmer
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        text_font: roboto24
+                        text: "Esszim."
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: lbl_battery_status_esszimmer
+                        align: TOP_LEFT
+                        x: 18
+                        y: 10
+                        text_font: battery_icons_20
+                        text: "\U0000E9EA"
+                    - label:
+                        id: heating_icon_label_esszimmer
+                        text: $radiator2
+                        align: TOP_LEFT
+                        x: 3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0x808080
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.esszimmer_decke
+              - button:
+                  id: wohnzimmer_btn
+                  checkable: true
+                  grid_cell_column_pos: 2
+                  grid_cell_row_pos: 0
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $ceiling_light1
+                        align: CENTER
+                        y: -20
+                    - label:
+                        id: room_temp_label_wohnzimmer
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        id: lbl_battery_status_wohnzimmer
+                        align: TOP_LEFT
+                        x: 18
+                        y: 10
+                        text_font: battery_icons_20
+                        text: "\U0000E9EA"
+                    - label:
+                        text_font: roboto24
+                        text: "Wohnzim."
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: heating_icon_label_wohnzimmer
+                        text: $radiator2
+                        align: TOP_LEFT
+                        x: 3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0x808080
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.wohnzimmer_relay_2
+              - button:
+                  id: buero_btn
+                  checkable: true
+                  grid_cell_column_pos: 0
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $icon_e9ed
+                        align: CENTER
+                        y: -20
+                    - label:
+                        id: room_temp_label_buero
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        text_font: roboto24
+                        text: "Büro"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: lbl_battery_status_buero
+                        align: TOP_LEFT
+                        x: 18
+                        y: 10
+                        text_font: battery_icons_20
+                        text: "\U0000E9EA"
+                    - label:
+                        id: heating_icon_label_buero
+                        text: $radiator2
+                        align: TOP_LEFT
+                        x: 3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0x808080
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.buro_relay_1
+              - button:
+                  id: unterschrank_btn
+                  checkable: true
+                  grid_cell_column_pos: 1
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        id: light_icon_unterschrank
+                        align: BOTTOM_MID
+                        text_font: icons_12
+                        text_color: 0x56acfa
+                        text: !lambda |-
+                          return "\U0000e916";
+                        x: -20
+                        y: -30
+                    - label:
+                        id: light_brightness_percent_unterschrank
+                        align: BOTTOM_MID
+                        text_font: roboto12
+                        text_color: 0x56acfa
+                        text: ""
+                        x: 15
+                        y: -30
+                    - label:
+                        text_font: hass_hue_icons
+                        text: "\U0000E991"
+                        align: CENTER
+                        y: -20
+                    - label:
+                        text_font: roboto24
+                        text: "Unterschrank"
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - slider:
+                        id: light_main_brightness_slider_unterschrank
+                        align: bottom_mid
+                        x: 0
+                        y: -5
+                        width: 100
+                        height: 25
+                        pad_all: 0
+                        min_value: 0
+                        max_value: 255
+                        knob:
+                          bg_color: 0xffffff
+                          pad_left: 0px
+                          pad_right: 0px
+                          pad_top: 0px
+                          pad_bottom: 0px
+                        indicator:
+                          radius: 8px
+                          bg_color: 0xb1b1b1
+                        on_release:
+                          - homeassistant.action:
+                              action: light.turn_on
+                              data:
+                                entity_id: light.unterschrank
+                                brightness: !lambda return int(x);
+                          - lambda: |-
+                              float brightness = x;
+                              lv_label_set_text_fmt(id(light_brightness_percent_unterschrank), "%.0f %%", brightness / 2.55);
+                              lv_obj_clear_flag(id(light_icon_unterschrank), LV_OBJ_FLAG_HIDDEN);
+                              lv_obj_clear_flag(id(light_brightness_percent_unterschrank), LV_OBJ_FLAG_HIDDEN);
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.unterschrank
+              - button:
+                  id: bad_btn
+                  checkable: true
+                  grid_cell_column_pos: 2
+                  grid_cell_row_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: STRETCH
+                  widgets:
+                    - label:
+                        text_font: hass_hue_icons
+                        text: $icon_e9f7
+                        align: CENTER
+                        y: -20
+                    - label:
+                        id: room_temp_label_bad
+                        text: "$temp"
+                        align: TOP_RIGHT
+                        x: -3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0xffffff
+                    - label:
+                        text: "Bad"
+                        text_font: roboto24
+                        long_mode: dot
+                        align: CENTER
+                        y: 30
+                    - label:
+                        id: lbl_battery_status_bad
+                        align: TOP_LEFT
+                        x: 18
+                        y: 10
+                        text_font: battery_icons_20
+                        text: "\U0000E9EA"
+                    - label:
+                        id: heating_icon_label_bad
+                        text: $radiator2
+                        align: TOP_LEFT
+                        x: 3
+                        y: 10
+                        text_font: roboto12
+                        text_color: 0x808080
+                  on_click:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data_template:
+                          entity_id: light.schalter_badezimmer_unten_l1
+
+    - id: page_thermostat
+      widgets:
+        - image:
+            align: CENTER
+            src: back1
+        - label:
+            text: "Heizung Diele"
+            align: TOP_MID
+            y: 6
+            text_font: roboto12
+            text_color: 0xffffff
+        - label:
+            align: top_left
+            y: 6
+            x: 92
+            id: display_time_header_thermostat
+            text: "00:00"
+            text_font: roboto12
+            text_color: 0xffffff
+        - obj:
+            bg_opa: TRANSP
+            border_opa: TRANSP
+            shadow_opa: TRANSP
+            width: 480
+            height: 480
+            widgets:
+              - meter:
+                  height: 320
+                  width: 320
+                  border_width: 0
+                  bg_opa: TRANSP
+                  align: CENTER
+                  scales:
+                    - range_from: 15
+                      range_to: 25
+                      angle_range: 270
+                      ticks:
+                        width: 1
+                        count: 41
+                        length: 10
+                        color: 0xffffff
+                        major:
+                          stride: 5
+                          width: 5
+                          length: 15
+                          color: 0xffffff
+                          label_gap: 15
+                      indicators:
+                        - tick_style:
+                            start_value: 15
+                            end_value: 25
+                            color_start: 0x56acfa
+                            color_end: 0xef382e
+                            width: 1
+              - arc:
+                  id: arc_id1
+                  align: CENTER
+                  arc_width: 36
+                  width: 400
+                  height: 400
+                  min_value: 15
+                  max_value: 25
+                  adjustable: true
+                  adv_hittest: true
+                  arc_opa: TRANSP
+                  indicator:
+                    arc_color: 0xef382e
+                    arc_width: 40
+                  knob:
+                    border_color: 0xef382e
+                    border_width: 8
+                    bg_color: 0xa3333f
+                  on_release:
+                    - homeassistant.service:
+                        service: climate.set_temperature
+                        data:
+                          entity_id: climate.diele1
+                          temperature: !lambda return x;
+              - arc:
+                  id: arc_sensor_temp
+                  clickable: false
+                  align: CENTER
+                  arc_width: 24
+                  width: 370
+                  height: 370
+                  min_value: 15
+                  max_value: 25
+                  value: 22
+                  adjustable: true
+                  arc_opa: TRANSP
+                  indicator:
+                    arc_opa: TRANSP
+                  knob:
+                    border_opa: TRANSP
+                    bg_color: 0xffffff
+              - obj:
+                  align: CENTER
+                  bg_color: 0x111111
+                  border_opa: TRANSP
+                  shadow_opa: TRANSP
+                  width: 220
+                  height: 220
+                  radius: 110
+              - label:
+                  id: heating_icon
+                  y: 30
+                  align: CENTER
+                  text_font: icons_24
+                  text: "${heating}"
+              - obj:
+                  id: valve_box
+                  y: 98
+                  align: CENTER
+                  hidden: true
+                  width: 60
+                  height: 40
+                  bg_opa: TRANSP
+                  border_opa: TRANSP
+                  shadow_opa: TRANSP
+                  widgets:
+                    - label:
+                        id: valve_icon
+                        x: -10
+                        align: LEFT_MID
+                        text_font: roboto12
+                        text_color: 0xffffff
+                        text: "\U000F1068"
+                    - label:
+                        id: heating_valve_position
+                        x: 5
+                        align: LEFT_MID
+                        text_font: roboto12
+                        text_color: 0xffffff
+                        text: ""
+              - label:
+                  id: thermostat_status
+                  y: -80
+                  x: 0
+                  align: CENTER
+                  text_font: nunito_24
+                  text_color: 0xffffff
+                  text: ""
+              - label:
+                  id: target_temperature_whole
+                  x: -200
+                  y: -20
+                  align: RIGHT_MID
+                  text_font: nunito_84
+                  text_color: 0xffffff
+                  text: ""
+              - label:
+                  id: target_temperature_fraction
+                  x: 248
+                  y: -5
+                  align: LEFT_MID
+                  text_font: nunito_36
+                  text_color: 0xffffff
+                  text: ""
+              - label:
+                  id: target_temperature_measurement
+                  x: 245
+                  y: -40
+                  align: LEFT_MID
+                  text_font: nunito_30
+                  text_color: 0xffffff
+                  text: "°C"
+              - label:
+                  id: sensor_temperature_thermostat_icon
+                  y: 80
+                  x: -37
+                  align: CENTER
+                  text_font: icons_24
+                  text_color: 0xffffff
+                  text: "${temperature}"
+              - label:
+                  id: sensor_temperature_thermostat
+                  y: 80
+                  x: 10
+                  align: CENTER
+                  text_font: nunito_20
+                  text_color: 0xffffff
+                  text: "0"
+              - button:
+                  x: 50
+                  y: -40
+                  width: 70
+                  height: 70
+                  bg_color: 0x111111
+                  border_color: 0xfafafa
+                  border_width: 5
+                  shadow_opa: TRANSP
+                  radius: 35
+                  align: BOTTOM_MID
+                  widgets:
+                    - label:
+                        y: -2
+                        align: CENTER
+                        text_font: nunito_48
+                        text_color: 0xfafafa
+                        text: "+"
+                  on_press:
+                      then:
+                        - lambda: |-
+                            auto temp = id(thermostat_id1).state + 0.5;
+                            id(thermostat_id1).publish_state(temp);
+                        - homeassistant.service:
+                            service: climate.set_temperature
+                            data:
+                              entity_id: climate.diele1
+                              temperature: !lambda 'return id(thermostat_id1).state;'
+              - button:
+                  x: -50
+                  y: -40
+                  width: 70
+                  height: 70
+                  bg_color: 0x111111
+                  border_color: 0xfafafa
+                  border_width: 5
+                  shadow_opa: TRANSP
+                  radius: 35
+                  align: BOTTOM_MID
+                  widgets:
+                    - label:
+                        y: -2
+                        align: CENTER
+                        text_font: nunito_48
+                        text_color: 0xfafafa
+                        text: "-"
+                  on_press:
+                      then:
+                        - lambda: |-
+                            auto temp = id(thermostat_id1).state - 0.5;
+                            id(thermostat_id1).publish_state(temp);
+                        - homeassistant.service:
+                            service: climate.set_temperature
+                            data:
+                              entity_id: climate.diele1
+                              temperature: !lambda 'return id(thermostat_id1).state;'
+
+    - id: setting_page
+      widgets:
+        - image:
+            align: CENTER
+            src: back2
+        - label:
+            text: "Einstellungen"
+            align: TOP_MID
+            y: 6
+            text_font: roboto12
+            text_color: 0xffffff
+        - label:
+            align: top_left
+            y: 6
+            x: 92
+            id: display_time_header_setting
+            text: "00:00"
+            text_font: roboto12
+            text_color: 0xffffff
+        # Day Slider
+        - label:
+            text: "Taghelligkeit"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 30
+            y: 50
+        - slider:
+            id: slider_brightness_day
+            x: 35
+            y: 80
+            width: 300
+            height: 20
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            min_value: 1
+            max_value: 100
+            value: !lambda "return id(brightness_day) * 100;"
+            on_value:
+              - lambda: |-
+                  id(brightness_day) = x / 100.0f;
+                  ESP_LOGD("Slider", "brightness_day: %.2f", id(brightness_day));
+                  if (id(display_backlight).remote_values.is_on()) {
+                    id(display_backlight_brightness) = id(brightness_day) * 100.0f;
+                    id(display_backlight).turn_on().set_brightness(id(brightness_day)).perform();
+                  }
+              - lvgl.label.update:
+                  id: slider_label_brightness_day
+                  text:
+                    format: "%.0f%%"
+                    args: [ x ]
+        - label:
+            id: slider_label_brightness_day
+            x: 360
+            y: 80
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "100"
+    # Night Slider
+        - label:
+            text: "Nachthelligkeit"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 30
+            y: 110
+        - slider:
+            id: slider_brightness_night
+            x: 35
+            y: 140
+            width: 300
+            height: 20
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            min_value: 1
+            max_value: 100
+            value: !lambda "return id(brightness_night) * 100;"
+            on_value:
+              - lambda: |-
+                  id(brightness_night) = x / 100.0f;
+                  ESP_LOGD("Slider", "brightness_night: %.2f", id(brightness_night));
+                  auto now = id(ha_time).now();
+                  if ((now.hour >= 23 || now.hour < 7) && id(display_backlight).remote_values.is_on()) {
+                    id(display_backlight_brightness) = id(brightness_night) * 100.0f;
+                    id(display_backlight).turn_on().set_brightness(id(brightness_night)).perform();
+                  }
+              - lvgl.label.update:
+                  id: slider_label_brightness_night
+                  text:
+                    format: "%.0f%%"
+                    args: [ x ]
+        - label:
+            id: slider_label_brightness_night
+            x: 360
+            y: 140
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "35"
+        # Standby-Time Day
+        - label:
+            text: "Standby Tag"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 30
+            y: 170
+        - slider:
+            id: slider_standby_day
+            x: 35
+            y: 200
+            width: 300
+            height: 20
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            min_value: 15
+            max_value: 300
+            value: !lambda "return id(standby_timeout_day);"
+            on_value:
+              - lambda: |-
+                  id(standby_timeout_day) = x;
+                  ESP_LOGD("Slider", "standby_timeout_day: %d", id(standby_timeout_day));
+              - lvgl.label.update:
+                  id: slider_label_standby_day
+                  text: !lambda |-
+                    int value = static_cast<int>(x);
+                    int minutes = value / 60;
+                    int seconds = value % 60;
+                    char buffer[32];
+                    if (minutes > 0) {
+                      snprintf(buffer, sizeof(buffer), "%dmin%s%ds", minutes, (seconds > 0 ? ", " : ""), seconds);
+                    } else {
+                      snprintf(buffer, sizeof(buffer), "%ds", seconds);
+                    }
+                    return std::string(buffer);
+              - script.execute: touch_wakeup_and_restart_timer
+        - label:
+            id: slider_label_standby_day
+            x: 360
+            y: 200
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "300"
+        # Standby-Time Night
+        - label:
+            text: "Standby Nacht"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 30
+            y: 230
+        - slider:
+            id: slider_standby_night
+            x: 35
+            y: 260
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            width: 300
+            height: 20
+            min_value: 15
+            max_value: 300
+            adv_hittest: true
+            value: !lambda "return id(standby_timeout_night);"
+            on_value:
+              - lambda: |-
+                  id(standby_timeout_night) = x;
+                  ESP_LOGD("Slider", "standby_timeout_night: %d", id(standby_timeout_night));
+              - lvgl.label.update:
+                  id: slider_label_standby_night
+                  text: !lambda |-
+                    int value = static_cast<int>(x);
+                    int minutes = value / 60;
+                    int seconds = value % 60;
+                    char buffer[32];
+                    if (minutes > 0) {
+                      snprintf(buffer, sizeof(buffer), "%dmin%s%ds", minutes, (seconds > 0 ? ", " : ""), seconds);
+                    } else {
+                      snprintf(buffer, sizeof(buffer), "%ds", seconds);
+                    }
+                    return std::string(buffer);
+              - script.execute: touch_wakeup_and_restart_timer
+        - label:
+            id: slider_label_standby_night
+            x: 360
+            y: 260
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "120"
+        # Standby-Brightness Day
+        - label:
+            text: "Standby Taghelligkeit"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 30
+            y: 290
+        - slider:
+            id: slider_standby_brightness_day
+            x: 35
+            y: 320
+            width: 300
+            height: 20
+            min_value: 0
+            max_value: 100
+            value: !lambda "return id(standby_brightness_day) * 100.0f;"
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            on_value:
+              - lambda: |-
+                  id(standby_brightness_day) = x / 100.0f;
+                  ESP_LOGD("Slider", "standby_brightness_day: %.2f", id(standby_brightness_day));
+              - lvgl.label.update:
+                  id: slider_label_standby_brightness_day
+                  text:
+                    format: "%.0f%%"
+                    args: [ x ]
+        - label:
+            id: slider_label_standby_brightness_day
+            x: 360
+            y: 320
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "35"
+        # Standby-Brightness Night
+        - label:
+            text: "Standby Nachthelligkeit"
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            x: 30
+            y: 350
+        - slider:
+            id: slider_standby_brightness_night
+            x: 35
+            y: 380
+            width: 300
+            height: 20
+            min_value: 0
+            max_value: 100
+            value: !lambda "return id(standby_brightness_night) * 100.0f;"
+            knob:
+              bg_color: 0xffffff
+              bg_grad_color: 0xdddddd
+              pad_left: 5px
+              pad_right: 5px
+              pad_top: 5px
+              pad_bottom: 5px
+            indicator:
+              radius: 8px
+              bg_color: 0xb1b1b1
+            on_value:
+              - lambda: |-
+                  id(standby_brightness_night) = x / 100.0f;
+                  ESP_LOGD("Slider", "standby_brightness_night: %.2f", id(standby_brightness_night));
+              - lvgl.label.update:
+                  id: slider_label_standby_brightness_night
+                  text:
+                    format: "%.0f%%"
+                    args: [ x ]
+        - label:
+            id: slider_label_standby_brightness_night
+            x: 360
+            y: 380
+            width: 105
+            text_font: roboto24
+            text_color: 0xCCCCCC
+            text_align: LEFT
+            text: "0"
+        - label:
+            x: 20
+            y: 420
+            text_font: roboto12
+            text_color: 0xCCCCCC
+            text: BSSID
+            id: settings_wifi_ssid
+        - label:
+            x: 275
+            y: 420
+            width: 200
+            text_font: roboto12
+            text_color: 0xCCCCCC
+            text_align: left
+            text: IP Address
+            id: settings_wifi_ipaddress
+
+    - id: weather_page
+      widgets:
+        - image:
+            align: CENTER
+            src: back3
+            widgets:
+              - label:
+                  align: top_left
+                  y: 6
+                  x: 82
+                  id: display_time_header_weather
+                  text: "00:00"
+                  text_font: roboto12
+                  text_color: 0xffffff
+              - label:
+                  text: "Wettervorschau"
+                  align: TOP_MID
+                  y: 6
+                  text_font: roboto12
+                  text_color: 0xffffff
+        - obj:
+            x: 25
+            y: 80
+            width: 100
+            height: 320
+            styles: bg_white
+            bg_color: 0x333333
+            scrollbar_mode: "OFF"
+            widgets:
+              - label:
+                  id: text_day_0
+                  text: "Tag"
+                  align: TOP_MID
+                  y: 5
+              - label:
+                  text_font: weather_icons_small
+                  id: home_weather_icon_0
+                  text: "-"
+                  align: TOP_MID
+                  y: 30
+              - label:
+                  id: text_weather_summary_0
+                  text: "-"
+                  text_font: roboto18
+                  long_mode: DOT
+                  text_color: 0xFFFFFF
+                  align: TOP_MID
+                  y: 85
+                  width: 90
+                  text_align: CENTER
+              - label:
+                  id: text_temperature_high_0
+                  text: "-"
+                  align: TOP_MID
+                  y: 175
+              - label:
+                  id: text_temperature_low_0
+                  text: "/-"
+                  align: TOP_MID
+                  y: 200
+              - label:
+                  id: text_weather_wind_0
+                  text: "/-"
+                  align: TOP_MID
+                  y: 225
+              - label:
+                  id: text_uv_index_0
+                  text: "UV: -"
+                  align: TOP_MID
+                  y: 250
+              - label:
+                  id: text_bw_index_0
+                  text: "-"
+                  align: TOP_MID
+                  y: 275
+        - obj:
+            x: 135
+            y: 80
+            width: 100
+            height: 320
+            styles: bg_white
+            bg_color: 0x333333
+            scrollbar_mode: "OFF"
+            widgets:
+              - label:
+                  id: text_day_1
+                  text: "Tag"
+                  align: TOP_MID
+                  y: 5
+              - label:
+                  text_font: weather_icons_small
+                  id: home_weather_icon_1
+                  text: "-"
+                  align: TOP_MID
+                  y: 30
+              - label:
+                  id: text_weather_summary_1
+                  text: "-"
+                  text_font: roboto18
+                  long_mode: DOT
+                  text_color: 0xFFFFFF
+                  align: TOP_MID
+                  y: 85
+                  width: 90
+                  text_align: CENTER
+              - label:
+                  id: text_temperature_high_1
+                  text: "-"
+                  align: TOP_MID
+                  y: 175
+              - label:
+                  id: text_temperature_low_1
+                  text: "/-"
+                  align: TOP_MID
+                  y: 200
+              - label:
+                  id: text_weather_wind_1
+                  text: "/-"
+                  align: TOP_MID
+                  y: 225
+              - label:
+                  id: text_uv_index_1
+                  text: "UV: -"
+                  align: TOP_MID
+                  y: 250
+              - label:
+                  id: text_bw_index_1
+                  text: "-"
+                  align: TOP_MID
+                  y: 275
+        - obj:
+            x: 245
+            y: 80
+            width: 100
+            height: 320
+            styles: bg_white
+            bg_color: 0x333333
+            scrollbar_mode: "OFF"
+            widgets:
+              - label:
+                  id: text_day_2
+                  text: "Tag"
+                  align: TOP_MID
+                  y: 5
+              - label:
+                  text_font: weather_icons_small
+                  id: home_weather_icon_2
+                  text: "-"
+                  align: TOP_MID
+                  y: 30
+              - label:
+                  id: text_weather_summary_2
+                  text: "-"
+                  text_font: roboto18
+                  long_mode: DOT
+                  text_color: 0xFFFFFF
+                  align: TOP_MID
+                  y: 85
+                  width: 90
+                  text_align: CENTER
+              - label:
+                  id: text_temperature_high_2
+                  text: "-"
+                  align: TOP_MID
+                  y: 175
+              - label:
+                  id: text_temperature_low_2
+                  text: "/-"
+                  align: TOP_MID
+                  y: 200
+              - label:
+                  id: text_weather_wind_2
+                  text: "/-"
+                  align: TOP_MID
+                  y: 225
+              - label:
+                  id: text_uv_index_2
+                  text: "UV: -"
+                  align: TOP_MID
+                  y: 250
+              - label:
+                  id: text_bw_index_2
+                  text: "-"
+                  align: TOP_MID
+                  y: 275
+        - obj:
+            x: 355
+            y: 80
+            width: 100
+            height: 320
+            styles: bg_white
+            bg_color: 0x333333
+            scrollbar_mode: "OFF"
+            widgets:
+              - label:
+                  id: text_day_3
+                  text: "Tag"
+                  align: TOP_MID
+                  y: 5
+              - label:
+                  text_font: weather_icons_small
+                  id: home_weather_icon_3
+                  text: "-"
+                  align: TOP_MID
+                  y: 30
+              - label:
+                  id: text_weather_summary_3
+                  text: "-"
+                  text_font: roboto18
+                  long_mode: DOT
+                  text_color: 0xFFFFFF
+                  align: TOP_MID
+                  y: 85
+                  width: 90
+                  text_align: CENTER
+              - label:
+                  id: text_temperature_high_3
+                  text: "-"
+                  align: TOP_MID
+                  y: 175
+              - label:
+                  id: text_temperature_low_3
+                  text: "/-"
+                  align: TOP_MID
+                  y: 200
+              - label:
+                  id: text_weather_wind_3
+                  text: "/-"
+                  align: TOP_MID
+                  y: 225
+              - label:
+                  id: text_uv_index_3
+                  text: "UV: -"
+                  align: TOP_MID
+                  y: 250
+              - label:
+                  id: text_bw_index_3
+                  text: "-"
+                  align: TOP_MID
+                  y: 275
+
+number:
+  - platform: template
+    name: "Standby Brightness Day"
+    id: ha_standby_brightness_day
+    min_value: 0
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 35
+    on_value:
+      then:
+        - lambda: 'id(standby_brightness_day) = x / 100.0f;'
+
+  - platform: template
+    name: "Standby Brightness Night"
+    id: ha_standby_brightness_night
+    min_value: 0
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 0
+    on_value:
+      then:
+        - lambda: 'id(standby_brightness_night) = x / 100.0f;'
+
+  - platform: template
+    name: "Brightness Day"
+    id: ha_brightness_day
+    min_value: 1
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 100
+    on_value:
+      then:
+        - lambda: 'id(brightness_day) = x / 100.0f;'
+
+  - platform: template
+    name: "Brightness Night"
+    id: ha_brightness_night
+    min_value: 1
+    max_value: 100
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 35
+    on_value:
+      then:
+        - lambda: 'id(brightness_night) = x / 100.0f;'
+
+  - platform: template
+    name: "Standby Timeout Day"
+    id: ha_standby_timeout_day
+    min_value: 5
+    max_value: 600
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 300
+    on_value:
+      then:
+        - lambda: 'id(standby_timeout_day) = x;'
+
+  - platform: template
+    name: "Standby Timeout Night"
+    id: ha_standby_timeout_night
+    min_value: 5
+    max_value: 300
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 120
+    on_value:
+      then:
+        - lambda: 'id(standby_timeout_night) = x;'
+
+  - platform: template
+    id: current_page_index
+    name: Aktuelle Seite
+    min_value: 0
+    max_value: 4  # Anzahl der Seiten - 1
+    step: 1
+    initial_value: 0
+    restore_value: false
+    optimistic: true
+time:
+  - platform: homeassistant
+    id: ha_time
+    on_time:
+      - hours: 3
+        minutes: 5
+        seconds: 0
+        then:
+          - switch.turn_on: switch_antiburn
+      - hours: 3
+        minutes: 15
+        seconds: 0
+        then:
+          - switch.turn_off: switch_antiburn
+switch:
+  - platform: template
+    name: Antiburn
+    id: switch_antiburn
+    icon: mdi:television-shimmer
+    optimistic: true
+    entity_category: "config"
+    turn_on_action:
+      - if:
+          condition: lvgl.is_paused
+          then:
+            - lvgl.resume:
+            - lvgl.widget.redraw:
+      - lvgl.pause:
+          show_snow: true
+    turn_off_action:
+      - if:
+          condition: lvgl.is_paused
+          then:
+            - lvgl.resume:
+            - lvgl.widget.redraw:
+
+sensor:
+  - platform: homeassistant
+    id: ha_timer_garderobe
+    entity_id: sensor.timer_garderobe_remaining
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            int seconds = (int) id(ha_timer_garderobe).state;
+            if (seconds != id(last_timer_garderobe)) {
+              id(last_timer_garderobe) = seconds;
+              if (seconds > 0) {
+                char buf[6];
+                snprintf(buf, sizeof(buf), "%02d:%02d", seconds / 60, seconds % 60);
+                lv_label_set_text(id(label_timer_garderobe), buf);
+                lv_obj_clear_flag(id(label_timer_garderobe), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(id(label_icon_timer_garderobe), LV_OBJ_FLAG_HIDDEN);
+              } else {
+                lv_obj_add_flag(id(label_timer_garderobe), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(id(label_icon_timer_garderobe), LV_OBJ_FLAG_HIDDEN);
+              }
+            }
+
+  - platform: homeassistant
+    id: ha_timer_eingang
+    entity_id: sensor.timer_eingang_remaining
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            int seconds = (int) id(ha_timer_eingang).state;
+            if (seconds != id(last_timer_eingang)) {
+              id(last_timer_eingang) = seconds;
+              if (seconds > 0) {
+                char buf[6];
+                snprintf(buf, sizeof(buf), "%02d:%02d", seconds / 60, seconds % 60);
+                lv_label_set_text(id(label_timer_eingang), buf);
+                lv_obj_clear_flag(id(label_timer_eingang), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(id(label_icon_timer_eingang), LV_OBJ_FLAG_HIDDEN);
+              } else {
+                lv_obj_add_flag(id(label_timer_eingang), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(id(label_icon_timer_eingang), LV_OBJ_FLAG_HIDDEN);
+              }
+            }
+
+  - platform: homeassistant
+    id: ha_timer_haustuer
+    entity_id: sensor.timer_haustuer_remaining
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            int seconds = (int) id(ha_timer_haustuer).state;
+            if (seconds != id(last_timer_haustuer)) {
+              id(last_timer_haustuer) = seconds;
+              if (seconds > 0) {
+                char buf[6];
+                snprintf(buf, sizeof(buf), "%02d:%02d", seconds / 60, seconds % 60);
+                lv_label_set_text(id(label_timer_haustuer), buf);
+                lv_obj_clear_flag(id(label_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(id(label_icon_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
+              } else {
+                lv_obj_add_flag(id(label_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(id(label_icon_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
+              }
+            }
+
+  - platform: homeassistant
+    id: diele_position
+    entity_id: sensor.diele1_position
+    internal: true
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: heating_position_value_diele
+            text: !lambda |-
+              if (!id(diele_position).has_state() || isnan(id(diele_position).state)) {
+                return std::string("-");
+              } else {
+                return std::to_string((int)id(diele_position).state) + "%";
+              }
+            text_color: !lambda |-
+              if (!id(diele_position).has_state() || isnan(id(diele_position).state)) {
+                return lv_color_hex(0x808080);
+              } else {
+                return id(diele_position).state > 0 ? lv_color_hex(0xFF0000) : lv_color_hex(0x808080);
+              }
+        - lvgl.label.update:
+            id: heating_position_icon_diele
+            text: !lambda |-
+              return std::string(id(diele_position).state > 0 ? "\U000F1068" : "\U000F1067");
+            text_color: !lambda |-
+              return id(diele_position).state > 0 ? lv_color_hex(0xFF0000) : lv_color_hex(0x808080);
+
+  - platform: homeassistant
+    id: garderobe_position
+    entity_id: sensor.garderobe_position
+    internal: true
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: heating_position_value_garderobe
+            text: !lambda |-
+              if (!id(garderobe_position).has_state() || isnan(id(garderobe_position).state)) {
+                return std::string("-");
+              } else {
+                return std::to_string((int)id(garderobe_position).state) + "%";
+              }
+            text_color: !lambda |-
+              if (!id(garderobe_position).has_state() || isnan(id(garderobe_position).state)) {
+                return lv_color_hex(0x808080);
+              } else {
+                return id(garderobe_position).state > 0 ? lv_color_hex(0xFF0000) : lv_color_hex(0x808080);
+              }
+        - lvgl.label.update:
+            id: heating_position_icon_garderobe
+            text: !lambda |-
+              return std::string(id(garderobe_position).state > 0 ? "\U000F1068" : "\U000F1067");
+            text_color: !lambda |-
+              return id(garderobe_position).state > 0 ? lv_color_hex(0xFF0000) : lv_color_hex(0x808080);
+
+  - platform: homeassistant
+    id: current_lights_on_test
+    entity_id: sensor.current_lights_on_test
+    on_value:
+      then:
+        - lambda: |-
+            lv_obj_clear_flag(id(lights_status_label), LV_OBJ_FLAG_HIDDEN);
+            int lights_on = (int)id(current_lights_on_test).state;
+            if (lights_on == 0) {
+              lv_label_set_text(id(lights_status_label), "\U000F12D0");
+              lv_obj_set_style_text_color(id(lights_status_label), lv_color_hex(0x333333), LV_PART_MAIN);
+            } else {
+              char buf[16];
+              snprintf(buf, sizeof(buf), "\U000F1254%d", lights_on);
+              lv_label_set_text(id(lights_status_label), buf);
+              lv_obj_set_style_text_color(id(lights_status_label), lv_color_hex(0x56ACFA), LV_PART_MAIN);
+            }
+
+  - platform: homeassistant
+    id: thermostat_valve_position
+    entity_id: sensor.diele1_position
+    internal: true
+
+  - platform: homeassistant
+    id: main_light_brightness
+    entity_id: light.haustur
+    attribute: brightness
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            if (id(main_light_status).state) {
+                float brightness = id(main_light_brightness).state;
+                if (isnan(brightness) || brightness <= 0) {
+                    lv_label_set_text(id(light_brightness_percent), "- %");
+                } else {
+                    char buf[10];
+                    snprintf(buf, sizeof(buf), "%.0f %%", brightness / 2.55);
+                    lv_label_set_text(id(light_brightness_percent), buf);
+                    lv_slider_set_value(id(light_main_brightness_slider), brightness, LV_ANIM_OFF);
+                }
+                lv_obj_clear_flag(id(light_icon), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(id(light_brightness_percent), LV_OBJ_FLAG_HIDDEN);
+            } else {
+                lv_label_set_text(id(light_brightness_percent), "");
+                lv_obj_add_flag(id(light_icon), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(id(light_brightness_percent), LV_OBJ_FLAG_HIDDEN);
+            }
+
+  - platform: homeassistant
+    id: main_light_brightness_unterschrank
+    entity_id: light.unterschrank
+    attribute: brightness
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            if (id(main_light_status_unterschrank).state) {
+                float brightness = id(main_light_brightness_unterschrank).state;
+                if (isnan(brightness) || brightness <= 0) {
+                    lv_label_set_text(id(light_brightness_percent_unterschrank), "- %");
+                } else {
+                    char buf[10];
+                    snprintf(buf, sizeof(buf), "%.0f %%", brightness / 2.55);
+                    lv_label_set_text(id(light_brightness_percent_unterschrank), buf);
+                    lv_slider_set_value(id(light_main_brightness_slider_unterschrank), brightness, LV_ANIM_OFF);
+                }
+                lv_obj_clear_flag(id(light_icon_unterschrank), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(id(light_brightness_percent_unterschrank), LV_OBJ_FLAG_HIDDEN);
+            } else {
+                lv_label_set_text(id(light_brightness_percent_unterschrank), "");
+                lv_obj_add_flag(id(light_icon_unterschrank), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(id(light_brightness_percent_unterschrank), LV_OBJ_FLAG_HIDDEN);
+            }
+
+  - platform: homeassistant
+    id: main_light_brightness_garderobe
+    entity_id: light.garderobe
+    attribute: brightness
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            if (id(main_light_status_garderobe).state) {
+                float brightness = id(main_light_brightness_garderobe).state;
+                if (isnan(brightness) || brightness <= 0) {
+                    lv_label_set_text(id(light_brightness_percent_garderobe), "- %");
+                } else {
+                    char buf[10];
+                    snprintf(buf, sizeof(buf), "%.0f %%", brightness / 2.55);
+                    lv_label_set_text(id(light_brightness_percent_garderobe), buf);
+                    lv_slider_set_value(id(light_main_brightness_slider_garderobe), brightness, LV_ANIM_OFF);
+                }
+                lv_obj_clear_flag(id(light_icon_garderobe), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(id(light_brightness_percent_garderobe), LV_OBJ_FLAG_HIDDEN);
+            } else {
+                lv_label_set_text(id(light_brightness_percent_garderobe), "");
+                lv_obj_add_flag(id(light_icon_garderobe), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(id(light_brightness_percent_garderobe), LV_OBJ_FLAG_HIDDEN);
+            }
+
+  - platform: homeassistant
+    id: main_light_brightness_diele
+    entity_id: light.diele_alle
+    attribute: brightness
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            if (id(main_light_status_diele).state) {
+                float brightness = id(main_light_brightness_diele).state;
+                if (isnan(brightness) || brightness <= 0) {
+                    lv_label_set_text(id(light_brightness_percent_diele), "- %");
+                } else {
+                    char buf[10];
+                    snprintf(buf, sizeof(buf), "%.0f %%", brightness / 2.55);
+                    lv_label_set_text(id(light_brightness_percent_diele), buf);
+                    lv_slider_set_value(id(light_main_brightness_slider_diele), brightness, LV_ANIM_OFF);
+                }
+                lv_obj_clear_flag(id(light_icon_diele), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(id(light_brightness_percent_diele), LV_OBJ_FLAG_HIDDEN);
+            } else {
+                lv_label_set_text(id(light_brightness_percent_diele), "");
+                lv_obj_add_flag(id(light_icon_diele), LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(id(light_brightness_percent_diele), LV_OBJ_FLAG_HIDDEN);
+            }
+
+  - platform: homeassistant
+    id: cw_sensor
+    name: "Kalenderwoche"
+    entity_id: sensor.swedish_calendar_week
+
+  - platform: homeassistant
+    id: battery_percentage_bad
+    entity_id: sensor.batterie_bad_unten
+    on_value:
+      - lvgl.label.update:
+          id: lbl_battery_status_bad
+          text: !lambda |-
+            static char buf[8];
+            float pct = x;
+            std::string icon;
+            if (pct >= 100.0f) {
+              icon = "\U000F0079";
+            } else if (pct > 90.0f) {
+              icon = "\U000F0082";
+            } else if (pct > 80.0f) {
+              icon = "\U000F0081";
+            } else if (pct > 70.0f) {
+              icon = "\U000F0080";
+            } else if (pct > 60.0f) {
+              icon = "\U000F007F";
+            } else if (pct > 50.0f) {
+              icon = "\U000F007E";
+            } else if (pct > 40.0f) {
+              icon = "\U000F007D";
+            } else if (pct > 30.0f) {
+              icon = "\U000F007C";
+            } else if (pct > 20.0f) {
+              icon = "\U000F007B";
+            } else if (pct > 10.0f) {
+              icon = "\U000F007A";
+            } else if (pct > 0.0f) {
+              icon = "\U000F008E";
+            } else {
+              icon = "\U000F0091";
+            }
+            snprintf(buf, sizeof(buf), "%s", icon.c_str());
+            return std::string(buf);
+          text_color: !lambda |-
+            float pct = x;
+            float t = (pct <= 10.0f)  ? 0.0f
+                      : (pct >= 100.0f) ? 1.0f
+                      : (pct - 10.0f) / 90.0f;
+            int r = int((1.0f - t) * 255.0f);
+            int g = int(t * 255.0f);
+            return lv_color_make(r, g, 0);
+
+  - platform: homeassistant
+    id: battery_percentage_buero
+    entity_id: sensor.batterie_buro1
+    on_value:
+      - lvgl.label.update:
+          id: lbl_battery_status_buero
+          text: !lambda |-
+            static char buf[8];
+            float pct = x;
+            std::string icon;
+            if (pct >= 100.0f) {
+              icon = "\U000F0079";
+            } else if (pct > 90.0f) {
+              icon = "\U000F0082";
+            } else if (pct > 80.0f) {
+              icon = "\U000F0081";
+            } else if (pct > 70.0f) {
+              icon = "\U000F0080";
+            } else if (pct > 60.0f) {
+              icon = "\U000F007F";
+            } else if (pct > 50.0f) {
+              icon = "\U000F007E";
+            } else if (pct > 40.0f) {
+              icon = "\U000F007D";
+            } else if (pct > 30.0f) {
+              icon = "\U000F007C";
+            } else if (pct > 20.0f) {
+              icon = "\U000F007B";
+            } else if (pct > 10.0f) {
+              icon = "\U000F007A";
+            } else if (pct > 0.0f) {
+              icon = "\U000F008E";
+            } else {
+              icon = "\U000F0091";
+            }
+            snprintf(buf, sizeof(buf), "%s", icon.c_str());
+            return std::string(buf);
+          text_color: !lambda |-
+            float pct = x;
+            float t = (pct <= 10.0f)  ? 0.0f
+                      : (pct >= 100.0f) ? 1.0f
+                      : (pct - 10.0f) / 90.0f;
+            int r = int((1.0f - t) * 255.0f);
+            int g = int(t * 255.0f);
+            return lv_color_make(r, g, 0);
+
+  - platform: homeassistant
+    id: battery_percentage_garderobe
+    entity_id: sensor.wohnzimmer_battery
+    on_value:
+      - lvgl.label.update:
+          id: lbl_battery_status_garderobe
+          text: !lambda |-
+            static char buf[8];
+            float pct = x;
+            std::string icon;
+            if (pct >= 100.0f) {
+              icon = "\U000F0079";
+            } else if (pct > 90.0f) {
+              icon = "\U000F0082";
+            } else if (pct > 80.0f) {
+              icon = "\U000F0081";
+            } else if (pct > 70.0f) {
+              icon = "\U000F0080";
+            } else if (pct > 60.0f) {
+              icon = "\U000F007F";
+            } else if (pct > 50.0f) {
+              icon = "\U000F007E";
+            } else if (pct > 40.0f) {
+              icon = "\U000F007D";
+            } else if (pct > 30.0f) {
+              icon = "\U000F007C";
+            } else if (pct > 20.0f) {
+              icon = "\U000F007B";
+            } else if (pct > 10.0f) {
+              icon = "\U000F007A";
+            } else if (pct > 0.0f) {
+              icon = "\U000F008E";
+            } else {
+              icon = "\U000F0091";
+            }
+            snprintf(buf, sizeof(buf), "%s", icon.c_str());
+            return std::string(buf);
+          text_color: !lambda |-
+            float pct = x;
+            float t = (pct <= 10.0f)  ? 0.0f
+                      : (pct >= 100.0f) ? 1.0f
+                      : (pct - 10.0f) / 90.0f;
+            int r = int((1.0f - t) * 255.0f);
+            int g = int(t * 255.0f);
+            return lv_color_make(r, g, 0);
+
+  - platform: homeassistant
+    id: battery_percentage_eingang
+    entity_id: sensor.bewegungsmelder_eingang_battery_2
+    on_value:
+      - lvgl.label.update:
+          id: lbl_battery_status_eingang
+          text: !lambda |-
+            static char buf[8];
+            float pct = x;
+            std::string icon;
+            if (pct >= 100.0f) {
+              icon = "\U000F0079";
+            } else if (pct > 90.0f) {
+              icon = "\U000F0082";
+            } else if (pct > 80.0f) {
+              icon = "\U000F0081";
+            } else if (pct > 70.0f) {
+              icon = "\U000F0080";
+            } else if (pct > 60.0f) {
+              icon = "\U000F007F";
+            } else if (pct > 50.0f) {
+              icon = "\U000F007E";
+            } else if (pct > 40.0f) {
+              icon = "\U000F007D";
+            } else if (pct > 30.0f) {
+              icon = "\U000F007C";
+            } else if (pct > 20.0f) {
+              icon = "\U000F007B";
+            } else if (pct > 10.0f) {
+              icon = "\U000F007A";
+            } else if (pct > 0.0f) {
+              icon = "\U000F008E";
+            } else {
+              icon = "\U000F0091";
+            }
+            snprintf(buf, sizeof(buf), "%s", icon.c_str());
+            return std::string(buf);
+          text_color: !lambda |-
+            float pct = x;
+            float t = (pct <= 10.0f)  ? 0.0f
+                      : (pct >= 100.0f) ? 1.0f
+                      : (pct - 10.0f) / 90.0f;
+            int r = int((1.0f - t) * 255.0f);
+            int g = int(t * 255.0f);
+            return lv_color_make(r, g, 0);
+
+  - platform: homeassistant
+    id: battery_percentage_esszimmer
+    entity_id: sensor.batterie_esszimmer
+    on_value:
+      - lvgl.label.update:
+          id: lbl_battery_status_esszimmer
+          text: !lambda |-
+            static char buf[8];
+            float pct = x;
+            std::string icon;
+            if (pct >= 100.0f) {
+              icon = "\U000F0079";
+            } else if (pct > 90.0f) {
+              icon = "\U000F0082";
+            } else if (pct > 80.0f) {
+              icon = "\U000F0081";
+            } else if (pct > 70.0f) {
+              icon = "\U000F0080";
+            } else if (pct > 60.0f) {
+              icon = "\U000F007F";
+            } else if (pct > 50.0f) {
+              icon = "\U000F007E";
+            } else if (pct > 40.0f) {
+              icon = "\U000F007D";
+            } else if (pct > 30.0f) {
+              icon = "\U000F007C";
+            } else if (pct > 20.0f) {
+              icon = "\U000F007B";
+            } else if (pct > 10.0f) {
+              icon = "\U000F007A";
+            } else if (pct > 0.0f) {
+              icon = "\U000F008E";
+            } else {
+              icon = "\U000F0091";
+            }
+            snprintf(buf, sizeof(buf), "%s", icon.c_str());
+            return std::string(buf);
+          text_color: !lambda |-
+            float pct = x;
+            float t = (pct <= 10.0f)  ? 0.0f
+                      : (pct >= 100.0f) ? 1.0f
+                      : (pct - 10.0f) / 90.0f;
+            int r = int((1.0f - t) * 255.0f);
+            int g = int(t * 255.0f);
+            return lv_color_make(r, g, 0);
+
+  - platform: homeassistant
+    id: battery_percentage_wohnzimmer
+    entity_id: sensor.thermostat_garderobe_battery
+    on_value:
+      - lvgl.label.update:
+          id: lbl_battery_status_wohnzimmer
+          text: !lambda |-
+            static char buf[8];
+            float pct = x;
+            std::string icon;
+            if (pct >= 100.0f) {
+              icon = "\U000F0079";
+            } else if (pct > 90.0f) {
+              icon = "\U000F0082";
+            } else if (pct > 80.0f) {
+              icon = "\U000F0081";
+            } else if (pct > 70.0f) {
+              icon = "\U000F0080";
+            } else if (pct > 60.0f) {
+              icon = "\U000F007F";
+            } else if (pct > 50.0f) {
+              icon = "\U000F007E";
+            } else if (pct > 40.0f) {
+              icon = "\U000F007D";
+            } else if (pct > 30.0f) {
+              icon = "\U000F007C";
+            } else if (pct > 20.0f) {
+              icon = "\U000F007B";
+            } else if (pct > 10.0f) {
+              icon = "\U000F007A";
+            } else if (pct > 0.0f) {
+              icon = "\U000F008E";
+            } else {
+              icon = "\U000F0091";
+            }
+            snprintf(buf, sizeof(buf), "%s", icon.c_str());
+            return std::string(buf);
+          text_color: !lambda |-
+            float pct = x;
+            float t = (pct <= 10.0f)  ? 0.0f
+                      : (pct >= 100.0f) ? 1.0f
+                      : (pct - 10.0f) / 90.0f;
+            int r = int((1.0f - t) * 255.0f);
+            int g = int(t * 255.0f);
+            return lv_color_make(r, g, 0);
+
+  - platform: homeassistant
+    id: battery_percentage_diele
+    entity_id: sensor.batterie_diele
+    on_value:
+      - lvgl.label.update:
+          id: lbl_battery_status_diele
+          text: !lambda |-
+            static char buf[8];
+            float pct = x;
+            std::string icon;
+            if (pct >= 100.0f) {
+              icon = "\U000F0079";
+            } else if (pct > 90.0f) {
+              icon = "\U000F0082";
+            } else if (pct > 80.0f) {
+              icon = "\U000F0081";
+            } else if (pct > 70.0f) {
+              icon = "\U000F0080";
+            } else if (pct > 60.0f) {
+              icon = "\U000F007F";
+            } else if (pct > 50.0f) {
+              icon = "\U000F007E";
+            } else if (pct > 40.0f) {
+              icon = "\U000F007D";
+            } else if (pct > 30.0f) {
+              icon = "\U000F007C";
+            } else if (pct > 20.0f) {
+              icon = "\U000F007B";
+            } else if (pct > 10.0f) {
+              icon = "\U000F007A";
+            } else if (pct > 0.0f) {
+              icon = "\U000F008E";
+            } else {
+              icon = "\U000F0091";
+            }
+            snprintf(buf, sizeof(buf), "%s", icon.c_str());
+            return std::string(buf);
+          text_color: !lambda |-
+            float pct = x;
+            float t = (pct <= 10.0f)  ? 0.0f
+                      : (pct >= 100.0f) ? 1.0f
+                      : (pct - 10.0f) / 90.0f;
+            int r = int((1.0f - t) * 255.0f);
+            int g = int(t * 255.0f);
+            return lv_color_make(r, g, 0);
+
+  - platform: homeassistant
+    id: battery_percentage_kueche
+    entity_id: sensor.thermostatkueche_battery
+    on_value:
+      - lvgl.label.update:
+          id: lbl_battery_status_kueche
+          text: !lambda |-
+            static char buf[8];
+            float pct = x;
+            std::string icon;
+            if (pct >= 100.0f) {
+              icon = "\U000F0079";
+            } else if (pct > 90.0f) {
+              icon = "\U000F0082";
+            } else if (pct > 80.0f) {
+              icon = "\U000F0081";
+            } else if (pct > 70.0f) {
+              icon = "\U000F0080";
+            } else if (pct > 60.0f) {
+              icon = "\U000F007F";
+            } else if (pct > 50.0f) {
+              icon = "\U000F007E";
+            } else if (pct > 40.0f) {
+              icon = "\U000F007D";
+            } else if (pct > 30.0f) {
+              icon = "\U000F007C";
+            } else if (pct > 20.0f) {
+              icon = "\U000F007B";
+            } else if (pct > 10.0f) {
+              icon = "\U000F007A";
+            } else if (pct > 0.0f) {
+              icon = "\U000F008E";
+            } else {
+              icon = "\U000F0091";
+            }
+            snprintf(buf, sizeof(buf), "%s", icon.c_str());
+            return std::string(buf);
+          text_color: !lambda |-
+            float pct = x;
+            float t = (pct <= 10.0f)  ? 0.0f
+                      : (pct >= 100.0f) ? 1.0f
+                      : (pct - 10.0f) / 90.0f;
+            int r = int((1.0f - t) * 255.0f);
+            int g = int(t * 255.0f);
+            return lv_color_make(r, g, 0);
+
+  - platform: homeassistant
+    id: sensor_temperature_haustuer
+    entity_id: sensor.blink_kamera_terrasse_temperatur
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: room_temp_label_haustuer
+            text:
+              format: "$temp %.1f °C"
+              args: [id(sensor_temperature_haustuer).state]
+
+  - platform: homeassistant
+    id: haustuer_temperature
+    entity_id: sensor.blink_kamera_terrasse_temperatur
+
+  - platform: homeassistant
+    id: diele_temperature
+    entity_id: sensor.diele_temperature
+
+  - platform: homeassistant
+    id: sensor_temperature_esszimmer
+    entity_id: sensor.esszimmer_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: room_temp_label_esszimmer
+            text:
+              format: "$temp %.1f °C"
+              args: [id(sensor_temperature_esszimmer).state]
+
+  - platform: homeassistant
+    id: esszimmer_temperature
+    entity_id: sensor.esszimmer_temperature
+
+  - platform: homeassistant
+    id: sensor_temperature_wohnzimmer
+    entity_id: sensor.wohnzimmer_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: room_temp_label_wohnzimmer
+            text:
+              format: "$temp %.1f °C"
+              args: [id(sensor_temperature_wohnzimmer).state]
+
+  - platform: homeassistant
+    id: wohnzimmer_temperature
+    entity_id: sensor.wohnzimmer_temperature
+
+  - platform: homeassistant
+    id: sensor_temperature_bad
+    entity_id: sensor.bad_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: room_temp_label_bad
+            text:
+              format: "$temp %.1f °C"
+              args: [id(sensor_temperature_bad).state]
+
+  - platform: homeassistant
+    id: bad_temperature
+    entity_id: sensor.bad_temperature
+
+  - platform: homeassistant
+    id: sensor_temperature_garderobe
+    entity_id: sensor.garderobe_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: room_temp_label_garderobe
+            text:
+              format: "$temp %.1f °C"
+              args: [id(sensor_temperature_garderobe).state]
+
+  - platform: homeassistant
+    id: garderobe_temperature
+    entity_id: sensor.garderobe_temperature
+
+  - platform: homeassistant
+    id: sensor_temperature_eingang
+    entity_id: sensor.eingang_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: room_temp_label_eingang
+            text:
+              format: "$temp %.1f °C"
+              args: [id(sensor_temperature_eingang).state]
+
+  - platform: homeassistant
+    id: eingang_temperature
+    entity_id: sensor.eingang_temperature
+
+  - platform: homeassistant
+    id: sensor_temperature_kueche
+    entity_id: sensor.kueche_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: room_temp_label_kueche
+            text:
+              format: "$temp %.1f °C"
+              args: [id(sensor_temperature_kueche).state]
+
+  - platform: homeassistant
+    id: kueche_temperature
+    entity_id: sensor.kueche_temperature
+
+  - platform: homeassistant
+    id: sensor_temperature_buero
+    entity_id: sensor.buero_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: room_temp_label_buero
+            text:
+              format: "$temp %.1f °C"
+              args: [id(sensor_temperature_buero).state]
+
+  - platform: homeassistant
+    id: buero_temperature
+    entity_id: sensor.buero_temperature
+
+  - platform: homeassistant
+    id: sensor_temperature_buero1
+    entity_id: sensor.blink_kamera_hinten_temperatur
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: room_temp_label_buero
+            text:
+              format: "$temp %.1f °C"
+              args: [id(sensor_temperature_buero).state]
+
+  - platform: homeassistant
+    id: buero_temperature1
+    entity_id: sensor.blink_kamera_hinten_temperatur
+
+  - platform: homeassistant
+    id: sensor_temperature_diele
+    entity_id: sensor.diele_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: room_temp_label_diele
+            text:
+              format: "$temp %.1f °C"
+              args: [id(sensor_temperature_diele).state]
+
+  - platform: homeassistant
+    id: sensor_temperature
+    entity_id: sensor.diele_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: sensor_temperature_thermostat
+            text:
+              format: "%.1f°C"
+              args: [id(sensor_temperature).state]
+        - lvgl.arc.update:
+            id: arc_sensor_temp
+            value: !lambda return x;
+
+  - platform: homeassistant
+    id: thermostat_id1
+    entity_id: climate.diele1
+    attribute: temperature
+    on_value:
+      then:
+        - lvgl.arc.update:
+            id: arc_id1
+            value: !lambda return x;
+        - lvgl.label.update:
+            id: target_temperature_whole
+            text: !lambda |-
+              static char buf[10];
+              int whole_part = static_cast<int>(id(thermostat_id1).state);
+              snprintf(buf, 10, "%d", whole_part);
+              return buf;
+        - lvgl.label.update:
+            id: target_temperature_fraction
+            text: !lambda |-
+              static char buf[10];
+              int whole_part = static_cast<int>(id(thermostat_id1).state);
+              int fractional_part = static_cast<int>((id(thermostat_id1).state - whole_part) * 10);
+              snprintf(buf, 10, ".%01d", fractional_part);
+              return buf;
+
+  - platform: homeassistant
+    id: ha_current_temp
+    entity_id: climate.diele1
+    attribute: current_temperature
+
+  - platform: homeassistant
+    id: ha_target_temp
+    entity_id: climate.diele1
+    attribute: temperature
+
+  - platform: homeassistant
+    id: temp_schlafzimmer
+    entity_id: sensor.schlafzimmer_temperature
+
+  - platform: wifi_signal
+    id: wifi_signal_dbm
+    name: "WiFi Signal (dBm)"
+    update_interval: 60s
+
+  - platform: wifi_signal
+    id: wifi_signal_percent
+    name: "WiFi Signal (%)"
+    update_interval: 60s
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "%"
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: wifi_status
+            text_color: !lambda |-
+              float dBm = id(wifi_signal_dbm).state;
+              if (dBm > -50) return lv_color_hex(0x00FF00);
+              if (dBm > -60) return lv_color_hex(0xCCFF00);
+              if (dBm > -70) return lv_color_hex(0xFF9900);
+              return lv_color_hex(0xFF0000);
+            text: !lambda |-
+              float dBm = id(wifi_signal_dbm).state;
+              if (dBm > -50) return "${wifi_100}";
+              if (dBm > -60) return "${wifi_75}";
+              if (dBm > -70) return "${wifi_50}";
+              return "${wifi_25}";
+
+  - platform: uptime
+    id: uptime_internal
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address"
+      on_value:
+        - lvgl.label.update:
+            id: settings_wifi_ipaddress
+            text:
+              format: "IP Address: %s"
+              args: [ 'x.c_str()' ]
+    ssid:
+      name: "SSID"
+      on_value:
+        - lvgl.label.update:
+            id: settings_wifi_ssid
+            text:
+              format: "SSID: %s"
+              args: [ 'x.c_str()' ]
+
+  - platform: homeassistant
+    id: ha_weather_temp
+    entity_id: weather.pirateweather
+    attribute: temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: display_temp_standby
+            text:
+              format: "\U000F050F %s °C"
+              args: ["id(ha_weather_temp).state.c_str()"]
+
+  - platform: homeassistant
+    id: weather_description_day_0
+    entity_id: sensor.weather_data
+    attribute: weather_description_day_0
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_weather_summary_0), x.c_str());
+
+  - platform: homeassistant
+    id: weather_description_day_1
+    entity_id: sensor.weather_data
+    attribute: weather_description_day_1
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_weather_summary_1), x.c_str());
+
+  - platform: homeassistant
+    id: weather_description_day_2
+    entity_id: sensor.weather_data
+    attribute: weather_description_day_2
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_weather_summary_2), x.c_str());
+
+  - platform: homeassistant
+    id: weather_description_day_3
+    entity_id: sensor.weather_data
+    attribute: weather_description_day_3
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_weather_summary_3), x.c_str());
+
+  - platform: homeassistant
+    id: weather_week_day_0
+    entity_id: sensor.weather_data
+    attribute: weather_week_day_0
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_day_0), id(weather_week_day_0).state.c_str());
+
+  - platform: homeassistant
+    id: weather_week_day_1
+    entity_id: sensor.weather_data
+    attribute: weather_week_day_1
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_day_1), id(weather_week_day_1).state.c_str());
+
+  - platform: homeassistant
+    id: weather_week_day_2
+    entity_id: sensor.weather_data
+    attribute: weather_week_day_2
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_day_2), id(weather_week_day_2).state.c_str());
+
+  - platform: homeassistant
+    id: weather_week_day_3
+    entity_id: sensor.weather_data
+    attribute: weather_week_day_3
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_day_3), id(weather_week_day_3).state.c_str());
+
+  - platform: homeassistant
+    id: weather_uv_index_0
+    entity_id: sensor.weather_data
+    attribute: weather_uv_index_day_0
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_uv_index_0), ("UV:" + (id(weather_uv_index_0).state)).c_str());
+
+  - platform: homeassistant
+    id: weather_uv_index_1
+    entity_id: sensor.weather_data
+    attribute: weather_uv_index_day_1
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_uv_index_1), ("UV:" + (id(weather_uv_index_1).state)).c_str());
+
+  - platform: homeassistant
+    id: weather_uv_index_2
+    entity_id: sensor.weather_data
+    attribute: weather_uv_index_day_2
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_uv_index_2), ("UV:" + (id(weather_uv_index_2).state)).c_str());
+
+  - platform: homeassistant
+    id: weather_uv_index_3
+    entity_id: sensor.weather_data
+    attribute: weather_uv_index_day_3
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_uv_index_3), ("UV:" + (id(weather_uv_index_3).state)).c_str());
+
+  - platform: homeassistant
+    id: weather_bw_index_0
+    entity_id: sensor.weather_data
+    attribute: weather_clouds_day_0
+    on_value:
+      then:
+        - lambda: |-
+            std::string txt = "\U000F1BE6 " + id(weather_bw_index_0).state + "%";
+            lv_label_set_text(id(text_bw_index_0), txt.c_str());
+
+  - platform: homeassistant
+    id: weather_bw_index_1
+    entity_id: sensor.weather_data
+    attribute: weather_clouds_day_1
+    on_value:
+      then:
+        - lambda: |-
+            std::string txt = "\U000F1BE6 " + id(weather_bw_index_1).state + "%";
+            lv_label_set_text(id(text_bw_index_1), txt.c_str());
+
+  - platform: homeassistant
+    id: weather_bw_index_2
+    entity_id: sensor.weather_data
+    attribute: weather_clouds_day_2
+    on_value:
+      then:
+        - lambda: |-
+            std::string txt = "\U000F1BE6 " + id(weather_bw_index_2).state + "%";
+            lv_label_set_text(id(text_bw_index_2), txt.c_str());
+
+  - platform: homeassistant
+    id: weather_bw_index_3
+    entity_id: sensor.weather_data
+    attribute: weather_clouds_day_3
+    on_value:
+      then:
+        - lambda: |-
+            std::string txt = "\U000F1BE6 " + id(weather_bw_index_3).state + "%";
+            lv_label_set_text(id(text_bw_index_3), txt.c_str());
+
+  - platform: homeassistant
+    id: weather_temp_high_0
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_max_day_0
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_high_0), ("\U000F10C2 " + (id(weather_temp_high_0).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_high_1
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_max_day_1
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_high_1), ("\U000F10C2 " + (id(weather_temp_high_1).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_high_2
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_max_day_2
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_high_2), ("\U000F10C2 " + (id(weather_temp_high_2).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_high_3
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_max_day_3
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_high_3), ("\U000F10C2 " + (id(weather_temp_high_3).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_low_0
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_min_day_0
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_low_0), ("\U000F10C3 " + (id(weather_temp_low_0).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_low_1
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_min_day_1
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_low_1), ("\U000F10C3 " + (id(weather_temp_low_1).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_low_2
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_min_day_2
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_low_2), ("\U000F10C3 " + (id(weather_temp_low_2).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_temp_low_3
+    entity_id: sensor.weather_data
+    attribute: weather_realfeel_min_day_3
+    on_value:
+      then:
+        - lambda: |-
+            lv_label_set_text(id(text_temperature_low_3), ("\U000F10C3 " + (id(weather_temp_low_3).state) + "°C").c_str());
+
+  - platform: homeassistant
+    id: weather_wind_0
+    entity_id: sensor.weather_data
+    attribute: weather_wind_day_0
+    on_value:
+      then:
+        - lambda: |-
+            std::string wind = "\U000F059D " + to_string(id(weather_wind_0).state) + "km/h";
+            lv_label_set_text(id(text_weather_wind_0), wind.c_str());
+
+  - platform: homeassistant
+    id: weather_wind_1
+    entity_id: sensor.weather_data
+    attribute: weather_wind_day_1
+    on_value:
+      then:
+        - lambda: |-
+            std::string wind = "\U000F059D " + to_string(id(weather_wind_1).state) + "km/h";
+            lv_label_set_text(id(text_weather_wind_1), wind.c_str());
+
+  - platform: homeassistant
+    id: weather_wind_2
+    entity_id: sensor.weather_data
+    attribute: weather_wind_day_2
+    on_value:
+      then:
+        - lambda: |-
+            std::string wind = "\U000F059D " + to_string(id(weather_wind_2).state) + "km/h";
+            lv_label_set_text(id(text_weather_wind_2), wind.c_str());
+
+  - platform: homeassistant
+    id: weather_wind_3
+    entity_id: sensor.weather_data
+    attribute: weather_wind_day_3
+    on_value:
+      then:
+        - lambda: |-
+            std::string wind = "\U000F059D " + to_string(id(weather_wind_3).state) + "km/h";
+            lv_label_set_text(id(text_weather_wind_3), wind.c_str());
+
+  - platform: homeassistant
+    id: weather_condition_0
+    entity_id: sensor.weather_data
+    attribute: weather_condition_day_0
+    on_value:
+      then:
+        - lambda: |-
+            std::string condition = id(weather_condition_0).state;
+            std::string icon;
+            if (condition == "sonnig") {
+              icon = "\U000F0599";
+            } else if (condition == "leicht bewölkt") {
+              icon = "\U000F0595";
+            } else if (condition == "bewölkt") {
+              icon = "\U000F0590";
+            } else if (condition == "stark bewölkt") {
+              icon = "\U000F0F2F";
+            } else if (condition == "regnerisch") {
+              icon = "\U000F0597";
+            } else if (condition == "gewitter") {
+              icon = "\U000F067E";
+            } else {
+              icon = "\U000F05A9";
+            }
+            lv_label_set_text(id(home_weather_icon_0), icon.c_str());
+
+  - platform: homeassistant
+    id: weather_condition_1
+    entity_id: sensor.weather_data
+    attribute: weather_condition_day_1
+    on_value:
+      then:
+        - lambda: |-
+            std::string condition = id(weather_condition_1).state;
+            std::string icon;
+            if (condition == "sonnig") {
+              icon = "\U000F0599";
+            } else if (condition == "leicht bewölkt") {
+              icon = "\U000F0595";
+            } else if (condition == "bewölkt") {
+              icon = "\U000F0590";
+            } else if (condition == "stark bewölkt") {
+              icon = "\U000F0F2F";
+            } else if (condition == "regnerisch") {
+              icon = "\U000F0597";
+            } else if (condition == "gewitter") {
+              icon = "\U000F067E";
+            } else {
+              icon = "\U000F05A9";
+            }
+            lv_label_set_text(id(home_weather_icon_1), icon.c_str());
+
+  - platform: homeassistant
+    id: weather_condition_2
+    entity_id: sensor.weather_data
+    attribute: weather_condition_day_2
+    on_value:
+      then:
+        - lambda: |-
+            std::string condition = id(weather_condition_2).state;
+            std::string icon;
+            if (condition == "sonnig") {
+              icon = "\U000F0599";
+            } else if (condition == "leicht bewölkt") {
+              icon = "\U000F0595";
+            } else if (condition == "bewölkt") {
+              icon = "\U000F0590";
+            } else if (condition == "stark bewölkt") {
+              icon = "\U000F0F2F";
+            } else if (condition == "regnerisch") {
+              icon = "\U000F0597";
+            } else if (condition == "gewitter") {
+              icon = "\U000F067E";
+            } else {
+              icon = "\U000F05A9";
+            }
+            lv_label_set_text(id(home_weather_icon_2), icon.c_str());
+
+  - platform: homeassistant
+    id: weather_condition_3
+    entity_id: sensor.weather_data
+    attribute: weather_condition_day_3
+    on_value:
+      then:
+        - lambda: |-
+            std::string condition = id(weather_condition_3).state;
+            std::string icon;
+            if (condition == "sonnig") {
+              icon = "\U000F0599";
+            } else if (condition == "leicht bewölkt") {
+              icon = "\U000F0595";
+            } else if (condition == "bewölkt") {
+              icon = "\U000F0590";
+            } else if (condition == "stark bewölkt") {
+              icon = "\U000F0F2F";
+            } else if (condition == "regnerisch") {
+              icon = "\U000F0597";
+            } else if (condition == "gewitter") {
+              icon = "\U000F067E";
+            } else {
+              icon = "\U000F05A9";
+            }
+            lv_label_set_text(id(home_weather_icon_3), icon.c_str());
+
+  - platform: homeassistant
+    id: thermostat_action
+    entity_id: climate.diele1
+    attribute: hvac_action
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: 'return x == "heating";'
+            then:
+              - script.execute: therm_status_update_on
+            else:
+              - script.execute: therm_status_update_off
+
+  - platform: template
+    id: cw_display_standby
+    lambda: |-
+      auto week = id(cw_sensor).state;
+      if (isnan(week)) {
+        return {"$calendar_icon KW: --"};
+      }
+      return {"$calendar_icon KW: " + std::to_string((int)round(week))};
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: display_cw_index_standby
+            text: !lambda return id(cw_display_standby).state;
+
+  - platform: homeassistant
+    id: sun_state
+    entity_id: sun.sun
+
+  - platform: homeassistant
+    id: heating_status_sensor_header
+    entity_id: climate.diele1
+    attribute: hvac_action
+    on_value:
+      then:
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_header).state, id(heating_icon_label_header));
+
+  - platform: homeassistant
+    id: heating_status_sensor_kueche
+    entity_id: climate.thermostatkueche
+    attribute: hvac_action
+    on_value:
+      then:
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_kueche).state, id(heating_icon_label_kueche));
+
+  - platform: homeassistant
+    id: heating_status_sensor_esszimmer
+    entity_id: climate.esszimmer
+    attribute: hvac_action
+    on_value:
+      then:
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_esszimmer).state, id(heating_icon_label_esszimmer));
+
+  - platform: homeassistant
+    id: heating_status_sensor_wohnzimmer
+    entity_id: climate.garderobe
+    attribute: hvac_action
+    on_value:
+      then:
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_wohnzimmer).state, id(heating_icon_label_wohnzimmer));
+
+  - platform: homeassistant
+    id: heating_status_sensor_buero
+    entity_id: climate.schlafzimmer2
+    attribute: hvac_action
+    on_value:
+      then:
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_buero).state, id(heating_icon_label_buero));
+
+  - platform: homeassistant
+    id: heating_status_sensor_bad
+    entity_id: climate.bad_neu
+    attribute: hvac_action
+    on_value:
+      then:
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_bad).state, id(heating_icon_label_bad));
+
+  - platform: homeassistant
+    id: heating_status_sensor_garderobe
+    entity_id: climate.wohnzimmer
+    attribute: hvac_action
+    on_value:
+      then:
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_garderobe).state, id(heating_icon_label_garderobe));
+
+  - platform: homeassistant
+    id: heating_status_sensor_diele
+    entity_id: climate.diele1
+    attribute: hvac_action
+    on_value:
+      then:
+        - lambda: |-
+            id(update_heating_icon)(id(heating_status_sensor_diele).state, id(heating_icon_label_diele));
+
+  - platform: homeassistant
+    id: sensor_motion_eingang
+    entity_id: binary_sensor.bewegungsmelder_eingang_occupancy
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: motion_status
+            hidden: !lambda "return id(sensor_motion_eingang).state != \"on\";"
+        - lvgl.label.update:
+            id: motion_status_off
+            hidden: !lambda "return id(sensor_motion_eingang).state == \"on\";"
+        - lvgl.label.update:
+            id: motion_status_unavailable
+            hidden: !lambda "return id(sensor_motion_eingang).state != \"unavailable\";"
+  - platform: homeassistant
+    id: sensor_motion_kueche
+    entity_id: binary_sensor.bewegungsmelder_kueche
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: motion_status
+            hidden: !lambda "return id(sensor_motion_kueche).state != \"on\";"
+        - lvgl.label.update:
+            id: motion_status_off
+            hidden: !lambda "return id(sensor_motion_kueche).state == \"on\";"
+        - lvgl.label.update:
+            id: motion_status_unavailable
+            hidden: !lambda "return id(sensor_motion_kueche).state != \"unavailable\";"
+
+  - platform: homeassistant
+    id: ha_time_string
+    entity_id: sensor.time
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: display_time_standby
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
+            id: display_time_header
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
+            id: display_time_header_thermostat
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
+            id: display_time_header_general
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
+            id: display_time_header_weather
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+        - lvgl.label.update:
+            id: display_time_header_setting
+            text: !lambda 'return id(ha_time_string).state.c_str();'
+
+  - platform: homeassistant
+    id: ha_date_standby
+    entity_id: sensor.date
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: display_date_standby
+            text: !lambda |-
+              std::string date_str = id(ha_date_standby).state;
+              std::tm timeinfo = {};
+              strptime(date_str.c_str(), "%Y-%m-%d", &timeinfo);
+              const char* wochentage[] = {"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"};
+              const char* monate[] = {"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"};
+              char buffer[64];
+              snprintf(buffer, sizeof(buffer), "%s, %02d. %s", wochentage[timeinfo.tm_wday], timeinfo.tm_mday, monate[timeinfo.tm_mon]);
+              return std::string(buffer);
+
+  - platform: homeassistant
+    id: ha_weather_cond_standby
+    entity_id: weather.pirateweather
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: display_weather_standby
+            text: !lambda |-
+              std::string condition = id(ha_weather_cond_standby).state;
+              if (condition == "clear-night") return "Klarer Abend";
+              if (condition == "clear-day") return "Sonnig";
+              if (condition == "sunny") return "Sonnig";
+              if (condition == "partly-cloudy-night") return "Teilweise bewölkt (Nacht)";
+              if (condition == "partly-cloudy-day") return "Teilweise bewölkt";
+              if (condition == "partlycloudy") return "Teilweise bewölkt";
+              if (condition == "cloudy") return "Bewölkt";
+              if (condition == "rainy") return "Regen";
+              if (condition == "fog") return "Nebel";
+              if (condition == "windy") return "Windig";
+              if (condition == "snow") return "Schnee";
+              if (condition == "hail") return "Hagel";
+              if (condition == "thunderstorm") return "Gewitter";
+              return "Unbekannt";
+
+  - platform: template
+    id: weather_condition_icon_standby
+    lambda: |-
+      std::string state = id(ha_weather_cond_standby).state;
+      if (state == "clear-night") return std::string("$night");
+      if (state == "clear-day") return std::string("$sunny");
+      if (state == "sunny") return std::string("$sunny");
+      if (state == "partly-cloudy-night") return std::string("$nightpartlycloudy");
+      if (state == "partly-cloudy-day") return std::string("$partlycloudy");
+      if (state == "partlycloudy") return std::string("$partlycloudy");
+      if (state == "cloudy") return std::string("$cloudy");
+      if (state == "rainy") return std::string("$pouring");
+      if (state == "fog") return std::string("$fog");
+      if (state == "windy") return std::string("$windy");
+      if (state == "snow") return std::string("$snowy");
+      if (state == "hail") return std::string("$hail");
+      if (state == "thunderstorm") return std::string("$lightning");
+      return std::string("$happyface");
+    update_interval: 300s
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: display_weather_icon_standby
+            text: !lambda 'return id(weather_condition_icon_standby).state;'
+
+  - platform: template
+    name: Uptime
+    lambda: |-
+      int seconds = (id(uptime_internal).state);
+      int days = seconds / (24 * 3600);
+      seconds = seconds % (24 * 3600);
+      int hours = seconds / 3600;
+      seconds = seconds % 3600;
+      int minutes = seconds /  60;
+      seconds = seconds % 60;
+      return { ( std::to_string(days) + "d " + std::to_string(hours) + "h " + std::to_string(minutes) + "m " + std::to_string(seconds) + "s").c_str() };
+    icon: mdi:clock-start
+    update_interval: 60s
+
+binary_sensor:
+  - platform: touchscreen
+    name: change_page_vb
+    id: change_page
+    x_min: 0
+    y_min: 0
+    x_max: 480
+    y_max: 480
+
+  - platform: homeassistant
+    id: main_light_status
+    entity_id: light.haustur
+    internal: true
+
+  - platform: homeassistant
+    id: main_light_status_garderobe
+    entity_id: light.garderobe
+    internal: true
+
+  - platform: homeassistant
+    id: main_light_status_diele
+    entity_id: light.diele_alle
+    internal: true
+
+  - platform: homeassistant
+    id: heating_active_diele
+    entity_id: climate.diele1
+    attribute: hvac_action
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(heating_active_diele).state;'
+            then:
+              - lvgl.label.update:
+                  id: thermostat_status
+                  text: "Heizen"
+                  text_color: 0xea6733
+            else:
+              - lvgl.label.update:
+                  id: thermostat_status
+                  text: "Aus"
+                  text_color: 0xffffff
+
+  - platform: homeassistant
+    entity_id: binary_sensor.bewegungsmelder_eingang_occupancy
+    id: ha_motion_sensor_eingang
+    on_press:
+      then:
+        - logger.log: "Bewegung erkannt via HA -> Display wecken"
+        - script.execute: touch_wakeup_and_restart_timer
+  - platform: homeassistant
+    entity_id: binary_sensor.bewegungsmelder_kueche
+    id: ha_motion_sensor_kueche
+    on_press:
+      then:
+        - logger.log: "Bewegung erkannt via HA -> Display wecken"
+        - script.execute: touch_wakeup_and_restart_timer
+
+  - platform: homeassistant
+    id: light_status_kueche
+    entity_id: light.kuche_alle
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(light_status_kueche).state;'
+            then:
+              - lvgl.label.update:
+                  id: room_temp_label_kueche
+                  text_color: 0x56acfa
+            else:
+              - lvgl.label.update:
+                  id: room_temp_label_kueche
+                  text_color: 0xffffff
+
+  - platform: homeassistant
+    id: light_status_esszimmer
+    entity_id: light.esszimmer_decke
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(light_status_esszimmer).state;'
+            then:
+              - lvgl.label.update:
+                  id: room_temp_label_esszimmer
+                  text_color: 0x56acfa
+            else:
+              - lvgl.label.update:
+                  id: room_temp_label_esszimmer
+                  text_color: 0xffffff
+
+  - platform: homeassistant
+    id: light_status_wohnzimmer
+    entity_id: light.wohnzimmer_relay_2
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(light_status_wohnzimmer).state;'
+            then:
+              - lvgl.label.update:
+                  id: room_temp_label_wohnzimmer
+                  text_color: 0x56acfa
+            else:
+              - lvgl.label.update:
+                  id: room_temp_label_wohnzimmer
+                  text_color: 0xffffff
+
+  - platform: homeassistant
+    id: light_status_buero
+    entity_id: light.buro_relay_1
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(light_status_buero).state;'
+            then:
+              - lvgl.label.update:
+                  id: room_temp_label_buero
+                  text_color: 0x56acfa
+            else:
+              - lvgl.label.update:
+                  id: room_temp_label_buero
+                  text_color: 0xffffff
+
+  - platform: homeassistant
+    id: light_status_diele
+    entity_id: light.diele_alle
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(light_status_diele).state;'
+            then:
+              - lvgl.label.update:
+                  id: room_temp_label_diele
+                  text_color: 0x56acfa
+            else:
+              - lvgl.label.update:
+                  id: room_temp_label_diele
+                  text_color: 0xffffff
+
+  - platform: homeassistant
+    id: light_status_bad
+    entity_id: light.schalter_badezimmer_unten_l1
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(light_status_bad).state;'
+            then:
+              - lvgl.label.update:
+                  id: room_temp_label_bad
+                  text_color: 0x56acfa
+            else:
+              - lvgl.label.update:
+                  id: room_temp_label_bad
+                  text_color: 0xffffff
+
+  - platform: homeassistant
+    id: light_status_haustuer
+    entity_id: light.haustur
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(light_status_haustuer).state;'
+            then:
+              - lvgl.label.update:
+                  id: room_temp_label_haustuer
+                  text_color: 0x56acfa
+            else:
+              - lvgl.label.update:
+                  id: room_temp_label_haustuer
+                  text_color: 0xffffff
+
+  - platform: homeassistant
+    id: diele_heating
+    entity_id: light.diele_alle
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: diele_btn
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: unterschrank_sensor
+    entity_id: light.unterschrank
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: unterschrank_btn
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: garderobe_sensor
+    entity_id: light.garderobe
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: garderobe_btn
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: eingang_sensor
+    entity_id: light.diele_1
+    publish_initial_state: true
+    internal: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: eingang_btn
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: haustuer_sensor
+    entity_id: light.haustur
+    publish_initial_state: true
+    internal: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: haustuer_btn
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: kueche_sensor1
+    entity_id: light.kuche_alle
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: kueche_btn
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: esszimmer_sensor
+    entity_id: light.esszimmer_decke
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: esszimmer_btn
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: wohnzimmer_sensor
+    entity_id: light.wohnzimmer_relay_2
+    publish_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: wohnzimmer_btn
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: buero_sensor
+    entity_id: light.buro_relay_1
+    publish_initial_state: true
+    internal: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: buero_btn
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: bad_sensor
+    entity_id: light.schalter_badezimmer_unten_l1
+    publish_initial_state: true
+    internal: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: bad_btn
+            state:
+              checked: !lambda "return x;"
+
+  - platform: homeassistant
+    id: main_light_status_unterschrank
+    entity_id: light.unterschrank
+    publish_initial_state: true
+    internal: true
+
+output:
+  - platform: ledc
+    pin: GPIO38
+    id: pwm_backlight
+    frequency: 100 Hz
+
+light:
+  - platform: monochromatic
+    output: pwm_backlight
+    id: display_backlight
+    name: "Backlight"
+    restore_mode: ALWAYS_OFF
+    default_transition_length: 2000ms
+
+#-------------------------------------------
+# Touchscreen gt911 i2c
+#-------------------------------------------
+i2c:
+  - id: bus_a
+    sda: GPIO19
+    scl: GPIO45
+touchscreen:
+  - platform: gt911
+    id: my_touchscreen
+    on_touch:
+      then:
+        - lambda: |-
+            id(last_touch_timestamp) = millis();
+        - script.execute: touch_wakeup_and_restart_timer
+    on_release:
+      then:
+        - lambda: |-
+            id(swipe_locked) = false;
+        - if:
+            condition:
+              lambda: 'return id(lvgl_paused);'
+            then:
+              - lvgl.resume:
+              - lambda: 'id(lvgl_paused) = false;'
+              - lvgl.widget.redraw:
+    on_update:
+      - lambda: |-
+          uint32_t now = millis();
+          if (now - id(last_swipe_time) < 700) return;
+          for (auto &touch : touches) {
+            int delta = touch.x_org - touch.x_prev;
+            if (delta > 100 && id(change_page).state) {
+              ESP_LOGI("touch", "Swipe erkannt → page_next");
+              id(last_swipe_time) = now;
+              id(page_next).execute();
+              break;
+            } else if (delta < -100 && id(change_page).state) {
+              ESP_LOGI("touch", "Swipe erkannt → page_prev");
+              id(last_swipe_time) = now;
+              id(page_prev).execute();
+              break;
+            }
+          }
+
+globals:
+  - id: last_timer_garderobe
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: last_timer_eingang
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: last_timer_haustuer
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: last_swipe_time
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: swipe_locked
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  - id: lvgl_paused
+    type: bool
+    initial_value: "false"
+    restore_value: no
+  - id: standby_display_off
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: standby_brightness_day
+    type: float
+    restore_value: yes
+    initial_value: "0.35"
+  - id: standby_brightness_night
+    type: float
+    restore_value: yes
+    initial_value: "0.0"
+  - id: standby_timeout_day
+    type: int
+    restore_value: true
+    initial_value: "300"
+  - id: standby_timeout_night
+    type: int
+    restore_value: true
+    initial_value: "120"
+  - id: brightness_day
+    type: float
+    restore_value: true
+    initial_value: '1.0'
+  - id: brightness_night
+    type: float
+    restore_value: true
+    initial_value: '0.35'
+  - id: last_tap_time
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: page_change_locked
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  - id: cover_retry_once
+    type: bool
+    initial_value: 'false'
+  - id: display_backlight_brightness
+    type: float
+    restore_value: no
+    initial_value: '1.0'
+  - id: current_brightness
+    type: float
+    restore_value: no
+    initial_value: '0'
+  - id: radiator2
+    type: std::string
+    initial_value: '"\U000F0438"'
+  - id: power_off
+    type: std::string
+    initial_value: '"\U000F0911"'
+  - id: update_heating_icon
+    type: std::function<void(std::string, lv_obj_t*)>
+    restore_value: no
+    initial_value: '[](std::string state, lv_obj_t* label) {
+      if (state == "heating") {
+        lv_label_set_text(label, id(radiator2).c_str());
+        lv_obj_set_style_text_color(label, lv_color_hex(0xFF0000), LV_PART_MAIN);
+      } else if (state == "idle") {
+        lv_label_set_text(label, id(radiator2).c_str());
+        lv_obj_set_style_text_color(label, lv_color_hex(0x56acfa), LV_PART_MAIN);
+      } else {
+        lv_label_set_text(label, id(power_off).c_str());
+        lv_obj_set_style_text_color(label, lv_color_hex(0x808080), LV_PART_MAIN);
+      }
+    }'
+  - id: last_touch_timestamp
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: last_user_interaction
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: user_touched
+    type: bool
+    initial_value: 'false'
+  - id: is_standby_active
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: is_nighttime
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: display_in_standby
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: clock_page_shown
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+
+interval:
+  - interval: 60s
+    then:
+      - if:
+          condition:
+            lambda: 'return id(display_in_standby);'
+          then:
+            - lvgl.label.update:
+                id: display_time_standby
+                text:
+                  time_format: "%H:%M"
+                  time: ha_time
+
+script:
+  - id: update_brightness_labels
+    mode: restart
+    then:
+      - lvgl.label.update:
+          id: slider_label_brightness_day
+          text: !lambda |-
+            char buffer[16];
+            snprintf(buffer, sizeof(buffer), "Tag: %.0f%%", id(brightness_day) * 100.0f);
+            return std::string(buffer);
+      - lvgl.label.update:
+          id: slider_label_brightness_night
+          text: !lambda |-
+            char buffer[16];
+            snprintf(buffer, sizeof(buffer), "Nacht: %.0f%%", id(brightness_night) * 100.0f);
+            return std::string(buffer);
+      - lvgl.label.update:
+          id: slider_label_brightness_day
+          text: !lambda |-
+            char buffer[10];
+            snprintf(buffer, sizeof(buffer), "%.0f%%", id(brightness_day) * 100);
+            return std::string(buffer);
+      - lvgl.label.update:
+          id: slider_label_brightness_night
+          text: !lambda |-
+            char buffer[10];
+            snprintf(buffer, sizeof(buffer), "%.0f%%", id(brightness_night) * 100);
+            return std::string(buffer);
+      - lvgl.label.update:
+          id: slider_label_standby_day
+          text: !lambda |-
+            char buffer[10];
+            snprintf(buffer, sizeof(buffer), "%ds", id(standby_timeout_day));
+            return std::string(buffer);
+      - lvgl.label.update:
+          id: slider_label_standby_night
+          text: !lambda |-
+            char buffer[10];
+            snprintf(buffer, sizeof(buffer), "%ds", id(standby_timeout_night));
+            return std::string(buffer);
+
+  - id: clock_page_button_script
+    mode: restart
+    then:
+      - lvgl.page.show:
+          id: general_page
+
+  - id: enter_standby
+    mode: restart
+    then:
+      - lambda: |-
+          if (id(page_change_locked)) {
+            ESP_LOGD("Page", "Seitenwechsel blockiert");
+            return;
+          }
+          id(page_change_locked) = true;
+          id(display_in_standby) = true;
+          id(is_standby_active) = true;
+          bool night = id(is_nighttime);
+          float brightness = night ? id(standby_brightness_night) : id(standby_brightness_day);
+          id(display_backlight_brightness) = brightness * 100.0f;
+          ESP_LOGD("Standby", "Standby aktiviert (%s) – Ziel-Helligkeit: %.0f%%",
+            night ? "Nacht" : "Tag", id(display_backlight_brightness));
+          id(standby_display_off) = brightness <= 0.01f;
+      - lvgl.page.show:
+          id: standby_page
+          animation: LV_SCR_LOAD_ANIM_NONE
+          time: 50ms
+      - lambda: |-
+          if (id(standby_display_off)) {
+            auto call = id(display_backlight).make_call();
+            call.set_state(false);
+            call.set_transition_length(2000);
+            call.perform();
+            ESP_LOGD("Standby", "Display komplett ausgeschaltet (%.0f%%)", id(display_backlight_brightness));
+          } else {
+            auto call = id(display_backlight).make_call();
+            call.set_state(true);
+            call.set_brightness(id(display_backlight_brightness) / 100.0f);
+            call.set_transition_length(2000);
+            call.perform();
+            ESP_LOGD("Standby", "Display gedimmt auf %.0f%%", id(display_backlight_brightness));
+          }
+
+  - id: touch_wakeup_and_restart_timer
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: return id(display_in_standby);
+          then:
+            - script.stop: standby_timer
+            - lambda: |-
+                auto now = id(ha_time).now();
+                bool is_night = (now.hour >= 23 || now.hour < 7);
+                id(page_change_locked) = false;
+                id(display_in_standby) = false;
+                id(is_standby_active) = false;
+                id(is_nighttime) = is_night;
+                id(standby_display_off) = false;
+                float brightness = is_night ? id(brightness_night) : id(brightness_day);
+                id(display_backlight_brightness) = brightness * 100.0f;
+                auto call = id(display_backlight).make_call();
+                call.set_state(true);
+                call.set_brightness(brightness);
+                call.set_transition_length(2000);
+                call.perform();
+                ESP_LOGD("Standby", "Display geweckt → Zielhelligkeit: %.0f%%", id(display_backlight_brightness));
+            - lvgl.resume:
+            - lvgl.widget.redraw:
+            - lvgl.page.show:
+                id: general_page
+                animation: LV_SCR_LOAD_ANIM_NONE
+                time: 500ms
+      - script.execute: standby_timer
+
+  - id: standby_timer
+    mode: restart
+    then:
+      - delay: !lambda |-
+          auto now = id(ha_time).now();
+          bool is_night = (now.hour < 7 || now.hour >= 23);
+          int timeout = is_night ? id(standby_timeout_night) : id(standby_timeout_day);
+          ESP_LOGD("Standby", "Verzögerung: %d Sekunden (%s)", timeout, is_night ? "Nacht" : "Tag");
+          return timeout * 1000;
+      - script.execute: enter_standby
+
+  - id: page_next
+    then:
+      - lambda: |-
+          int idx = (int) id(current_page_index).state;
+          idx = (idx + 1) % 5;
+          id(current_page_index).publish_state(idx);
+      - script.execute: change_page_by_index
+
+  - id: page_prev
+    then:
+      - lambda: |-
+          int idx = (int) id(current_page_index).state;
+          idx = (idx - 1 + 5) % 5;
+          id(current_page_index).publish_state(idx);
+      - script.execute: change_page_by_index
+
+  - id: change_page_by_index
+    then:
+      - lambda: |-
+          ESP_LOGI("change_page", "Wechsle zu Seite %d", (int) id(current_page_index).state);
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 0;'
+          then:
+            - lvgl.page.show: general_page
+#            - lambda: ESP_LOGI("change_page", "Wechsle zur Hauptseite");
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 1;'
+          then:
+            - lvgl.page.show: sleeping_page
+#            - lambda: ESP_LOGI("change_page", "Wechsle zur Schlafseite");
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 2;'
+          then:
+            - lvgl.page.show: page_thermostat
+#            - lambda: ESP_LOGI("change_page", "Wechsle zur Heizungsseite");
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 3;'
+          then:
+            - lvgl.page.show: setting_page
+#            - lambda: ESP_LOGI("change_page", "Wechsle zur Einstellungsseite");
+      - if:
+          condition:
+            lambda: 'return (int) id(current_page_index).state == 4;'
+          then:
+            - lvgl.page.show: weather_page
+#            - lambda: ESP_LOGI("change_page", "Wechsle zur Wetterseite");
+
+  - id: therm_status_update_on
+    then:
+      - lvgl.label.update:
+          id: thermostat_status
+          text_color: 0xea6733
+          text: !lambda return "Heizen";
+      - lvgl.label.update:
+          id: heating_icon
+          text_color: 0xea6733
+          text: "$heating"
+      - lambda: |-
+          float valve = id(thermostat_valve_position).state;
+          if (!isnan(valve) && valve > 0.0f) {
+            lv_obj_clear_flag(id(valve_box), LV_OBJ_FLAG_HIDDEN);
+            char buffer[16];
+            snprintf(buffer, sizeof(buffer), "%.0f %%", valve);
+            lv_label_set_text(id(heating_valve_position), buffer);
+          } else {
+            lv_obj_add_flag(id(valve_box), LV_OBJ_FLAG_HIDDEN);
+          }
+
+  - id: therm_status_update_off
+    then:
+      - lvgl.label.update:
+          id: thermostat_status
+          text_color: 0xffffff
+          text: !lambda return "Aus";
+      - lvgl.label.update:
+          id: heating_icon
+          text_color: 0x56acfa
+          text: "$heating"
+      - lambda: |-
+          lv_obj_add_flag(id(valve_box), LV_OBJ_FLAG_HIDDEN);
+#-------------------------------------------
+# Display st7701s spi
+#-------------------------------------------
+spi:
+  - id: lcd_spi
+    clk_pin: GPIO48
+    mosi_pin: GPIO47
+
+display:
+  - platform: st7701s
+    id: my_display
+    update_interval: never
+    data_rate: 2MHz
+    spi_mode: MODE3
+    color_order: RGB
+    invert_colors: false
+    dimensions:
+      width: 480
+      height: 480
+    transform:
+      mirror_x: false
+      mirror_y: false
+    cs_pin: 39
+      # reset not defined
+    de_pin: 18
+    hsync_pin: 16
+    vsync_pin: 17
+    pclk_pin: 21
+    init_sequence:
+      - 1
+      - [0xFF, 0x77, 0x01, 0x00, 0x00, 0x10]
+      - [0xCD, 0x00]
+    pclk_frequency: 12MHz
+    pclk_inverted: false
+    data_pins:
+      red:
+        - 11         # R1
+        - 12         # R2
+        - 13         # R3
+        - 14         # R4
+        - 0          # R5
+      green:
+        - 8          # G0
+        - 20         # G1
+        - 3          # G2
+        - 46         # G3
+        - 9          # G4
+        - 10         # G5
+      blue:
+        - 4          # B1
+        - 5          # B2
+        - 6          # B3
+        - 7          # B4
+        - 15         # B5
