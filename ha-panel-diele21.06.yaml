@@ -111,7 +111,7 @@ substitutions:
   wifi_100:           "\U0000E911"
 
 esphome:
-  name: hapanel4
+  name: hapanel5
   friendly_name: Display Diele
   platformio_options:
     board_build.flash_mode: dio
@@ -150,6 +150,7 @@ esphome:
           } else {
             ESP_LOGW("boot", "Uhrzeit ungültig – standby_timer wird nicht gestartet");
           }
+      - script.execute: update_dropdown_display_off
       - script.execute: touch_wakeup_and_restart_timer
       - lambda: |-
           if (!isnan(id(main_light_brightness).state)) {
@@ -987,7 +988,7 @@ lvgl:
       widgets:
         - image:
             align: CENTER
-            src: back3
+            src: back1
         - label:
             text: "Allgemein"
             align: TOP_MID
@@ -1564,7 +1565,7 @@ lvgl:
       widgets:
         - image:
             align: CENTER
-            src: back2
+            src: back1
         - label:
             text: "Einstellungen"
             align: TOP_MID
@@ -1585,11 +1586,11 @@ lvgl:
             text_font: roboto24
             text_color: 0xCCCCCC
             x: 30
-            y: 50
+            y: 30
         - slider:
             id: slider_brightness_day
             x: 35
-            y: 80
+            y: 60
             width: 300
             height: 20
             knob:
@@ -1621,7 +1622,7 @@ lvgl:
         - label:
             id: slider_label_brightness_day
             x: 360
-            y: 80
+            y: 55
             width: 105
             text_font: roboto24
             text_color: 0xCCCCCC
@@ -1633,11 +1634,11 @@ lvgl:
             text_font: roboto24
             text_color: 0xCCCCCC
             x: 30
-            y: 110
+            y: 90
         - slider:
             id: slider_brightness_night
             x: 35
-            y: 140
+            y: 120
             width: 300
             height: 20
             knob:
@@ -1670,7 +1671,7 @@ lvgl:
         - label:
             id: slider_label_brightness_night
             x: 360
-            y: 140
+            y: 115
             width: 105
             text_font: roboto24
             text_color: 0xCCCCCC
@@ -1682,11 +1683,11 @@ lvgl:
             text_font: roboto24
             text_color: 0xCCCCCC
             x: 30
-            y: 170
+            y: 150
         - slider:
             id: slider_standby_day
             x: 35
-            y: 200
+            y: 180
             width: 300
             height: 20
             knob:
@@ -1723,7 +1724,7 @@ lvgl:
         - label:
             id: slider_label_standby_day
             x: 360
-            y: 200
+            y: 175
             width: 105
             text_font: roboto24
             text_color: 0xCCCCCC
@@ -1735,11 +1736,11 @@ lvgl:
             text_font: roboto24
             text_color: 0xCCCCCC
             x: 30
-            y: 230
+            y: 210
         - slider:
             id: slider_standby_night
             x: 35
-            y: 260
+            y: 240
             knob:
               bg_color: 0xffffff
               bg_grad_color: 0xdddddd
@@ -1777,7 +1778,7 @@ lvgl:
         - label:
             id: slider_label_standby_night
             x: 360
-            y: 260
+            y: 235
             width: 105
             text_font: roboto24
             text_color: 0xCCCCCC
@@ -1789,11 +1790,11 @@ lvgl:
             text_font: roboto24
             text_color: 0xCCCCCC
             x: 30
-            y: 290
+            y: 270
         - slider:
             id: slider_standby_brightness_day
             x: 35
-            y: 320
+            y: 300
             width: 300
             height: 20
             min_value: 0
@@ -1821,7 +1822,7 @@ lvgl:
         - label:
             id: slider_label_standby_brightness_day
             x: 360
-            y: 320
+            y: 295
             width: 105
             text_font: roboto24
             text_color: 0xCCCCCC
@@ -1833,11 +1834,11 @@ lvgl:
             text_font: roboto24
             text_color: 0xCCCCCC
             x: 30
-            y: 350
+            y: 330
         - slider:
             id: slider_standby_brightness_night
             x: 35
-            y: 380
+            y: 360
             width: 300
             height: 20
             min_value: 0
@@ -1865,39 +1866,77 @@ lvgl:
         - label:
             id: slider_label_standby_brightness_night
             x: 360
-            y: 380
+            y: 355
             width: 105
             text_font: roboto24
             text_color: 0xCCCCCC
             text_align: LEFT
             text: "0"
         - label:
-            x: 20
-            y: 420
-            text_font: roboto12
+            id: label_standby_display_off
+            text: "Display aus nach"
+            text_font: roboto24
             text_color: 0xCCCCCC
-            text: BSSID
-            id: settings_wifi_ssid
+            text_align: LEFT
+            x: 30
+            y: 390
+        - dropdown:
+            id: roller_display_off_delay
+            x: 350
+            y: 390
+            width: 100
+            height: 40
+            options:
+              - "0 min"
+              - "1 min"
+              - "2 min"
+              - "3 min"
+              - "4 min"
+              - "5 min"
+              - "6 min"
+              - "7 min"
+              - "8 min"
+              - "9 min"
+              - "10 min"
+            selected_index: !lambda 'return id(standby_display_off_minutes);'
+            text_color: 0xFFFFFF
+            bg_color: 0x000000
+            bg_opa: TRANSP
+            border_width: 0
+            dropdown_list:
+              selected:
+                checked:
+                  text_color: 0xFF0000
+            on_value:
+              then:
+                - lambda: |-
+                    id(standby_display_off_minutes) = x;
+                    ESP_LOGD("Standby", "Display-Off-Zeit gesetzt: %d Minuten", id(standby_display_off_minutes));
+                - script.execute: update_display_off_label
         - label:
-            x: 275
-            y: 420
-            width: 200
-            text_font: roboto12
+            id: label_standby_display_off_status
+            x: 280
+            y: 390
+            width: 80
+            text_font: roboto24
             text_color: 0xCCCCCC
-            text_align: left
-            text: IP Address
-            id: settings_wifi_ipaddress
+            text_align: LEFT
+            text: !lambda |-
+                    if (id(standby_display_off_minutes) == 0)
+                      return std::string("Aus");
+                    else
+                      return std::string("");
 
     - id: weather_page
       widgets:
         - image:
             align: CENTER
-            src: back3
+            src: back1
             widgets:
               - label:
                   align: top_left
                   y: 6
-                  x: 82
+                  x: 92
                   id: display_time_header_weather
                   text: "00:00"
                   text_font: roboto12
@@ -3110,24 +3149,6 @@ sensor:
     id: uptime_internal
 
 text_sensor:
-  - platform: wifi_info
-    ip_address:
-      name: "IP Address"
-      on_value:
-        - lvgl.label.update:
-            id: settings_wifi_ipaddress
-            text:
-              format: "IP Address: %s"
-              args: [ 'x.c_str()' ]
-    ssid:
-      name: "SSID"
-      on_value:
-        - lvgl.label.update:
-            id: settings_wifi_ssid
-            text:
-              format: "SSID: %s"
-              args: [ 'x.c_str()' ]
-
   - platform: homeassistant
     id: ha_weather_temp
     entity_id: weather.pirateweather
@@ -4111,10 +4132,6 @@ globals:
     type: int
     restore_value: no
     initial_value: '0'
-  - id: last_swipe_time
-    type: uint32_t
-    restore_value: no
-    initial_value: '0'
   - id: swipe_locked
     type: bool
     restore_value: no
@@ -4123,6 +4140,18 @@ globals:
     type: bool
     initial_value: "false"
     restore_value: no
+  - id: last_swipe_time
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+  - id: standby_display_off_minutes
+    type: int
+    restore_value: true
+    initial_value: '0'
+  - id: standby_display_off_timer_active
+    type: bool
+    restore_value: no
+    initial_value: 'false'
   - id: standby_display_off
     type: bool
     restore_value: no
@@ -4279,6 +4308,34 @@ script:
       - lvgl.page.show:
           id: general_page
 
+  - id: update_display_off_label
+    mode: restart
+    then:
+      - lvgl.label.update:
+          id: label_standby_display_off_status
+          text: !lambda |-
+            if (id(standby_display_off_minutes) == 0)
+              return std::string("Aus");
+            else
+              return std::string("");
+
+  - id: update_dropdown_display_off
+    mode: restart
+    then:
+      - lvgl.dropdown.update:
+          id: roller_display_off_delay
+          selected_index: !lambda 'return id(standby_display_off_minutes);'
+      - lvgl.label.update:
+          id: label_standby_display_off_status
+          text: !lambda |-
+            if (id(standby_display_off_minutes) == 0)
+              return std::string("Aus");
+            else {
+              char buf[16];
+              snprintf(buf, sizeof(buf), "%d min", id(standby_display_off_minutes));
+              return std::string(buf);
+            }
+
   - id: enter_standby
     mode: restart
     then:
@@ -4304,17 +4361,22 @@ script:
           if (id(standby_display_off)) {
             auto call = id(display_backlight).make_call();
             call.set_state(false);
-            call.set_transition_length(2000);
+            call.set_transition_length(1000);
             call.perform();
             ESP_LOGD("Standby", "Display komplett ausgeschaltet (%.0f%%)", id(display_backlight_brightness));
           } else {
             auto call = id(display_backlight).make_call();
             call.set_state(true);
             call.set_brightness(id(display_backlight_brightness) / 100.0f);
-            call.set_transition_length(2000);
+            call.set_transition_length(1000);
             call.perform();
             ESP_LOGD("Standby", "Display gedimmt auf %.0f%%", id(display_backlight_brightness));
           }
+      - if:
+          condition:
+            lambda: 'return id(standby_display_off_minutes) > 0;'
+          then:
+            - script.execute: standby_display_off_timer
 
   - id: touch_wakeup_and_restart_timer
     mode: restart
@@ -4323,6 +4385,7 @@ script:
           condition:
             lambda: return id(display_in_standby);
           then:
+            - script.stop: standby_display_off_timer
             - script.stop: standby_timer
             - lambda: |-
                 auto now = id(ha_time).now();
@@ -4337,7 +4400,7 @@ script:
                 auto call = id(display_backlight).make_call();
                 call.set_state(true);
                 call.set_brightness(brightness);
-                call.set_transition_length(2000);
+                call.set_transition_length(1000);
                 call.perform();
                 ESP_LOGD("Standby", "Display geweckt → Zielhelligkeit: %.0f%%", id(display_backlight_brightness));
             - lvgl.resume:
@@ -4347,6 +4410,25 @@ script:
                 animation: LV_SCR_LOAD_ANIM_NONE
                 time: 500ms
       - script.execute: standby_timer
+
+  - id: standby_display_off_timer
+    mode: restart
+    then:
+      - lambda: |-
+          ESP_LOGD("Standby", "Display-Off-Timer gestartet: %d Minuten", id(standby_display_off_minutes));
+          id(standby_display_off_timer_active) = true;
+      - delay: !lambda "return id(standby_display_off_minutes) * 60000;"
+      - if:
+          condition:
+            lambda: return id(display_in_standby);
+          then:
+            - light.turn_off:
+                id: display_backlight
+                transition_length: 2s
+            - lambda: |-
+                ESP_LOGD("Standby", "Display komplett ausgeschaltet nach %d min", id(standby_display_off_minutes));
+      - lambda: |-
+          id(standby_display_off_timer_active) = false;
 
   - id: standby_timer
     mode: restart
@@ -4358,6 +4440,7 @@ script:
           ESP_LOGD("Standby", "Verzögerung: %d Sekunden (%s)", timeout, is_night ? "Nacht" : "Tag");
           return timeout * 1000;
       - script.execute: enter_standby
+
 
   - id: page_next
     then:
@@ -4384,31 +4467,26 @@ script:
             lambda: 'return (int) id(current_page_index).state == 0;'
           then:
             - lvgl.page.show: general_page
-#            - lambda: ESP_LOGI("change_page", "Wechsle zur Hauptseite");
       - if:
           condition:
             lambda: 'return (int) id(current_page_index).state == 1;'
           then:
             - lvgl.page.show: sleeping_page
-#            - lambda: ESP_LOGI("change_page", "Wechsle zur Schlafseite");
       - if:
           condition:
             lambda: 'return (int) id(current_page_index).state == 2;'
           then:
             - lvgl.page.show: page_thermostat
-#            - lambda: ESP_LOGI("change_page", "Wechsle zur Heizungsseite");
       - if:
           condition:
             lambda: 'return (int) id(current_page_index).state == 3;'
           then:
             - lvgl.page.show: setting_page
-#            - lambda: ESP_LOGI("change_page", "Wechsle zur Einstellungsseite");
       - if:
           condition:
             lambda: 'return (int) id(current_page_index).state == 4;'
           then:
             - lvgl.page.show: weather_page
-#            - lambda: ESP_LOGI("change_page", "Wechsle zur Wetterseite");
 
   - id: therm_status_update_on
     then:
