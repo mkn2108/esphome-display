@@ -1,3 +1,5 @@
+@25.06.: Added display off after standby. Now you can have normal mode for example 100% for 4min -> after standby mode with dedicated page with for example 35% for 3min -> if off mode is not 0min then the display will switch off after choosen time for example 5min.
+
 @16.06.: Added setting page to change on the fly display brightness for day, night, standby, the same for display on, dimm or display off time.
 
 @06.06.: Standby mode adaption fo display where no permanent standby clock is needed:
