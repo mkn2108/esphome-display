@@ -576,7 +576,7 @@ lvgl:
       widgets:
         - image:
             align: CENTER
-            src: back2
+            src: back3
         - label:
             text: "Diele"
             align: TOP_MID
@@ -1578,7 +1578,7 @@ lvgl:
       widgets:
         - image:
             align: CENTER
-            src: back1
+            src: back2
         - label:
             text: "Einstellungen"
             align: TOP_MID
@@ -2042,7 +2042,7 @@ lvgl:
       widgets:
         - image:
             align: CENTER
-            src: back1
+            src: back3
             widgets:
               - label:
                   align: top_left
@@ -4434,12 +4434,6 @@ script:
             snprintf(buffer, sizeof(buffer), "%ds", id(standby_timeout_night));
             return std::string(buffer);
 
-  - id: clock_page_button_script
-    mode: restart
-    then:
-      - lvgl.page.show:
-          id: general_page
-
   - id: update_is_nighttime
     mode: restart
     then:
@@ -4545,16 +4539,17 @@ script:
                 id(display_in_standby) = false;
                 id(is_standby_active) = false;
                 id(standby_display_off) = false;
-
                 float brightness = id(is_nighttime) ? id(brightness_night) : id(brightness_day);
                 id(display_backlight_brightness) = brightness * 100.0f;
-
                 auto call = id(display_backlight).make_call();
                 call.set_state(true);
                 call.set_brightness(brightness);
                 call.set_transition_length(1000);
                 call.perform();
             - script.execute: standby_timer
+            - lvgl.page.show:
+                id: general_page
+                animation: LV_SCR_LOAD_ANIM_NONE
 
   - id: standby_display_off_timer
     mode: restart
