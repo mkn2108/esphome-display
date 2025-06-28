@@ -124,21 +124,25 @@ esphome:
       - lvgl.slider.update: { id: slider_standby_brightness_night, value: !lambda 'return id(standby_brightness_night) * 100.0f;' }
       - lvgl.slider.update: { id: slider_standby_day, value: !lambda 'return id(standby_timeout_day);' }
       - lvgl.slider.update: { id: slider_standby_night, value: !lambda 'return id(standby_timeout_night);' }
+      - lvgl.dropdown.update:
+          id: roller_night_start_hour
+          selected_index: !lambda 'return id(night_start_hour);'
+      - lvgl.dropdown.update:
+          id: roller_night_end_hour
+          selected_index: !lambda 'return id(night_end_hour);'
+      - script.execute: update_dropdown_display_off
+      - script.execute: update_night_dropdowns
       - delay: 1s
+      - script.execute: update_is_nighttime
       - lambda: |-
-          auto now = id(ha_time).now();
-          bool is_night = now.is_valid() && (now.hour >= 23 || now.hour < 7);
-          id(is_nighttime) = is_night;
-
-          float brightness = is_night ? id(brightness_night) : id(brightness_day);
+          float brightness = id(is_nighttime) ? id(brightness_night) : id(brightness_day);
           id(display_backlight_brightness) = brightness * 100.0f;
-          ESP_LOGD("BOOT", "Initiale Helligkeit (is_night=%s): %.0f%%", is_night ? "ja" : "nein", id(display_backlight_brightness));
+          ESP_LOGD("BOOT", "Initiale Helligkeit (is_night=%s): %.0f%%",
+                   id(is_nighttime) ? "ja" : "nein", id(display_backlight_brightness));
       - light.turn_on:
           id: display_backlight
-          brightness: !lambda |-
-            auto now = id(ha_time).now();
-            return (now.is_valid() && (now.hour >= 23 || now.hour < 7)) ? id(brightness_night) : id(brightness_day);
-          transition_length: 1500ms
+          brightness: !lambda 'return id(is_nighttime) ? id(brightness_night) : id(brightness_day);'
+          transition_length: 800ms
       - delay: 5s
       - lvgl.widget.hide: boot_screen
       - delay: 10s
@@ -216,6 +220,15 @@ esphome:
           } else {
             lv_obj_add_flag(id(label_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
             lv_obj_add_flag(id(label_icon_timer_haustuer), LV_OBJ_FLAG_HIDDEN);
+          }
+      - delay: 30s
+      - lambda: |-
+          auto now = id(ha_time).now();
+          if (now.is_valid()) {
+            ESP_LOGI("boot", "Zweiter Versuch: standby_timer wird gestartet");
+            id(standby_timer).execute();
+          } else {
+            ESP_LOGW("boot", "Zweiter Versuch: Uhrzeit immer noch ungültig – standby_timer nicht gestartet");
           }
 
 font: !include display/fonts.yaml
@@ -1874,17 +1887,17 @@ lvgl:
             text: "0"
         - label:
             id: label_standby_display_off
-            text: "Display aus nach"
-            text_font: roboto24
+            text: "Aus nach"
+            text_font: roboto18
             text_color: 0xCCCCCC
             text_align: LEFT
             x: 30
-            y: 390
+            y: 400
         - dropdown:
             id: roller_display_off_delay
-            x: 350
-            y: 390
-            width: 100
+            x: 100
+            y: 392
+            width: 80
             height: 40
             options:
               - "0 min"
@@ -1912,20 +1925,118 @@ lvgl:
                 - lambda: |-
                     id(standby_display_off_minutes) = x;
                     ESP_LOGD("Standby", "Display-Off-Zeit gesetzt: %d Minuten", id(standby_display_off_minutes));
-                - script.execute: update_display_off_label
         - label:
-            id: label_standby_display_off_status
-            x: 280
-            y: 390
-            width: 80
-            text_font: roboto24
+            id: label_night_start
+            x: 190
+            y: 400
+            text: "Nacht ab"
+            text_font: roboto18
             text_color: 0xCCCCCC
-            text_align: LEFT
-            text: !lambda |-
-                    if (id(standby_display_off_minutes) == 0)
-                      return std::string("Aus");
-                    else
-                      return std::string("");
+        - dropdown:
+            id: roller_night_start_hour
+            x: 260
+            y: 392
+            width: 60
+            height: 40
+            options:
+              - "00"
+              - "01"
+              - "02"
+              - "03"
+              - "04"
+              - "05"
+              - "06"
+              - "07"
+              - "08"
+              - "09"
+              - "10"
+              - "11"
+              - "12"
+              - "13"
+              - "14"
+              - "15"
+              - "16"
+              - "17"
+              - "18"
+              - "19"
+              - "20"
+              - "21"
+              - "22"
+              - "23"
+            selected_index: !lambda 'return id(night_end_hour);'
+            text_color: 0xFFFFFF
+            bg_color: 0x000000
+            bg_opa: TRANSP
+            border_width: 0
+            dropdown_list:
+              selected:
+                checked:
+                  text_color: 0xFF0000
+            on_value:
+              then:
+                - lambda: |-
+                    int hour = x;
+                    if (hour < 0) hour = 0;
+                    if (hour > 23) hour = 23;
+                    id(night_start_hour) = hour;
+                    ESP_LOGD("Standby", "Nacht beginnt ab %d Uhr", id(night_start_hour));
+                - script.execute: update_is_nighttime
+        - label:
+            id: label_night_end
+            x: 330
+            y: 400
+            text: "Nacht bis"
+            text_font: roboto18
+            text_color: 0xCCCCCC
+        - dropdown:
+            id: roller_night_end_hour
+            x: 400
+            y: 392
+            width: 60
+            height: 40
+            options:
+              - "00"
+              - "01"
+              - "02"
+              - "03"
+              - "04"
+              - "05"
+              - "06"
+              - "07"
+              - "08"
+              - "09"
+              - "10"
+              - "11"
+              - "12"
+              - "13"
+              - "14"
+              - "15"
+              - "16"
+              - "17"
+              - "18"
+              - "19"
+              - "20"
+              - "21"
+              - "22"
+              - "23"
+            selected_index: !lambda 'return id(night_end_hour);'
+            text_color: 0xFFFFFF
+            bg_color: 0x000000
+            bg_opa: TRANSP
+            border_width: 0
+            dropdown_list:
+              selected:
+                checked:
+                  text_color: 0xFF0000
+            on_value:
+              then:
+                - lambda: |-
+                    int hour = x;
+                    if (hour < 0) hour = 0;
+                    if (hour > 23) hour = 23;
+                    id(night_end_hour) = hour;
+                    ESP_LOGD("Standby", "Nacht endet um %d Uhr", id(night_end_hour));
+                - script.execute: update_is_nighttime
 
     - id: weather_page
       widgets:
@@ -2259,6 +2370,19 @@ number:
 time:
   - platform: homeassistant
     id: ha_time
+    on_time:
+      - seconds: 0
+        then:
+          - lambda: |-
+              static bool started = false;
+              if (!started) {
+                ESP_LOGI("time", "standby_timer via on_time gestartet");
+                id(standby_timer).execute();
+                started = true;
+              }
+
+  - platform: homeassistant
+    id: ha_time_antiburn
     on_time:
       - hours: 3
         minutes: 5
@@ -4120,6 +4244,14 @@ touchscreen:
           }
 
 globals:
+  - id: night_start_hour
+    type: int
+    restore_value: true
+    initial_value: '22'
+  - id: night_end_hour
+    type: int
+    restore_value: true
+    initial_value: '7'
   - id: last_timer_garderobe
     type: int
     restore_value: no
@@ -4308,16 +4440,36 @@ script:
       - lvgl.page.show:
           id: general_page
 
-  - id: update_display_off_label
+  - id: update_is_nighttime
     mode: restart
     then:
-      - lvgl.label.update:
-          id: label_standby_display_off_status
-          text: !lambda |-
-            if (id(standby_display_off_minutes) == 0)
-              return std::string("Aus");
-            else
-              return std::string("");
+      - lambda: |-
+          auto now = id(ha_time).now();
+          if (!now.is_valid()) {
+            ESP_LOGW("Standby", "Uhrzeit ungültig – Nachtzeitprüfung übersprungen");
+            return;
+          }
+          int hour = now.hour;
+          int start = id(night_start_hour);
+          int end = id(night_end_hour);
+          bool is_night;
+          if (start <= end) {
+            is_night = hour >= start && hour < end;
+          } else {
+            is_night = hour >= start || hour < end;
+          }
+          id(is_nighttime) = is_night;
+          float brightness = is_night ? id(brightness_night) : id(brightness_day);
+          id(display_backlight_brightness) = brightness * 100.0f;
+          if (id(display_backlight).remote_values.is_on()) {
+            auto call = id(display_backlight).make_call();
+            call.set_state(true);
+            call.set_brightness(brightness);
+            call.set_transition_length(600);
+            call.perform();
+          }
+          ESP_LOGD("Standby", "Aktuelle Stunde: %d, Nacht: %s (Start: %d, Ende: %d)",
+                   hour, is_night ? "ja" : "nein", start, end);
 
   - id: update_dropdown_display_off
     mode: restart
@@ -4325,53 +4477,53 @@ script:
       - lvgl.dropdown.update:
           id: roller_display_off_delay
           selected_index: !lambda 'return id(standby_display_off_minutes);'
-      - lvgl.label.update:
-          id: label_standby_display_off_status
-          text: !lambda |-
-            if (id(standby_display_off_minutes) == 0)
-              return std::string("Aus");
-            else {
-              char buf[16];
-              snprintf(buf, sizeof(buf), "%d min", id(standby_display_off_minutes));
-              return std::string(buf);
-            }
+
+  - id: update_night_dropdowns
+    mode: restart
+    then:
+      - lvgl.dropdown.update:
+          id: roller_night_start_hour
+          selected_index: !lambda 'return id(night_start_hour);'
+      - lvgl.dropdown.update:
+          id: roller_night_end_hour
+          selected_index: !lambda 'return id(night_end_hour);'
+      - delay: 500ms
+      - script.execute: update_is_nighttime
 
   - id: enter_standby
     mode: restart
     then:
       - lambda: |-
           if (id(page_change_locked)) {
-            ESP_LOGD("Page", "Seitenwechsel blockiert");
+            ESP_LOGD("Standby", "Seitenwechsel blockiert");
             return;
           }
           id(page_change_locked) = true;
           id(display_in_standby) = true;
           id(is_standby_active) = true;
-          bool night = id(is_nighttime);
-          float brightness = night ? id(standby_brightness_night) : id(standby_brightness_day);
+          float brightness = id(is_nighttime) ? id(standby_brightness_night) : id(standby_brightness_day);
           id(display_backlight_brightness) = brightness * 100.0f;
-          ESP_LOGD("Standby", "Standby aktiviert (%s) – Ziel-Helligkeit: %.0f%%",
-            night ? "Nacht" : "Tag", id(display_backlight_brightness));
+
           id(standby_display_off) = brightness <= 0.01f;
+          ESP_LOGD("Standby", "is_nighttime: %s, standby_brightness: %.2f",
+                   id(is_nighttime) ? "ja" : "nein",
+                   id(is_nighttime) ? id(standby_brightness_night) : id(standby_brightness_day));
       - lvgl.page.show:
           id: standby_page
           animation: LV_SCR_LOAD_ANIM_NONE
           time: 50ms
       - lambda: |-
+          auto call = id(display_backlight).make_call();
           if (id(standby_display_off)) {
-            auto call = id(display_backlight).make_call();
             call.set_state(false);
-            call.set_transition_length(1000);
-            call.perform();
-            ESP_LOGD("Standby", "Display komplett ausgeschaltet (%.0f%%)", id(display_backlight_brightness));
+            ESP_LOGD("Standby", "Display komplett ausgeschaltet");
           } else {
-            auto call = id(display_backlight).make_call();
             call.set_state(true);
             call.set_brightness(id(display_backlight_brightness) / 100.0f);
-            call.set_transition_length(1000);
-            call.perform();
             ESP_LOGD("Standby", "Display gedimmt auf %.0f%%", id(display_backlight_brightness));
           }
+          call.set_transition_length(1000);
+          call.perform();
       - if:
           condition:
             lambda: 'return id(standby_display_off_minutes) > 0;'
@@ -4387,29 +4539,22 @@ script:
           then:
             - script.stop: standby_display_off_timer
             - script.stop: standby_timer
+            - script.execute: update_is_nighttime
             - lambda: |-
-                auto now = id(ha_time).now();
-                bool is_night = (now.hour >= 23 || now.hour < 7);
                 id(page_change_locked) = false;
                 id(display_in_standby) = false;
                 id(is_standby_active) = false;
-                id(is_nighttime) = is_night;
                 id(standby_display_off) = false;
-                float brightness = is_night ? id(brightness_night) : id(brightness_day);
+
+                float brightness = id(is_nighttime) ? id(brightness_night) : id(brightness_day);
                 id(display_backlight_brightness) = brightness * 100.0f;
+
                 auto call = id(display_backlight).make_call();
                 call.set_state(true);
                 call.set_brightness(brightness);
                 call.set_transition_length(1000);
                 call.perform();
-                ESP_LOGD("Standby", "Display geweckt → Zielhelligkeit: %.0f%%", id(display_backlight_brightness));
-            - lvgl.resume:
-            - lvgl.widget.redraw:
-            - lvgl.page.show:
-                id: general_page
-                animation: LV_SCR_LOAD_ANIM_NONE
-                time: 500ms
-      - script.execute: standby_timer
+            - script.execute: standby_timer
 
   - id: standby_display_off_timer
     mode: restart
@@ -4427,20 +4572,20 @@ script:
                 transition_length: 2s
             - lambda: |-
                 ESP_LOGD("Standby", "Display komplett ausgeschaltet nach %d min", id(standby_display_off_minutes));
-      - lambda: |-
-          id(standby_display_off_timer_active) = false;
+      - lambda: 'id(standby_display_off_timer_active) = false;'
 
   - id: standby_timer
     mode: restart
     then:
+      - script.execute: update_is_nighttime
       - delay: !lambda |-
-          auto now = id(ha_time).now();
-          bool is_night = (now.hour < 7 || now.hour >= 23);
-          int timeout = is_night ? id(standby_timeout_night) : id(standby_timeout_day);
-          ESP_LOGD("Standby", "Verzögerung: %d Sekunden (%s)", timeout, is_night ? "Nacht" : "Tag");
+          int timeout = id(is_nighttime) ? id(standby_timeout_night) : id(standby_timeout_day);
+          ESP_LOGD("Standby", "Verzögerung: %d Sekunden (%s)", timeout, id(is_nighttime) ? "Nacht" : "Tag");
           return timeout * 1000;
       - script.execute: enter_standby
-
+      - lambda: |-
+          ESP_LOGD("Standby", "standby_timer wurde gestartet – Nacht: %s",
+                   id(is_nighttime) ? "ja" : "nein");
 
   - id: page_next
     then:
