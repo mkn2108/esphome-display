@@ -1,152 +1,186 @@
 template:
-- trigger:
-    - platform: time_pattern
-      seconds: "/1"
-    - platform: state
-      entity_id: timer.timer_garderobe
-  sensor:
-    - name: "timer_garderobe_remaining"
+  - trigger:
+      - platform: time_pattern
+        seconds: "/1"
+      - platform: state
+        entity_id: timer.timer_garderobe
+      - platform: state
+        entity_id: light.garderobe
+    sensor:
+      name: "timer_garderobe_remaining"
       unit_of_measurement: "s"
       state: >
-        {% set end = state_attr('timer.timer_garderobe', 'finishes_at') %}
-        {% if end and states('timer.timer_garderobe') == 'active' %}
-          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
-          {{ [seconds | int, 0] | max }}
-        {% else %}
+        {% if is_state('light.garderobe', 'off') %}
           0
+        {% else %}
+          {% set end = state_attr('timer.timer_garderobe', 'finishes_at') %}
+          {% if end and states('timer.timer_garderobe') == 'active' %}
+            {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+            {{ [seconds | int, 0] | max }}
+          {% else %}
+            0
+          {% endif %}
         {% endif %}
 
-- trigger:
-    - platform: time_pattern
-      seconds: "/1"
-    - platform: state
-      entity_id: timer.timer_haustur
-  sensor:
-    - name: "timer_haustuer_remaining"
+  - trigger:
+      - platform: time_pattern
+        seconds: "/1"
+      - platform: state
+        entity_id: timer.haustuer_draussen
+      - platform: state
+        entity_id: light.haustur
+    sensor:
+      name: "timer_haustuer_remaining"
       unit_of_measurement: "s"
       state: >
-        {% set end = state_attr('timer.timer_haustur', 'finishes_at') %}
-        {% if end and states('timer.timer_haustur') == 'active' %}
-          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
-          {{ [seconds | int, 0] | max }}
-        {% else %}
+        {% if is_state('light.haustur', 'off') %}
           0
+        {% else %}
+          {% set end = state_attr('timer.haustuer_draussen', 'finishes_at') %}
+          {% if end and states('timer.haustuer_draussen') == 'active' %}
+            {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+            {{ [seconds | int, 0] | max }}
+          {% else %}
+            0
+          {% endif %}
         {% endif %}
 
-- trigger:
-    - platform: time_pattern
-      seconds: "/1"
-    - platform: state
-      entity_id: timer.timer_eingang
-  sensor:
-    - name: "timer_eingang_remaining"
+  - trigger:
+      - platform: time_pattern
+        seconds: "/1"
+      - platform: state
+        entity_id: timer.timer_eingang
+      - platform: state
+        entity_id: light.diele_1
+    sensor:
+      name: "timer_eingang_remaining"
       unit_of_measurement: "s"
       state: >
-        {% set end = state_attr('timer.timer_eingang', 'finishes_at') %}
-        {% if end and states('timer.timer_eingang') == 'active' %}
-          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
-          {{ [seconds | int, 0] | max }}
-        {% else %}
+        {% if is_state('light.diele_1', 'off') %}
           0
+        {% else %}
+          {% set end = state_attr('timer.timer_eingang', 'finishes_at') %}
+          {% if end and states('timer.timer_eingang') == 'active' %}
+            {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+            {{ [seconds | int, 0] | max }}
+          {% else %}
+            0
+          {% endif %}
         {% endif %}
 
-- trigger:
-    - platform: time_pattern
-      seconds: "/1"
-    - platform: state
-      entity_id: timer.timer_treppe_oben
-  sensor:
-    - name: "timer_balkon_remaining"
-      unit_of_measurement: "s"
-      state: >
-        {% set end = state_attr('timer.timer_treppe_oben', 'finishes_at') %}
-        {% if end and states('timer.timer_treppe_oben') == 'active' %}
-          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
-          {{ [seconds | int, 0] | max }}
-        {% else %}
-          0
-        {% endif %}
+  - trigger:
+      - platform: time_pattern
+        seconds: "/1"
+      - platform: state
+        entity_id: timer.timer_treppe_oben
+      - platform: state
+        entity_id: light.wohnzimmerobenbalkon
+    sensor:
+      - name: "timer_balkon_remaining"
+        unit_of_measurement: "s"
+        state: >
+          {% if is_state('light.wohnzimmerobenbalkon', 'off') %}
+            0
+          {% else %}
+            {% set end = state_attr('timer.timer_treppe_oben', 'finishes_at') %}
+            {% if end and states('timer.timer_treppe_oben') == 'active' %}
+              {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+              {{ [seconds | int, 0] | max }}
+            {% else %}
+              0
+            {% endif %}
+          {% endif %}
 
-- trigger:
-    - platform: time_pattern
-      seconds: "/1"
-    - platform: state
-      entity_id: timer.flur_lea
-  sensor:
-    - name: "timer_flur_lea_remaining"
-      unit_of_measurement: "s"
-      state: >
-        {% set end = state_attr('timer.flur_lea', 'finishes_at') %}
-        {% if end and states('timer.flur_lea') == 'active' %}
-          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
-          {{ [seconds | int, 0] | max }}
-        {% else %}
-          0
-        {% endif %}
+  - trigger:
+      - platform: time_pattern
+        seconds: "/1"
+      - platform: state
+        entity_id: timer.flur_lea
+      - platform: state
+        entity_id: light.deckenlampe_flur_lea
+    sensor:
+      - name: "timer_flur_lea_remaining"
+        unit_of_measurement: "s"
+        state: >
+          {% if is_state('light.deckenlampe_flur_lea', 'off') %}
+            0
+          {% else %}
+            {% set end = state_attr('timer.flur_lea', 'finishes_at') %}
+            {% if end and states('timer.flur_lea') == 'active' %}
+              {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+              {{ [seconds | int, 0] | max }}
+            {% else %}
+              0
+            {% endif %}
+          {% endif %}
+  - trigger:
+      - platform: time_pattern
+        seconds: "/1"
+      - platform: state
+        entity_id: timer.flur_maja
+      - platform: state
+        entity_id: light.deckenlampe_flur_maja
+    sensor:
+      - name: "timer_flur_maja_remaining"
+        unit_of_measurement: "s"
+        state: >
+          {% if is_state('light.deckenlampe_flur_maja', 'off') %}
+            0
+          {% else %}
+            {% set end = state_attr('timer.flur_maja', 'finishes_at') %}
+            {% if end and states('timer.flur_maja') == 'active' %}
+              {% set seconds = (as_datetime(end) - now()).total_seconds() %}
+              {{ [seconds | int, 0] | max }}
+            {% else %}
+              0
+            {% endif %}
+          {% endif %}
+  - trigger:
+      - platform: homeassistant
+        event: start
+      - platform: time_pattern
+        minutes: "/30"
+      - platform: state
+        entity_id:
+          - sensor.weather_data
+          - sensor.home_windgeschwindigkeit_tag_0
+          - sensor.home_windgeschwindigkeit_tag_1
+          - sensor.home_windgeschwindigkeit_tag_2
+          - sensor.home_windgeschwindigkeit_tag_3
+          - sensor.home_windgeschwindigkeit_nacht_0
+          - sensor.home_windgeschwindigkeit_nacht_1
+          - sensor.home_windgeschwindigkeit_nacht_2
+          - sensor.home_windgeschwindigkeit_nacht_3
+          - sensor.home_realfeel_temperatur_max_tag_0
+          - sensor.home_realfeel_temperatur_max_tag_1
+          - sensor.home_realfeel_temperatur_max_tag_2
+          - sensor.home_realfeel_temperatur_max_tag_3
+          - sensor.home_realfeel_temperatur_min_tag_0
+          - sensor.home_realfeel_temperatur_min_tag_1
+          - sensor.home_realfeel_temperatur_min_tag_2
+          - sensor.home_realfeel_temperatur_min_tag_3
+          - sensor.home_uv_index_tag_0
+          - sensor.home_uv_index_tag_1
+          - sensor.home_uv_index_tag_2
+          - sensor.home_uv_index_tag_3
+          - sensor.home_bewolkung_tag_0
+          - sensor.home_bewolkung_tag_1
+          - sensor.home_bewolkung_tag_2
+          - sensor.home_bewolkung_tag_3
+          - sensor.home_bewolkung_nacht_0
+          - sensor.home_bewolkung_nacht_1
+          - sensor.home_bewolkung_nacht_2
+          - sensor.home_bewolkung_nacht_3
+          - sensor.home_bedingung_tag_0
+          - sensor.home_bedingung_tag_1
+          - sensor.home_bedingung_tag_2
+          - sensor.home_bedingung_tag_3
+          - sensor.home_bedingung_nacht_0
+          - sensor.home_bedingung_nacht_1
+          - sensor.home_bedingung_nacht_2
+          - sensor.home_bedingung_nacht_3
 
-- trigger:
-    - platform: time_pattern
-      seconds: "/1"
-    - platform: state
-      entity_id: timer.flur_maja
-  sensor:
-    - name: "timer_flur_maja_remaining"
-      unit_of_measurement: "s"
-      state: >
-        {% set end = state_attr('timer.flur_maja', 'finishes_at') %}
-        {% if end and states('timer.flur_maja') == 'active' %}
-          {% set seconds = (as_datetime(end) - now()).total_seconds() %}
-          {{ [seconds | int, 0] | max }}
-        {% else %}
-          0
-        {% endif %}
-
-- trigger:
-    - platform: homeassistant
-      event: start
-    - platform: time_pattern
-      minutes: "/30"
-    - platform: state
-      entity_id:
-        - sensor.weather_data
-        - sensor.home_windgeschwindigkeit_tag_0
-        - sensor.home_windgeschwindigkeit_tag_1
-        - sensor.home_windgeschwindigkeit_tag_2
-        - sensor.home_windgeschwindigkeit_tag_3
-        - sensor.home_windgeschwindigkeit_nacht_0
-        - sensor.home_windgeschwindigkeit_nacht_1
-        - sensor.home_windgeschwindigkeit_nacht_2
-        - sensor.home_windgeschwindigkeit_nacht_3
-        - sensor.home_realfeel_temperatur_max_tag_0
-        - sensor.home_realfeel_temperatur_max_tag_1
-        - sensor.home_realfeel_temperatur_max_tag_2
-        - sensor.home_realfeel_temperatur_max_tag_3
-        - sensor.home_realfeel_temperatur_min_tag_0
-        - sensor.home_realfeel_temperatur_min_tag_1
-        - sensor.home_realfeel_temperatur_min_tag_2
-        - sensor.home_realfeel_temperatur_min_tag_3
-        - sensor.home_uv_index_tag_0
-        - sensor.home_uv_index_tag_1
-        - sensor.home_uv_index_tag_2
-        - sensor.home_uv_index_tag_3
-        - sensor.home_bewolkung_tag_0
-        - sensor.home_bewolkung_tag_1
-        - sensor.home_bewolkung_tag_2
-        - sensor.home_bewolkung_tag_3
-        - sensor.home_bewolkung_nacht_0
-        - sensor.home_bewolkung_nacht_1
-        - sensor.home_bewolkung_nacht_2
-        - sensor.home_bewolkung_nacht_3
-        - sensor.home_bedingung_tag_0
-        - sensor.home_bedingung_tag_1
-        - sensor.home_bedingung_tag_2
-        - sensor.home_bedingung_tag_3
-        - sensor.home_bedingung_nacht_0
-        - sensor.home_bedingung_nacht_1
-        - sensor.home_bedingung_nacht_2
-        - sensor.home_bedingung_nacht_3
-
-  sensor:
+    sensor:
     - name: "weather_data"
       unique_id: weather_data
       state: >
